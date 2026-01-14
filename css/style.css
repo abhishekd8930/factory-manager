@@ -1,0 +1,152 @@
+/* css/style.css - Add to very top */
+body { font-family: sans-serif; margin: 0; background: #f0f2f5; }
+button { cursor: pointer; }
+.hidden { display: none !important; } /* Critical logic fallback */
+
+/* --- CORE STYLES --- */
+body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; color: #1e293b; margin: 0; padding: 0; }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+.glass-panel {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* Chart Container */
+.chart-container { position: relative; width: 100%; height: 250px; margin: 0 auto; }
+
+/* Animations */
+.fade-in { animation: fadeIn 0.4s ease-out forwards; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Tab Logic */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Inputs */
+input:focus, select:focus, textarea:focus { 
+    background-color: #f0fdf4; 
+    border-radius: 4px; 
+    outline: 2px solid #4f46e5; 
+    outline-offset: -1px;
+}
+
+/* Voice Active Animation */
+.voice-active { color: #dc2626 !important; animation: pulse 1s infinite; }
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+/* --- LOGIN GLASSMORPHISM STYLES --- */
+.login-bg {
+    background: linear-gradient(135deg, #4f46e5 0%, #0f172a 100%);
+    position: relative;
+    overflow: hidden;
+}
+.login-bg::before {
+    content: '';
+    position: absolute;
+    width: 150%;
+    height: 150%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 60%);
+    top: -25%;
+    left: -25%;
+    animation: rotate 20s linear infinite;
+}
+@keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.login-input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+}
+.login-input::placeholder { color: rgba(255, 255, 255, 0.5); }
+.login-input:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.5);
+    outline: none;
+}
+
+/* --- PRINT STYLES --- */
+@media print {
+    body * { visibility: hidden; }
+    #salary-modal, #salary-modal * { visibility: visible; }
+    #salary-modal { 
+        display: block !important;
+        position: absolute; 
+        left: 0; 
+        top: 0; 
+        width: 100%; 
+        background: white; 
+        z-index: 9999;
+        padding: 0;
+    }
+    .no-print { display: none !important; } 
+}
+
+/* Sticky Columns for Attendance Book */
+.sticky-col-left { position: sticky; left: 0; z-index: 20; background-color: #fff; box-shadow: 2px 0 5px -2px rgba(0,0,0,0.1); }
+thead .sticky-col-left { background-color: #f8fafc; z-index: 30; }
+
+/* Table Cell Hover in Attendance Book */
+.att-cell:hover { background-color: #f1f5f9; }
+
+/* Add to css/style.css */
+
+/* Ledger Table Fixes */
+.ledger-scroll-container {
+    overflow-y: auto;
+    overflow-x: auto; /* Allow horizontal scroll if needed */
+    max-height: 65vh;
+    border-top: 1px solid #e2e8f0;
+    display: block;
+    width: 100%;
+}
+
+.ledger-table {
+    width: 100%;
+    border-collapse: separate; /* Required for sticky headers to work properly */
+    border-spacing: 0;
+    table-layout: fixed; /* CRITICAL: Forces columns to respect width classes */
+}
+
+/* Ensure sticky headers stay on top and have a background */
+.ledger-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background-color: #f1f5f9; /* Slate-100 */
+    border-bottom: 2px solid #e2e8f0;
+}
+
+/* Fix Input Alignment */
+.ledger-table input {
+    width: 100%;
+    
+    
+    font-weight: 500;
+}
+
+/* Make the dashboard cards float when hovered */
+.bg-white.rounded-2xl {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.bg-white.rounded-2xl:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    border-color: #6366f1; /* Indigo-500 highlight */
+}
