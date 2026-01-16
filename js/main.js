@@ -74,11 +74,14 @@ function moveFocusToNextInput(currentInput) {
 // --- 2. NAVIGATION LOGIC ---
 
 // Define the core switch function first
+// Define the core switch function first
 const performSwitchTab = (id) => {
+    // 1. Hide all tabs, Show target tab
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
     const target = document.getElementById(id);
     if(target) target.classList.add('active');
     
+    // 2. Desktop Sidebar Styling
     document.querySelectorAll('.nav-btn').forEach(btn => { 
         btn.classList.remove('bg-indigo-50', 'text-indigo-600', 'ring-1', 'ring-indigo-100'); 
         btn.classList.add('text-slate-500'); 
@@ -90,7 +93,23 @@ const performSwitchTab = (id) => {
         btn.classList.remove('text-slate-500');
         btn.classList.add('bg-indigo-50', 'text-indigo-600', 'ring-1', 'ring-indigo-100');
     }
+
+    // 3. Mobile Bottom Nav Styling (NEW ADDITION)
+    document.querySelectorAll('.nav-btn-mobile').forEach(mb => {
+        // Reset to default grey
+        mb.classList.remove('text-indigo-600', 'bg-indigo-50'); 
+        mb.classList.add('text-slate-400'); 
+    });
+
+    const mobileBtnId = 'mobile-nav-' + id;
+    const mobileBtn = document.getElementById(mobileBtnId);
+    if(mobileBtn) {
+        // Highlight active button (Blue text + light blue background)
+        mobileBtn.classList.remove('text-slate-400');
+        mobileBtn.classList.add('text-indigo-600', 'bg-indigo-50');
+    }
     
+    // 4. Trigger specific renders
     if(id === 'home' && window.renderHome) window.renderHome();
     if(id === 'dashboard' && window.renderCharts) window.renderCharts();
     if(id === 'staff') { 
@@ -116,6 +135,7 @@ const performSwitchTab = (id) => {
         if(transDate) transDate.value = state.today;
         if(window.renderAccounts) window.renderAccounts();
     }
+    if(id === 'inventory' && window.renderInventory) window.renderInventory();
 
     window.closeSidebarOnMobile();
 };

@@ -71,12 +71,10 @@
     </div>
 
     <div id="app-view" class="hidden h-screen flex overflow-hidden bg-slate-50">
-        <button onclick="toggleSidebar()" class="md:hidden fixed top-4 right-4 z-50 bg-indigo-600 text-white p-2 rounded-lg shadow-lg no-print">
-            <i class="fa-solid fa-bars"></i>
-        </button>
+        
 
-        <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 h-full flex flex-col z-40 transition-transform duration-300 absolute md:relative -translate-x-full md:translate-x-0">
-            <div class="p-6 flex items-center gap-3 border-b border-slate-50">
+        <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 h-full flex flex-col z-[60] transition-transform duration-300 absolute md:relative -translate-x-full md:translate-x-0">
+        <div class="p-6 flex items-center gap-3 border-b border-slate-50">
                 <div class="bg-gradient-to-br from-indigo-600 to-purple-700 p-2.5 rounded-xl text-white shadow-lg shadow-indigo-200">
                     <i class="fa-solid fa-bolt"></i>
                 </div>
@@ -87,28 +85,29 @@
             </div>
             
             <nav class="flex-1 px-4 space-y-2 mt-6">
-                <button onclick="switchTab('home')" class="nav-btn w-full text-left p-3 rounded-xl transition font-medium bg-indigo-50 text-indigo-600 flex items-center gap-3 shadow-sm ring-1 ring-indigo-100" id="nav-home">
-                    <i class="fa-solid fa-house w-5"></i> Home <span class="ml-auto text-[10px] opacity-50">Alt+1</span>
-                </button>
-                <button onclick="switchTab('dashboard')" class="nav-btn w-full text-left p-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-dashboard">
-                    <i class="fa-solid fa-chart-pie w-5"></i> Analytics <span class="ml-auto text-[10px] opacity-50">Alt+2</span>
-                </button>
-                <button onclick="switchTab('staff')" class="nav-btn w-full text-left p-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-staff">
-                    <i class="fa-solid fa-users w-5"></i> Staff & Ledger <span class="ml-auto text-[10px] opacity-50">Alt+3</span>
-                </button>
-                <button onclick="switchTab('attendance')" class="nav-btn w-full text-left p-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-attendance">
-                    <i class="fa-solid fa-calendar-check w-5"></i> Attendance <span class="ml-auto text-[10px] opacity-50">Alt+4</span>
-                </button>
-                <button onclick="switchTab('history')" class="nav-btn w-full text-left p-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-history">
-                    <i class="fa-solid fa-clock-rotate-left w-5"></i> History <span class="ml-auto text-[10px] opacity-50">Alt+5</span>
-                </button>
-                <button onclick="switchTab('accounts')" class="nav-btn w-full text-left p-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-accounts">
-                    <i class="fa-solid fa-wallet w-5"></i> Accounts <span class="ml-auto text-[10px] opacity-50">Alt+6</span>
-                </button>
-                <button onclick="switchTab('inventory')" class="nav-btn w-full text-left p-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-inventory">
-                    <i class="fa-solid fa-boxes-stacked w-5"></i> Store <span class="ml-auto text-[10px] opacity-50">Alt+7</span>
-                </button>
-            </nav>
+    <button onclick="switchTab('home')" class="nav-btn w-full text-left p-3 rounded-xl transition font-medium hidden md:flex items-center gap-3" id="nav-home">
+        <i class="fa-solid fa-house w-5"></i> Home <span class="ml-auto text-[10px] opacity-50">Alt+1</span>
+    </button>
+    <button onclick="switchTab('dashboard')" class="nav-btn w-full text-left p-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium hidden md:flex items-center gap-3" id="nav-dashboard">
+        <i class="fa-solid fa-chart-pie w-5"></i> Analytics <span class="ml-auto text-[10px] opacity-50">Alt+2</span>
+    </button>
+    <button onclick="switchTab('staff')" class="nav-btn w-full text-left p-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium hidden md:flex items-center gap-3" id="nav-staff">
+        <i class="fa-solid fa-users w-5"></i> Staff & Ledger <span class="ml-auto text-[10px] opacity-50">Alt+3</span>
+    </button>
+    <button onclick="switchTab('attendance')" class="nav-btn w-full text-left p-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium hidden md:flex items-center gap-3" id="nav-attendance">
+        <i class="fa-solid fa-calendar-check w-5"></i> Attendance <span class="ml-auto text-[10px] opacity-50">Alt+4</span>
+    </button>
+
+    <button onclick="switchTab('history')" class="nav-btn w-full text-left p-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-history">
+        <i class="fa-solid fa-clock-rotate-left w-5"></i> History <span class="ml-auto text-[10px] opacity-50">Alt+5</span>
+    </button>
+    <button onclick="switchTab('accounts')" class="nav-btn w-full text-left p-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-accounts">
+        <i class="fa-solid fa-wallet w-5"></i> Accounts <span class="ml-auto text-[10px] opacity-50">Alt+6</span>
+    </button>
+    <button onclick="switchTab('inventory')" class="nav-btn w-full text-left p-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-inventory">
+        <i class="fa-solid fa-boxes-stacked w-5"></i> Store <span class="ml-auto text-[10px] opacity-50">Alt+7</span>
+    </button>
+</nav>
             
             <div class="p-4 border-t border-slate-100 bg-slate-50/50">
                 <button onclick="openSettings()" class="w-full mb-4 text-left p-3 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-md transition font-bold text-sm flex items-center justify-between group">
@@ -128,7 +127,7 @@
             </div>
         </aside>
 
-        <main class="flex-1 h-full overflow-y-auto relative scroll-smooth p-4 md:p-8" onclick="closeSidebarOnMobile()">
+        <main class="flex-1 h-full overflow-y-auto relative scroll-smooth p-4 pb-24 md:p-8 md:pb-8" onclick="closeSidebarOnMobile()">
             
             <div id="home" class="tab-content active max-w-7xl mx-auto fade-in relative">
                 
@@ -704,6 +703,35 @@
 </div>
 
         </main>
+
+        <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around p-2 pb-4 z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+    
+    <button id="mobile-nav-home" onclick="switchTab('home')" class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-400 hover:text-indigo-600 transition">
+        <i class="fa-solid fa-house text-xl mb-1"></i>
+        <span class="text-[10px] font-bold">Home</span>
+    </button>
+
+    <button id="mobile-nav-dashboard" onclick="switchTab('dashboard')" class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-400 hover:text-indigo-600 transition">
+        <i class="fa-solid fa-chart-pie text-xl mb-1"></i>
+        <span class="text-[10px] font-bold">Stats</span>
+    </button>
+
+    <button onclick="toggleSidebar()" class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition border border-transparent active:scale-95">
+        <i class="fa-solid fa-bars text-xl mb-1"></i>
+        <span class="text-[10px] font-bold">Menu</span>
+    </button>
+
+    <button id="mobile-nav-staff" onclick="switchTab('staff')" class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-400 hover:text-indigo-600 transition">
+        <i class="fa-solid fa-users text-xl mb-1"></i>
+        <span class="text-[10px] font-bold">Staff</span>
+    </button>
+
+    <button id="mobile-nav-attendance" onclick="switchTab('attendance')" class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-400 hover:text-indigo-600 transition">
+        <i class="fa-solid fa-calendar-check text-xl mb-1"></i>
+        <span class="text-[10px] font-bold">Attn.</span>
+    </button>
+
+</div>
     </div>
 
     <div id="salary-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm p-4">
