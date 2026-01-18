@@ -7,12 +7,7 @@ const CONFIG = {
 
     // --- 2. SECURITY ---
     AUTH: {
-        // Login Credentials
-        USER: 'admin',
-        PASS: 'admin123', 
-        
-        // Session Duration (12 Hours in milliseconds)
-        // User stays logged in for this long before being asked to sign in again
+       
         SESSION_EXPIRY_MS: 12 * 60 * 60 * 1000 
     },
 

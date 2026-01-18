@@ -1,8 +1,9 @@
 // js/firebase-init.js
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-// ADDED 'onValue' to the imports below
 import { getDatabase, ref, set, get, child, onValue } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+// NEW: Import the Security Tools
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCmWoGK5SDReHxxcQrzbCxMycqEJGUak5U",
@@ -14,13 +15,19 @@ const firebaseConfig = {
   appId: "1:279210394974:web:fc469a01c8636feacdbbcf"
 };
 
-// Initialize Firebase
+// Initialize App
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const auth = getAuth(app); // NEW: Initialize the Guard
+
+// Expose Auth functions to window so other files can use them
+window.auth = auth;
+window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+window.signOut = signOut;
+window.onAuthStateChanged = onAuthStateChanged;
 
 // --- REAL-TIME CONNECTION STATUS MONITOR ---
 const connectedRef = ref(db, ".info/connected");
-
 onValue(connectedRef, (snap) => {
   const isConnected = snap.val() === true;
   updateStatusUI(isConnected);
@@ -29,25 +36,20 @@ onValue(connectedRef, (snap) => {
 function updateStatusUI(online) {
     const dot = document.getElementById('status-dot');
     const text = document.getElementById('status-text');
-    
-    // Only run if elements exist (e.g. might not exist on login screen)
     if (dot && text) {
         if (online) {
             dot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
             text.innerText = "Cloud Connected";
             text.className = "text-xs font-bold text-emerald-600 transition-colors duration-300";
-            console.log("System Status: ONLINE");
         } else {
             dot.className = "w-2 h-2 rounded-full bg-red-500";
             text.innerText = "Offline Mode";
             text.className = "text-xs font-bold text-red-500 transition-colors duration-300";
-            console.log("System Status: OFFLINE");
         }
     }
 }
 
 // --- HELPER FUNCTIONS ---
-
 window.saveToCloud = (path, data) => {
     set(ref(db, path), data)
     .then(() => console.log(`Saved: ${path}`))
@@ -65,6 +67,5 @@ window.loadFromCloud = async (path) => {
     }
 };
 
-// Signal Ready
 window.isFirebaseReady = true;
 document.dispatchEvent(new Event('firebase-ready'));
