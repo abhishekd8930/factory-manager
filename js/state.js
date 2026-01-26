@@ -3,7 +3,7 @@ console.log("State Module Loaded");
 const state = {
     today: new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0],
     historyDate: new Date(),
-    
+
     // LOAD FROM LOCAL STORAGE (Instant)
     historyData: JSON.parse(localStorage.getItem('srf_production_history')) || [],
     staffData: JSON.parse(localStorage.getItem('srf_staff_list')) || [],
@@ -12,16 +12,24 @@ const state = {
     washingData: JSON.parse(localStorage.getItem('srf_washing_history')) || [],
     ownerTodos: JSON.parse(localStorage.getItem('srf_owner_todos') || '[]'),
     inventoryData: JSON.parse(localStorage.getItem('srf_inventory')) || [],
-    
+
     // UI STATE
     selectedCalendarDate: null,
     currentLedgerEmp: null,
     currentLedgerDate: new Date(),
-    sortTimings: 'alpha', 
+    sortTimings: 'alpha',
     sortPcs: 'alpha',
     searchTimings: '',
-    searchPcs: ''
+    searchPcs: '',
+
+    // DYNAMIC CONFIG
+    config: JSON.parse(localStorage.getItem('srf_config')) || DEFAULT_CONFIG
 };
+
+// Expose CONFIG globally for backward compatibility
+Object.defineProperty(window, 'CONFIG', {
+    get: () => state.config
+});
 
 // --- CLOUD SYNCHRONIZATION ---
 
@@ -42,14 +50,14 @@ window.initializeData = async () => {
             // 1. Take Cloud Data
             // 2. Overwrite with Local Data (Priority to recent unsaved edits)
             // Note: In a real app, we'd check timestamps. For this project, we prioritize preserving local inputs.
-            
+
             // Actually, safest is: Take Local, fill gaps with Cloud.
             // But if Cloud has new data from another device, we want that too.
-            
+
             // STRATEGY: We assume 'staffLedgers' is an object keyed by "ID_YEAR_MONTH".
             // We merge the keys.
             const merged = { ...cloudData, ...state.staffLedgers };
-            
+
             state.staffLedgers = merged;
             localStorage.setItem('srf_staff_ledgers', JSON.stringify(merged));
         }
@@ -61,7 +69,7 @@ window.initializeData = async () => {
             // For Arrays (Lists), we usually trust the cloud, 
             // UNLESS local has more items (recently added).
             // Simple approach: Trust Cloud for lists to ensure consistency across devices.
-            
+
             let cleanData = Array.isArray(cloudData) ? cloudData : Object.values(cloudData);
             state[stateKey] = cleanData;
             localStorage.setItem(localKey, JSON.stringify(cleanData));
@@ -81,19 +89,19 @@ window.initializeData = async () => {
     console.log("Sync Complete. Refreshing UI...");
 
     // Refresh UI
-    if(window.renderStaffGrid) window.renderStaffGrid();
-    if(window.renderCharts) window.renderCharts();
-    if(window.renderAccounts) window.renderAccounts();
-    if(window.renderTodoList) window.renderTodoList();
-    if(window.loadFromCloud) await syncArray('inventoryData', 'srf_inventory', 'inventoryData');
+    if (window.renderStaffGrid) window.renderStaffGrid();
+    if (window.renderCharts) window.renderCharts();
+    if (window.renderAccounts) window.renderAccounts();
+    if (window.renderTodoList) window.renderTodoList();
+    if (window.loadFromCloud) await syncArray('inventoryData', 'srf_inventory', 'inventoryData');
     // If a ledger is currently open, re-render it to show merged data
-    if(state.currentLedgerEmp && window.renderLedgerTable) {
+    if (state.currentLedgerEmp && window.renderLedgerTable) {
         window.renderLedgerTable();
     }
 };
 
 const startSync = () => {
-    if(window.hasSynced) return;
+    if (window.hasSynced) return;
     window.hasSynced = true;
     window.initializeData();
 };

@@ -5,10 +5,10 @@ console.log("Main Controller Loaded");
 window.handleGlobalKeydown = (e) => {
     // Ignore shortcuts if on login screen
     if (document.getElementById('login-view').classList.contains('hidden') === false) return;
-    
+
     // Tab Switching (Alt + 1-6)
     if (e.altKey) {
-        switch(e.key) {
+        switch (e.key) {
             case '1': switchTab('home'); break;
             case '2': switchTab('dashboard'); break;
             case '3': switchTab('staff'); break;
@@ -16,14 +16,14 @@ window.handleGlobalKeydown = (e) => {
             case '5': switchTab('history'); break;
             case '6': switchTab('accounts'); break;
             case '7': switchTab('inventory'); break;
-            case 'n': case 'N': e.preventDefault(); handleAddShortcut(); break;  
+            case 'n': case 'N': e.preventDefault(); handleAddShortcut(); break;
         }
     }
 
     // Save Action (Ctrl + S)
-    if (e.ctrlKey && (e.key === 's' || e.key === 'S')) { 
-        e.preventDefault(); 
-        handleSaveShortcut(); 
+    if (e.ctrlKey && (e.key === 's' || e.key === 'S')) {
+        e.preventDefault();
+        handleSaveShortcut();
     }
 
     // Enter Key Navigation (Skip inputs in tables)
@@ -43,8 +43,8 @@ function handleAddShortcut() {
     if (activeTab === 'staff') {
         if (!document.getElementById('staff-ledger-view').classList.contains('hidden')) {
             if (state.currentLedgerEmp?.type === 'pcs') window.addPcsRow();
-        } else { 
-            window.toggleAddStaffModal(); 
+        } else {
+            window.toggleAddStaffModal();
         }
     }
 }
@@ -55,7 +55,7 @@ function handleSaveShortcut() {
     if (activeTab === 'staff') {
         window.saveFinancials();
         const header = document.getElementById('financial-salary-container')?.parentElement;
-        if(header) {
+        if (header) {
             header.classList.add('bg-emerald-100');
             setTimeout(() => header.classList.remove('bg-emerald-100'), 300);
         }
@@ -79,17 +79,17 @@ const performSwitchTab = (id) => {
     // 1. Hide all tabs, Show target tab
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
     const target = document.getElementById(id);
-    if(target) target.classList.add('active');
-    
+    if (target) target.classList.add('active');
+
     // 2. Desktop Sidebar Styling
-    document.querySelectorAll('.nav-btn').forEach(btn => { 
-        btn.classList.remove('bg-indigo-50', 'text-indigo-600', 'ring-1', 'ring-indigo-100'); 
-        btn.classList.add('text-slate-500'); 
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('bg-indigo-50', 'text-indigo-600', 'ring-1', 'ring-indigo-100');
+        btn.classList.add('text-slate-500');
     });
-    
+
     const btnId = 'nav-' + id;
     const btn = document.getElementById(btnId);
-    if(btn) {
+    if (btn) {
         btn.classList.remove('text-slate-500');
         btn.classList.add('bg-indigo-50', 'text-indigo-600', 'ring-1', 'ring-indigo-100');
     }
@@ -97,45 +97,45 @@ const performSwitchTab = (id) => {
     // 3. Mobile Bottom Nav Styling (NEW ADDITION)
     document.querySelectorAll('.nav-btn-mobile').forEach(mb => {
         // Reset to default grey
-        mb.classList.remove('text-indigo-600', 'bg-indigo-50'); 
-        mb.classList.add('text-slate-400'); 
+        mb.classList.remove('text-indigo-600', 'bg-indigo-50');
+        mb.classList.add('text-slate-400');
     });
 
     const mobileBtnId = 'mobile-nav-' + id;
     const mobileBtn = document.getElementById(mobileBtnId);
-    if(mobileBtn) {
+    if (mobileBtn) {
         // Highlight active button (Blue text + light blue background)
         mobileBtn.classList.remove('text-slate-400');
         mobileBtn.classList.add('text-indigo-600', 'bg-indigo-50');
     }
-    
+
     // 4. Trigger specific renders
-    if(id === 'home' && window.renderHome) window.renderHome();
-    if(id === 'dashboard' && window.renderCharts) window.renderCharts();
-    if(id === 'staff') { 
-        if(window.closeLedgerView) window.closeLedgerView(); 
-        if(window.renderStaffGrid) window.renderStaffGrid(); 
+    if (id === 'home' && window.renderHome) window.renderHome();
+    if (id === 'dashboard' && window.renderCharts) window.renderCharts();
+    if (id === 'staff') {
+        if (window.closeLedgerView) window.closeLedgerView();
+        if (window.renderStaffGrid) window.renderStaffGrid();
     }
-    if(id === 'attendance') { 
+    if (id === 'attendance') {
         const attDate = document.getElementById('attendance-date');
-        if(attDate && !attDate.value) attDate.value = state.today; 
-        
+        if (attDate && !attDate.value) attDate.value = state.today;
+
         const now = new Date();
         const yyyy = now.getFullYear();
         const mm = String(now.getMonth() + 1).padStart(2, '0');
         document.getElementById('attendance-month').value = `${yyyy}-${mm}`;
-        
+
         const isDaily = document.getElementById('btn-att-daily').classList.contains('bg-white');
-        if(isDaily && window.renderAttendanceView) window.renderAttendanceView();
-        else if(window.renderAttendanceBook) window.renderAttendanceBook();
+        if (isDaily && window.renderAttendanceView) window.renderAttendanceView();
+        else if (window.renderAttendanceBook) window.renderAttendanceBook();
     }
-    if(id === 'history' && window.renderHistoryPage) window.renderHistoryPage();
-    if(id === 'accounts') {
+    if (id === 'history' && window.renderHistoryPage) window.renderHistoryPage();
+    if (id === 'accounts') {
         const transDate = document.getElementById('trans-date');
-        if(transDate) transDate.value = state.today;
-        if(window.renderAccounts) window.renderAccounts();
+        if (transDate) transDate.value = state.today;
+        if (window.renderAccounts) window.renderAccounts();
     }
-    if(id === 'inventory' && window.renderInventory) window.renderInventory();
+    if (id === 'inventory' && window.renderInventory) window.renderInventory();
 
     window.closeSidebarOnMobile();
 };
@@ -152,20 +152,210 @@ window.toggleSidebar = () => {
     document.getElementById('sidebar').classList.toggle('-translate-x-full');
 };
 
-window.closeSidebarOnMobile = () => { 
-    if(window.innerWidth < 768) {
-        document.getElementById('sidebar').classList.add('-translate-x-full'); 
+window.closeSidebarOnMobile = () => {
+    if (window.innerWidth < 768) {
+        document.getElementById('sidebar').classList.add('-translate-x-full');
     }
 };
 
 // --- 4. SETTINGS MODAL LOGIC ---
 
+// --- 4. SETTINGS MODAL LOGIC ---
+
+// --- 4. SECURE CONTROL PANEL LOGIC ---
+
+// Helper to open PIN modal
+window.openControlPanel = () => {
+    // Check if CPIN exists in config
+    const hasPin = window.CONFIG && window.CONFIG.CPIN;
+
+    document.getElementById('cpin-modal').classList.remove('hidden');
+    document.getElementById('cpin-input').value = '';
+    document.getElementById('cpin-input').focus();
+
+    if (!hasPin) {
+        // SET NEW PIN MODE
+        document.getElementById('cpin-title').innerText = "Set CPIN";
+        document.getElementById('cpin-desc').innerText = "Create a 6-digit PIN for future access.";
+        state.cpinMode = 'SET';
+    } else {
+        // AUTH MODE
+        document.getElementById('cpin-title').innerText = "Security Check";
+        document.getElementById('cpin-desc').innerText = "Enter CPIN to access protected settings.";
+        state.cpinMode = 'AUTH';
+    }
+};
+
+window.closeCPINModal = () => {
+    document.getElementById('cpin-modal').classList.add('hidden');
+};
+
+window.submitCPIN = () => {
+    const input = document.getElementById('cpin-input').value;
+
+    if (input.length !== 6) {
+        alert("Please enter a valid 6-digit PIN.");
+        return;
+    }
+
+    if (state.cpinMode === 'SET') {
+        // Save New PIN
+        const newConfig = { ...window.CONFIG, CPIN: input };
+        state.config = newConfig;
+        localStorage.setItem('srf_config', JSON.stringify(newConfig));
+
+        // Open Panel
+        window.closeCPINModal();
+        window.openRealControlPanel();
+        alert("CPIN Set Successfully!");
+    } else {
+        // Validate PIN
+        if (window.CONFIG.CPIN === input) {
+            window.closeCPINModal();
+            window.openRealControlPanel();
+        } else {
+            alert("Incorrect PIN. Please try again.");
+            document.getElementById('cpin-input').value = '';
+        }
+    }
+};
+
+window.handleForgotCPIN = () => {
+    const confirmReset = confirm("⚠ FORGOT PIN?\n\nTo regain access, you must RESET All Settings (Owner Name, Rates, etc).\nThis will NOT delete staff/production data.\n\nProceed to Reset Settings?");
+    if (confirmReset) {
+        localStorage.removeItem('srf_config');
+        state.config = DEFAULT_CONFIG;
+        alert("Settings have been reset to default. You can now access Control Panel without a PIN.");
+        window.location.reload();
+    }
+};
+
+window.openRealControlPanel = () => {
+    document.getElementById('settings-modal').classList.add('hidden'); // Close main settings
+    document.getElementById('control-panel-modal').classList.remove('hidden');
+
+    // Load Config Data
+    const conf = window.CONFIG;
+    if (conf) {
+        if (document.getElementById('conf-owner')) document.getElementById('conf-owner').value = conf.OWNER_NAME || '';
+        if (document.getElementById('conf-ot')) document.getElementById('conf-ot').value = conf.RATES?.OT_PER_HOUR || '';
+        if (document.getElementById('conf-npl')) document.getElementById('conf-npl').value = conf.RATES?.NPL_FINE || '';
+        if (document.getElementById('conf-bonus')) document.getElementById('conf-bonus').value = conf.RATES?.ATTENDANCE_BONUS || '';
+    }
+};
+
+window.closeRealControlPanel = () => {
+    document.getElementById('control-panel-modal').classList.add('hidden');
+    // Re-open settings modal just in case user wants to go back? 
+    // Usually better to just close or go back to settings. Let's go back to settings.
+    document.getElementById('settings-modal').classList.remove('hidden');
+
+    // Reset Edit Mode
+    const inputs = ['conf-owner', 'conf-ot', 'conf-npl', 'conf-bonus'];
+    document.getElementById('btn-config-save').classList.add('hidden');
+    document.getElementById('btn-config-edit').innerText = 'EDIT';
+    inputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.disabled = true;
+            el.classList.remove('border-indigo-500', 'bg-indigo-50', 'bg-white');
+            el.classList.add('bg-transparent'); // Restore transparent look
+        }
+    });
+};
+
+window.resetCPINonly = () => {
+    if (confirm("Are you sure you want to REMOVE the PIN security?")) {
+        const newConfig = { ...window.CONFIG };
+        delete newConfig.CPIN;
+        state.config = newConfig;
+        localStorage.setItem('srf_config', JSON.stringify(newConfig));
+        alert("PIN Removed. Access is now open.");
+        window.closeRealControlPanel();
+    }
+};
+
+// --- END SECURE CONTROL PANEL LOGIC ---
+
 window.openSettings = () => {
     document.getElementById('settings-modal').classList.remove('hidden');
-    // Add this function to js/main.js
+
+    // NEW: Load Config Data into Inputs
+    const conf = window.CONFIG;
+    if (conf) {
+        if (document.getElementById('conf-owner')) document.getElementById('conf-owner').value = conf.OWNER_NAME || '';
+        if (document.getElementById('conf-ot')) document.getElementById('conf-ot').value = conf.RATES?.OT_PER_HOUR || '';
+        if (document.getElementById('conf-npl')) document.getElementById('conf-npl').value = conf.RATES?.NPL_FINE || '';
+        if (document.getElementById('conf-bonus')) document.getElementById('conf-bonus').value = conf.RATES?.ATTENDANCE_BONUS || '';
+    }
+};
+
+window.closeSettings = () => {
+    document.getElementById('settings-modal').classList.add('hidden');
+    // turn editing off when closing
+    const inputs = ['conf-owner', 'conf-ot', 'conf-npl', 'conf-bonus'];
+    inputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.disabled = true;
+            el.classList.remove('border-indigo-500', 'bg-indigo-50');
+            el.classList.add('border-slate-200');
+        }
+    });
+    document.getElementById('btn-config-save').classList.add('hidden');
+    document.getElementById('btn-config-edit').innerText = 'EDIT';
+};
+
+window.toggleConfigEdit = () => {
+    const inputs = ['conf-owner', 'conf-ot', 'conf-npl', 'conf-bonus'];
+    const btn = document.getElementById('btn-config-edit');
+    const saveBtn = document.getElementById('btn-config-save');
+    const isEditing = btn.innerText === 'CANCEL';
+
+    if (isEditing) {
+        // Cancel Editing
+        btn.innerText = 'EDIT';
+        saveBtn.classList.add('hidden');
+        inputs.forEach(id => {
+            const el = document.getElementById(id);
+            el.disabled = true;
+            el.classList.remove('border-indigo-500', 'bg-indigo-50');
+        });
+        window.openSettings(); // Reload values
+    } else {
+        // Start Editing
+        btn.innerText = 'CANCEL';
+        saveBtn.classList.remove('hidden');
+        inputs.forEach(id => {
+            const el = document.getElementById(id);
+            el.disabled = false;
+            el.classList.add('border-indigo-500', 'bg-indigo-50');
+        });
+    }
+};
+
+window.saveConfig = () => {
+    const newConfig = { ...window.CONFIG };
+
+    newConfig.OWNER_NAME = document.getElementById('conf-owner').value;
+    newConfig.RATES.OT_PER_HOUR = Number(document.getElementById('conf-ot').value);
+    newConfig.RATES.NPL_FINE = Number(document.getElementById('conf-npl').value);
+    newConfig.RATES.ATTENDANCE_BONUS = Number(document.getElementById('conf-bonus').value);
+
+    // Save to State & LocalStorage
+    state.config = newConfig;
+    localStorage.setItem('srf_config', JSON.stringify(newConfig));
+
+    // Update UI immediately
+    if (window.updateGreeting) window.updateGreeting();
+
+    alert("Settings Saved!");
+    window.closeSettings();
+};
+
 window.factoryReset = () => {
     const code = prompt("⚠ WARNING: This will wipe ALL data to start fresh.\nType 'RESET' to confirm:");
-    
+
     if (code === 'RESET') {
         // Clear all App Data keys
         localStorage.removeItem('srf_staff_list');
@@ -174,9 +364,10 @@ window.factoryReset = () => {
         localStorage.removeItem('srf_washing_history');
         localStorage.removeItem('srf_accounts');
         localStorage.removeItem('srf_owner_todos');
-        
+        localStorage.removeItem('srf_config'); // Clear custom config too
+
         // Optional: If using Firebase, wipe that too (be careful!)
-        if(window.saveToCloud) {
+        if (window.saveToCloud) {
             window.saveToCloud('staffData', []);
             window.saveToCloud('staffLedgers', {});
             // ... wipe other paths
@@ -186,16 +377,11 @@ window.factoryReset = () => {
         window.location.reload();
     }
 };
-};
-
-window.closeSettings = () => {
-    document.getElementById('settings-modal').classList.add('hidden');
-};
 
 const settingsModal = document.getElementById('settings-modal');
-if(settingsModal) {
+if (settingsModal) {
     settingsModal.addEventListener('click', (e) => {
-        if(e.target.id === 'settings-modal') {
+        if (e.target.id === 'settings-modal') {
             window.closeSettings();
         }
     });
@@ -203,10 +389,10 @@ if(settingsModal) {
 
 // --- 5. INITIALIZATION ---
 
-document.addEventListener('DOMContentLoaded', () => { 
+document.addEventListener('DOMContentLoaded', () => {
     const attDate = document.getElementById('attendance-date');
-    if(attDate) attDate.value = state.today; 
-    
+    if (attDate) attDate.value = state.today;
+
     // RESTORE SESSION
     const lastTab = localStorage.getItem('srf_last_tab') || 'home';
     const lastEmpId = localStorage.getItem('srf_last_emp_id');
@@ -214,22 +400,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // Use internal function to avoid wiping 'srf_last_emp_id' which switchTab might do indirectly via closeLedgerView
     // Actually, switchTab calls closeLedgerView which removes the ID.
     // FIX: We manually restore tab, THEN if it was staff+ledger, we re-open it.
-    
+
     // 1. Render the basic tab view
-    performSwitchTab(lastTab); 
+    performSwitchTab(lastTab);
 
     // 2. If we were deep inside a ledger, restore that specifically
     if (lastTab === 'staff' && lastEmpId) {
         // Wait for grid to render
         setTimeout(() => {
-            if(window.openLedger) window.openLedger(lastEmpId, false);
+            if (window.openLedger) window.openLedger(lastEmpId, false);
         }, 50);
     }
 
-    if(window.addLedgerRow) window.addLedgerRow(); 
+    if (window.addLedgerRow) window.addLedgerRow();
     // In js/main.js inside performSwitchTab(id):
 
-    if(id === 'inventory' && window.renderInventory) window.renderInventory();
+    if (id === 'inventory' && window.renderInventory) window.renderInventory();
 });
 
 // ==========================================
@@ -257,7 +443,7 @@ window.startVoiceInput = (triggerElement) => {
 
     // Locate the input field (it is inside the same parent div)
     inputField = btn.previousElementSibling;
-    
+
     if (!inputField || inputField.tagName !== 'INPUT') {
         console.error("Voice Error: Could not find input field.");
         return;
@@ -277,7 +463,7 @@ window.startVoiceInput = (triggerElement) => {
     // 5. Events
     recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
-        
+
         // Auto-Capitalize first letter
         const cleanText = transcript.charAt(0).toUpperCase() + transcript.slice(1);
 
@@ -290,13 +476,13 @@ window.startVoiceInput = (triggerElement) => {
 
         // Trigger 'input' event so the 'Save Draft' logic in Dashboard works
         inputField.dispatchEvent(new Event('input'));
-        
+
         resetUI();
     };
 
     recognition.onerror = (event) => {
         console.warn("Voice Error:", event.error);
-        if(event.error === 'not-allowed') alert("Please allow Microphone access.");
+        if (event.error === 'not-allowed') alert("Please allow Microphone access.");
         resetUI();
     };
 
@@ -316,12 +502,12 @@ window.startVoiceInput = (triggerElement) => {
 // Force the app to wait for the HTML to be ready
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM Loaded. Initializing App...");
-    
+
     // 1. Check if user is logged in
     if (window.checkLogin) {
         window.checkLogin();
     }
-    
+
     // 2. If we are on the home screen, force a calendar render
     const homeGrid = document.getElementById('home-calendar-grid');
     if (homeGrid && window.renderHome) {
@@ -342,11 +528,11 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("Rendering Calendar...");
             window.renderHomeCalendar();
         }
-        
+
         if (typeof window.renderTodoList === 'function') {
             window.renderTodoList();
         }
-        
+
         if (typeof window.updateGreeting === 'function') {
             window.updateGreeting();
         }

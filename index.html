@@ -1,63 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sri Raghavendra Fashions - Smart Manager</title>
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Roboto:wght@400;500;700&display=swap"
+        rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <link rel="stylesheet" href="css/style.css">
     <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#4f46e5">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
 </head>
+
 <body onkeydown="handleGlobalKeydown(event)">
 
     <div id="login-view" class="h-screen w-full flex items-center justify-center login-bg fixed inset-0 z-50">
         <div class="glass-card p-8 md:p-10 w-full max-w-[400px] mx-4 relative z-10 fade-in border-t border-white/20">
-            
+
             <div class="text-center mb-8">
-                <div class="bg-white/10 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-2xl ring-4 ring-white/5 text-white text-3xl backdrop-blur-md">
+                <div
+                    class="bg-white/10 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-2xl ring-4 ring-white/5 text-white text-3xl backdrop-blur-md">
                     <i class="fa-solid fa-user-shield"></i>
                 </div>
                 <h2 class="text-white/70 text-xs font-bold uppercase tracking-[0.2em] mb-2">Welcome to</h2>
                 <h3 class="text-2xl md:text-3xl font-bold text-white tracking-tight leading-tight">
                     Sri Raghavendra Fashions<br>
-                    
+
                 </h3>
             </div>
-            
+
             <form onsubmit="handleLogin(event)" class="space-y-5">
-                
+
                 <div class="relative group">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <i class="fa-solid fa-user text-indigo-200/50 group-focus-within:text-white transition-colors"></i>
+                        <i
+                            class="fa-solid fa-user text-indigo-200/50 group-focus-within:text-white transition-colors"></i>
                     </div>
-                    <input type="text" id="login-user" 
-                        class="w-full bg-black/20 text-white placeholder-white/40 rounded-xl py-3.5 pl-12 pr-4 border border-white/10 focus:border-white/30 focus:bg-black/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium" 
+                    <input type="text" id="login-user"
+                        class="w-full bg-black/20 text-white placeholder-white/40 rounded-xl py-3.5 pl-12 pr-4 border border-white/10 focus:border-white/30 focus:bg-black/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium"
                         placeholder="Username">
                 </div>
 
                 <div class="relative group">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <i class="fa-solid fa-lock text-indigo-200/50 group-focus-within:text-white transition-colors"></i>
+                        <i
+                            class="fa-solid fa-lock text-indigo-200/50 group-focus-within:text-white transition-colors"></i>
                     </div>
-                    <input type="password" id="login-pass" 
-                        class="w-full bg-black/20 text-white placeholder-white/40 rounded-xl py-3.5 pl-12 pr-12 border border-white/10 focus:border-white/30 focus:bg-black/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium" 
+                    <input type="password" id="login-pass"
+                        class="w-full bg-black/20 text-white placeholder-white/40 rounded-xl py-3.5 pl-12 pr-12 border border-white/10 focus:border-white/30 focus:bg-black/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium"
                         placeholder="Password">
-                    
-                    <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-4 flex items-center text-indigo-200/50 hover:text-white transition-colors cursor-pointer outline-none">
+
+                    <button type="button" onclick="togglePasswordVisibility()"
+                        class="absolute inset-y-0 right-0 pr-4 flex items-center text-indigo-200/50 hover:text-white transition-colors cursor-pointer outline-none">
                         <i class="fa-solid fa-eye" id="pass-icon"></i>
                     </button>
                 </div>
 
-                <button type="submit" class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-900/30 transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 group">
+                <button type="submit"
+                    class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-900/30 transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 group">
                     <span>Access Dashboard</span>
                     <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                 </button>
@@ -71,11 +80,13 @@
     </div>
 
     <div id="app-view" class="hidden h-screen flex overflow-hidden bg-slate-50">
-        
 
-        <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 h-full flex flex-col z-[60] transition-transform duration-300 absolute md:relative -translate-x-full md:translate-x-0">
-        <div class="p-6 flex items-center gap-3 border-b border-slate-50">
-                <div class="bg-gradient-to-br from-indigo-600 to-purple-700 p-2.5 rounded-xl text-white shadow-lg shadow-indigo-200">
+
+        <aside id="sidebar"
+            class="w-64 bg-white border-r border-slate-200 h-full flex flex-col z-[60] transition-transform duration-300 absolute md:relative -translate-x-full md:translate-x-0">
+            <div class="p-6 flex items-center gap-3 border-b border-slate-50">
+                <div
+                    class="bg-gradient-to-br from-indigo-600 to-purple-700 p-2.5 rounded-xl text-white shadow-lg shadow-indigo-200">
                     <i class="fa-solid fa-bolt"></i>
                 </div>
                 <div>
@@ -85,67 +96,94 @@
             </div>
 
             <nav class="flex-1 px-4 space-y-2 mt-6 overflow-y-auto">
-    <button onclick="switchTab('home')" class="nav-btn w-full text-left p-3 rounded-xl transition font-medium hidden md:flex items-center gap-3" id="nav-home">
-        <i class="fa-solid fa-house w-5"></i> Home <span class="ml-auto text-[10px] opacity-50">Alt+1</span>
-    </button>
+                <button onclick="switchTab('home')"
+                    class="nav-btn w-full text-left p-3 rounded-xl transition font-medium hidden md:flex items-center gap-3"
+                    id="nav-home">
+                    <i class="fa-solid fa-house w-5"></i> Home <span class="ml-auto text-[10px] opacity-50">Alt+1</span>
+                </button>
 
-    <button onclick="switchTab('dashboard')" class="nav-btn w-full text-left p-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-dashboard">
-        <i class="fa-solid fa-chart-pie w-5"></i> Analytics <span class="ml-auto text-[10px] opacity-50">Alt+2</span>
-    </button>
+                <button onclick="switchTab('dashboard')"
+                    class="nav-btn w-full text-left p-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3"
+                    id="nav-dashboard">
+                    <i class="fa-solid fa-chart-pie w-5"></i> Analytics <span
+                        class="ml-auto text-[10px] opacity-50">Alt+2</span>
+                </button>
 
-    <button onclick="switchTab('staff')" class="nav-btn w-full text-left p-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-staff">
-        <i class="fa-solid fa-users w-5"></i> Staff & Ledger <span class="ml-auto text-[10px] opacity-50">Alt+3</span>
-    </button>
+                <button onclick="switchTab('staff')"
+                    class="nav-btn w-full text-left p-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3"
+                    id="nav-staff">
+                    <i class="fa-solid fa-users w-5"></i> Staff & Ledger <span
+                        class="ml-auto text-[10px] opacity-50">Alt+3</span>
+                </button>
 
-    <button onclick="switchTab('attendance')" class="nav-btn w-full text-left p-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-attendance">
-        <i class="fa-solid fa-calendar-check w-5"></i> Attendance <span class="ml-auto text-[10px] opacity-50">Alt+4</span>
-    </button>
+                <button onclick="switchTab('attendance')"
+                    class="nav-btn w-full text-left p-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3"
+                    id="nav-attendance">
+                    <i class="fa-solid fa-calendar-check w-5"></i> Attendance <span
+                        class="ml-auto text-[10px] opacity-50">Alt+4</span>
+                </button>
 
-    <button onclick="switchTab('history')" class="nav-btn w-full text-left p-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-history">
-        <i class="fa-solid fa-clock-rotate-left w-5"></i> History <span class="ml-auto text-[10px] opacity-50">Alt+5</span>
-    </button>
-    <button onclick="switchTab('accounts')" class="nav-btn w-full text-left p-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-accounts">
-        <i class="fa-solid fa-wallet w-5"></i> Accounts <span class="ml-auto text-[10px] opacity-50">Alt+6</span>
-    </button>
-    <button onclick="switchTab('inventory')" class="nav-btn w-full text-left p-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-inventory">
-        <i class="fa-solid fa-boxes-stacked w-5"></i> Store <span class="ml-auto text-[10px] opacity-50">Alt+7</span>
-    </button>
-</nav>
-            
+                <button onclick="switchTab('history')"
+                    class="nav-btn w-full text-left p-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3"
+                    id="nav-history">
+                    <i class="fa-solid fa-clock-rotate-left w-5"></i> History <span
+                        class="ml-auto text-[10px] opacity-50">Alt+5</span>
+                </button>
+                <button onclick="switchTab('accounts')"
+                    class="nav-btn w-full text-left p-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3"
+                    id="nav-accounts">
+                    <i class="fa-solid fa-wallet w-5"></i> Accounts <span
+                        class="ml-auto text-[10px] opacity-50">Alt+6</span>
+                </button>
+                <button onclick="switchTab('inventory')"
+                    class="nav-btn w-full text-left p-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3"
+                    id="nav-inventory">
+                    <i class="fa-solid fa-boxes-stacked w-5"></i> Store <span
+                        class="ml-auto text-[10px] opacity-50">Alt+7</span>
+                </button>
+            </nav>
+
             <div class="p-4 border-t border-slate-100 bg-slate-50/50">
-                <button onclick="openSettings()" class="w-full mb-4 text-left p-3 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-md transition font-bold text-sm flex items-center justify-between group">
+                <button onclick="openSettings()"
+                    class="w-full mb-4 text-left p-3 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-md transition font-bold text-sm flex items-center justify-between group">
                     <span class="flex items-center gap-3">
                         <i class="fa-solid fa-gear group-hover:rotate-90 transition duration-500"></i> Settings
                     </span>
                     <i class="fa-solid fa-chevron-right text-xs opacity-30"></i>
                 </button>
 
-                 <div class="bg-white rounded-xl p-3 border border-slate-200 shadow-sm">
+                <div class="bg-white rounded-xl p-3 border border-slate-200 shadow-sm">
                     <p class="text-xs text-slate-400 font-semibold uppercase">System Status</p>
                     <div class="flex items-center gap-2 mt-2">
                         <div class="w-2 h-2 rounded-full bg-emerald-500" id="status-dot"></div>
                         <span class="text-xs font-bold text-slate-600" id="status-text">Local Data Active</span>
                     </div>
-                 </div>
+                </div>
             </div>
         </aside>
 
-        <main class="flex-1 h-full overflow-y-auto relative scroll-smooth p-4 pb-24 md:p-8 md:pb-8" onclick="closeSidebarOnMobile()">
-            
+        <main class="flex-1 h-full overflow-y-auto relative scroll-smooth p-4 pb-24 md:p-8 md:pb-8"
+            onclick="closeSidebarOnMobile()">
+
             <div id="home" class="tab-content active max-w-7xl mx-auto fade-in relative">
-                
+
                 <div class="mb-8 bg-white p-8 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full mix-blend-multiply filter blur-3xl opacity-70 -translate-y-1/2 translate-x-1/2"></div>
-                    <div class="absolute bottom-0 left-0 w-64 h-64 bg-emerald-50 rounded-full mix-blend-multiply filter blur-3xl opacity-70 translate-y-1/2 -translate-x-1/2"></div>
-                    
+                    <div
+                        class="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full mix-blend-multiply filter blur-3xl opacity-70 -translate-y-1/2 translate-x-1/2">
+                    </div>
+                    <div
+                        class="absolute bottom-0 left-0 w-64 h-64 bg-emerald-50 rounded-full mix-blend-multiply filter blur-3xl opacity-70 translate-y-1/2 -translate-x-1/2">
+                    </div>
+
                     <div class="relative z-10">
                         <p class="text-slate-500 font-medium mb-4 flex items-center gap-2">
                             <i class="fa-regular fa-calendar"></i> <span id="home-date">Loading date...</span>
                         </p>
-                        
+
                         <div>
                             <p class="text-2xl text-slate-400 font-medium mb-0" id="greet-msg">Hello,</p>
-                            <h1 class="text-5xl md:text-6xl font-bold text-slate-800 tracking-tight flex items-center gap-3">
+                            <h1
+                                class="text-5xl md:text-6xl font-bold text-slate-800 tracking-tight flex items-center gap-3">
                                 <span id="greet-name">Manager</span>
                                 <i id="greet-icon" class="fa-solid fa-sun text-yellow-400 text-3xl"></i>
                             </h1>
@@ -156,14 +194,21 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between">
+
+                    <div
+                        class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between">
                         <div class="flex justify-between items-start mb-4">
                             <div>
-                                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Staff Attendance</p>
-                                <h3 class="text-3xl font-bold text-slate-800 mt-1"><span id="stat-staff-today">0</span> <span class="text-sm text-slate-400 font-normal">Working</span></h3>
+                                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Staff Attendance
+                                </p>
+                                <h3 class="text-3xl font-bold text-slate-800 mt-1"><span id="stat-staff-today">0</span>
+                                    <span class="text-sm text-slate-400 font-normal">Working</span>
+                                </h3>
                             </div>
-                            <div class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg"><i class="fa-solid fa-users"></i></div>
+                            <div
+                                class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
                         </div>
                         <div class="border-t border-slate-50 pt-4">
                             <div class="flex justify-between text-sm mb-1">
@@ -174,13 +219,20 @@
                         </div>
                     </div>
 
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between">
+                    <div
+                        class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between">
                         <div class="flex justify-between items-start mb-4">
                             <div>
-                                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Production Output</p>
-                                <h3 class="text-3xl font-bold text-slate-800 mt-1"><span id="stat-prod-today">0</span> <span class="text-sm text-slate-400 font-normal">Pcs Today</span></h3>
+                                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Production Output
+                                </p>
+                                <h3 class="text-3xl font-bold text-slate-800 mt-1"><span id="stat-prod-today">0</span>
+                                    <span class="text-sm text-slate-400 font-normal">Pcs Today</span>
+                                </h3>
                             </div>
-                            <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg"><i class="fa-solid fa-layer-group"></i></div>
+                            <div
+                                class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-layer-group"></i>
+                            </div>
                         </div>
                         <div class="border-t border-slate-50 pt-4">
                             <div class="flex justify-between text-sm mb-1">
@@ -191,13 +243,19 @@
                         </div>
                     </div>
 
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between">
+                    <div
+                        class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between">
                         <div class="flex justify-between items-start mb-4">
                             <div>
                                 <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Washing Output</p>
-                                <h3 class="text-3xl font-bold text-slate-800 mt-1"><span id="stat-wash-today">0</span> <span class="text-sm text-slate-400 font-normal">Pcs Today</span></h3>
+                                <h3 class="text-3xl font-bold text-slate-800 mt-1"><span id="stat-wash-today">0</span>
+                                    <span class="text-sm text-slate-400 font-normal">Pcs Today</span>
+                                </h3>
                             </div>
-                            <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center text-lg"><i class="fa-solid fa-soap"></i></div>
+                            <div
+                                class="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-soap"></i>
+                            </div>
                         </div>
                         <div class="border-t border-slate-50 pt-4">
                             <div class="flex justify-between text-sm mb-1">
@@ -211,17 +269,22 @@
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    
-                    <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col relative" id="todo-block">
+
+                    <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col relative"
+                        id="todo-block">
                         <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
                             <i class="fa-solid fa-list-check text-indigo-600"></i> My Daily To-Do List
                         </h3>
-                        
+
                         <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-200 mb-4 shrink-0">
-                            <label for="todo-input" class="block text-xs font-bold text-indigo-600 uppercase mb-1">New Task / Reminder</label>
+                            <label for="todo-input" class="block text-xs font-bold text-indigo-600 uppercase mb-1">New
+                                Task / Reminder</label>
                             <div class="flex gap-2">
-                                <input type="text" id="todo-input" onkeydown="if(event.key === 'Enter') saveTodoItem()" placeholder="e.g. 9:00 AM: Dispatch X item" class="w-full p-3 border rounded-lg outline-none focus:border-indigo-500 bg-white text-sm">
-                                <button onclick="saveTodoItem()" class="bg-indigo-600 text-white font-bold py-3 px-6 rounded-xl hover:bg-indigo-700 transition shadow-md shrink-0">
+                                <input type="text" id="todo-input" onkeydown="if(event.key === 'Enter') saveTodoItem()"
+                                    placeholder="e.g. 9:00 AM: Dispatch X item"
+                                    class="w-full p-3 border rounded-lg outline-none focus:border-indigo-500 bg-white text-sm">
+                                <button onclick="saveTodoItem()"
+                                    class="bg-indigo-600 text-white font-bold py-3 px-6 rounded-xl hover:bg-indigo-700 transition shadow-md shrink-0">
                                     <i class="fa-solid fa-plus"></i>
                                 </button>
                             </div>
@@ -241,7 +304,7 @@
                             <h3 class="font-bold text-slate-800" id="home-calendar-title">Calendar</h3>
                             <div class="w-2 h-2 rounded-full bg-indigo-500"></div>
                         </div>
-                        
+
                         <div class="grid grid-cols-7 text-center mb-2">
                             <div class="text-[10px] font-bold text-red-400 uppercase">Su</div>
                             <div class="text-[10px] font-bold text-slate-400 uppercase">Mo</div>
@@ -256,26 +319,34 @@
                     </div>
                 </div>
 
-                <div id="holiday-menu-modal" class="hidden absolute top-0 left-0 right-0 bottom-0 bg-white/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center m-4 rounded-3xl border-4 border-indigo-50 shadow-2xl">
+                <div id="holiday-menu-modal"
+                    class="hidden absolute top-0 left-0 right-0 bottom-0 bg-white/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center m-4 rounded-3xl border-4 border-indigo-50 shadow-2xl">
                     <h4 class="text-2xl font-bold text-slate-800 mb-1" id="holiday-modal-date"></h4>
                     <p class="text-slate-400 text-sm mb-6 font-medium uppercase tracking-wider">Owner Actions</p>
 
                     <div id="holiday-action-buttons" class="w-full max-w-xs space-y-3"></div>
-                    
-                    <div id="holiday-grant-form" class="hidden w-full max-w-xs p-4 bg-indigo-50 rounded-xl border border-indigo-100 mt-4 animate-fade-in-up">
+
+                    <div id="holiday-grant-form"
+                        class="hidden w-full max-w-xs p-4 bg-indigo-50 rounded-xl border border-indigo-100 mt-4 animate-fade-in-up">
                         <label class="block text-xs font-bold text-indigo-600 uppercase mb-1">Title</label>
-                        <input type="text" id="holiday-title-input" class="w-full p-2 border rounded-lg bg-white text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g. Dasara">
+                        <input type="text" id="holiday-title-input"
+                            class="w-full p-2 border rounded-lg bg-white text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            placeholder="e.g. Dasara">
 
                         <label class="block text-xs font-bold text-indigo-600 uppercase mb-1">Type</label>
-                        <select id="holiday-type-select" class="w-full p-2 border rounded-lg bg-white text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <select id="holiday-type-select"
+                            class="w-full p-2 border rounded-lg bg-white text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             <option value="HOLIDAY">Holiday</option>
                             <option value="PAID_LEAVE">No Work (Paid)</option>
                         </select>
 
-                        <button onclick="saveHolidayAnnouncement()" class="w-full bg-emerald-600 text-white py-2 rounded-lg font-bold hover:bg-emerald-700 transition shadow-md">Save Changes</button>
+                        <button onclick="saveHolidayAnnouncement()"
+                            class="w-full bg-emerald-600 text-white py-2 rounded-lg font-bold hover:bg-emerald-700 transition shadow-md">Save
+                            Changes</button>
                     </div>
 
-                    <button onclick="closeHolidayMenu()" class="mt-6 text-slate-400 font-bold hover:text-slate-600 transition text-sm flex items-center gap-2">
+                    <button onclick="closeHolidayMenu()"
+                        class="mt-6 text-slate-400 font-bold hover:text-slate-600 transition text-sm flex items-center gap-2">
                         <i class="fa-solid fa-xmark"></i> Close
                     </button>
                 </div>
@@ -310,21 +381,21 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 mb-8">
-    
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-        <h3 class="font-bold text-slate-700 mb-4">Washing Output (This Month)</h3>
-        <div class="h-64">
-            <canvas id="washingChart"></canvas>
-        </div>
-        </div>
 
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-        <h3 class="font-bold text-slate-700 mb-4">Salary Distribution</h3>
-            <div class="h-64 flex justify-center">
-                <canvas id="salaryPieChart"></canvas>
-            </div>
-        </div>
-</div>
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="font-bold text-slate-700 mb-4">Washing Output (This Month)</h3>
+                        <div class="h-64">
+                            <canvas id="washingChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="font-bold text-slate-700 mb-4">Salary Distribution</h3>
+                        <div class="h-64 flex justify-center">
+                            <canvas id="salaryPieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="glass-panel rounded-2xl p-1 shadow-sm mb-10">
                     <div class="bg-white rounded-xl p-6 border border-slate-100">
@@ -343,14 +414,24 @@
                         </div>
                         <table class="w-full text-sm text-left whitespace-nowrap mb-4" id="daily-log-table">
                             <thead class="bg-slate-50 text-slate-500 font-semibold uppercase text-xs">
-                                <tr><th class="p-3 w-40">Date</th><th class="p-3">Details (Alt for Voice)</th><th class="p-3 w-24">Total</th><th class="p-3 w-24">Missing</th><th class="p-3 w-10"></th></tr>
+                                <tr>
+                                    <th class="p-3 w-40">Date</th>
+                                    <th class="p-3">Details (Alt for Voice)</th>
+                                    <th class="p-3 w-24">Total</th>
+                                    <th class="p-3 w-24">Missing</th>
+                                    <th class="p-3 w-10"></th>
+                                </tr>
                             </thead>
                             <tbody id="ledger-body"></tbody>
                         </table>
                         <div class="flex gap-3">
-                            <button onclick="addLedgerRow()" class="bg-white border border-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg flex items-center gap-2 hover:bg-slate-50 transition"><i class="fa-solid fa-plus"></i> Add (Alt+N)</button>
+                            <button onclick="addLedgerRow()"
+                                class="bg-white border border-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg flex items-center gap-2 hover:bg-slate-50 transition"><i
+                                    class="fa-solid fa-plus"></i> Add (Alt+N)</button>
                             <div class="flex-1"></div>
-                            <button onclick="saveLedger()" class="bg-slate-800 text-white font-bold py-2 px-6 rounded-lg shadow-lg flex items-center gap-2 hover:bg-slate-700 transition"><i class="fa-solid fa-cloud-arrow-up"></i> Save (Ctrl+S)</button>
+                            <button onclick="saveLedger()"
+                                class="bg-slate-800 text-white font-bold py-2 px-6 rounded-lg shadow-lg flex items-center gap-2 hover:bg-slate-700 transition"><i
+                                    class="fa-solid fa-cloud-arrow-up"></i> Save (Ctrl+S)</button>
                         </div>
                     </div>
                 </div>
@@ -366,7 +447,7 @@
                                 <p class="text-xl font-bold text-blue-600" id="hud-washing-total">0</p>
                             </div>
                         </div>
-                        
+
                         <table class="w-full text-sm text-left whitespace-nowrap mb-4">
                             <thead class="bg-slate-50 text-slate-500 font-semibold uppercase text-xs">
                                 <tr>
@@ -378,13 +459,15 @@
                             </thead>
                             <tbody id="washing-body"></tbody>
                         </table>
-                        
+
                         <div class="flex gap-3">
-                            <button onclick="addWashingRow()" class="bg-white border border-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg flex items-center gap-2 hover:bg-slate-50 transition">
+                            <button onclick="addWashingRow()"
+                                class="bg-white border border-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg flex items-center gap-2 hover:bg-slate-50 transition">
                                 <i class="fa-solid fa-plus"></i> Add Row
                             </button>
                             <div class="flex-1"></div>
-                            <button onclick="saveWashingLog()" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow-lg flex items-center gap-2 hover:bg-blue-700 transition">
+                            <button onclick="saveWashingLog()"
+                                class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow-lg flex items-center gap-2 hover:bg-blue-700 transition">
                                 <i class="fa-solid fa-save"></i> Save Washing
                             </button>
                         </div>
@@ -400,15 +483,18 @@
                             <p class="text-slate-500 mt-1">Select an employee to view their ledger.</p>
                         </div>
                         <div class="flex gap-3">
-                            <button onclick="toggleAddStaffModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-medium shadow-lg transition flex items-center gap-2">
+                            <button onclick="toggleAddStaffModal()"
+                                class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-medium shadow-lg transition flex items-center gap-2">
                                 <i class="fa-solid fa-user-plus"></i> Add Employee
                             </button>
-                            <button onclick="toggleDetailsModal()" class="bg-white border border-indigo-200 text-indigo-600 hover:bg-indigo-50 px-3 py-2 rounded-lg font-medium shadow-md transition flex items-center gap-2" title="Wage Summary">
+                            <button onclick="toggleDetailsModal()"
+                                class="bg-white border border-indigo-200 text-indigo-600 hover:bg-indigo-50 px-3 py-2 rounded-lg font-medium shadow-md transition flex items-center gap-2"
+                                title="Wage Summary">
                                 <i class="fa-solid fa-circle-info text-xl"></i>
                             </button>
                         </div>
                     </div>
-                    
+
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div class="bg-slate-100 p-6 rounded-2xl border border-slate-200/60 flex flex-col h-full">
                             <div class="flex justify-between items-center mb-4">
@@ -416,18 +502,25 @@
                                     <i class="fa-solid fa-user-clock text-indigo-500"></i> Time Based Staff
                                 </h3>
                                 <div class="flex gap-2">
-                                    <button onclick="toggleSort('timings')" class="bg-white w-8 h-8 rounded-lg border border-slate-200 text-slate-500 hover:text-indigo-600 shadow-sm transition flex items-center justify-center" title="Sort">
+                                    <button onclick="toggleSort('timings')"
+                                        class="bg-white w-8 h-8 rounded-lg border border-slate-200 text-slate-500 hover:text-indigo-600 shadow-sm transition flex items-center justify-center"
+                                        title="Sort">
                                         <i class="fa-solid fa-arrow-down-a-z" id="sort-icon-timings"></i>
                                     </button>
-                                    <button onclick="toggleSearch('timings')" class="bg-white w-8 h-8 rounded-lg border border-slate-200 text-slate-500 hover:text-indigo-600 shadow-sm transition flex items-center justify-center" title="Search">
+                                    <button onclick="toggleSearch('timings')"
+                                        class="bg-white w-8 h-8 rounded-lg border border-slate-200 text-slate-500 hover:text-indigo-600 shadow-sm transition flex items-center justify-center"
+                                        title="Search">
                                         <i class="fa-solid fa-magnifying-glass"></i>
                                     </button>
                                 </div>
                             </div>
                             <div id="search-box-timings" class="hidden mb-4">
-                                <input type="text" oninput="handleStaffSearch('timings', this.value)" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:border-indigo-500 outline-none" placeholder="Search by name...">
+                                <input type="text" oninput="handleStaffSearch('timings', this.value)"
+                                    class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:border-indigo-500 outline-none"
+                                    placeholder="Search by name...">
                             </div>
-                            <div class="grid grid-cols-1 gap-4 overflow-y-auto max-h-[500px]" id="staff-grid-timings"></div>
+                            <div class="grid grid-cols-1 gap-4 overflow-y-auto max-h-[500px]" id="staff-grid-timings">
+                            </div>
                         </div>
 
                         <div class="bg-slate-100 p-6 rounded-2xl border border-slate-200/60 flex flex-col h-full">
@@ -436,16 +529,22 @@
                                     <i class="fa-solid fa-user-tag text-emerald-500"></i> Piece Work Staff
                                 </h3>
                                 <div class="flex gap-2">
-                                    <button onclick="toggleSort('pcs')" class="bg-white w-8 h-8 rounded-lg border border-slate-200 text-slate-500 hover:text-emerald-600 shadow-sm transition flex items-center justify-center" title="Sort">
+                                    <button onclick="toggleSort('pcs')"
+                                        class="bg-white w-8 h-8 rounded-lg border border-slate-200 text-slate-500 hover:text-emerald-600 shadow-sm transition flex items-center justify-center"
+                                        title="Sort">
                                         <i class="fa-solid fa-arrow-down-a-z" id="sort-icon-pcs"></i>
                                     </button>
-                                    <button onclick="toggleSearch('pcs')" class="bg-white w-8 h-8 rounded-lg border border-slate-200 text-slate-500 hover:text-emerald-600 shadow-sm transition flex items-center justify-center" title="Search">
+                                    <button onclick="toggleSearch('pcs')"
+                                        class="bg-white w-8 h-8 rounded-lg border border-slate-200 text-slate-500 hover:text-emerald-600 shadow-sm transition flex items-center justify-center"
+                                        title="Search">
                                         <i class="fa-solid fa-magnifying-glass"></i>
                                     </button>
                                 </div>
                             </div>
                             <div id="search-box-pcs" class="hidden mb-4">
-                                <input type="text" oninput="handleStaffSearch('pcs', this.value)" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:border-emerald-500 outline-none" placeholder="Search by name...">
+                                <input type="text" oninput="handleStaffSearch('pcs', this.value)"
+                                    class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:border-emerald-500 outline-none"
+                                    placeholder="Search by name...">
                             </div>
                             <div class="grid grid-cols-1 gap-4 overflow-y-auto max-h-[500px]" id="staff-grid-pcs"></div>
                         </div>
@@ -454,39 +553,61 @@
 
                 <div id="staff-ledger-view" class="hidden">
                     <div class="flex items-center gap-4 mb-6">
-                        <button onclick="closeLedgerView()" class="bg-white border border-slate-300 text-slate-600 w-10 h-10 rounded-full hover:bg-slate-50 transition shadow-sm flex items-center justify-center" title="Back (Esc)"><i class="fa-solid fa-arrow-left"></i></button>
+                        <button onclick="closeLedgerView()"
+                            class="bg-white border border-slate-300 text-slate-600 w-10 h-10 rounded-full hover:bg-slate-50 transition shadow-sm flex items-center justify-center"
+                            title="Back (Esc)"><i class="fa-solid fa-arrow-left"></i></button>
                         <div class="flex items-center gap-3">
-                            <button onclick="changeLedgerEmployee(-1)" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-indigo-100 text-slate-500 hover:text-indigo-600 flex items-center justify-center transition"><i class="fa-solid fa-chevron-left"></i></button>
+                            <button onclick="changeLedgerEmployee(-1)"
+                                class="w-8 h-8 rounded-full bg-slate-100 hover:bg-indigo-100 text-slate-500 hover:text-indigo-600 flex items-center justify-center transition"><i
+                                    class="fa-solid fa-chevron-left"></i></button>
                             <div>
                                 <h2 class="text-2xl font-bold text-slate-800" id="ledger-emp-name">Employee Name</h2>
                                 <p class="text-sm text-slate-500" id="ledger-emp-role">Role</p>
                             </div>
-                            <button onclick="changeLedgerEmployee(1)" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-indigo-100 text-slate-500 hover:text-indigo-600 flex items-center justify-center transition"><i class="fa-solid fa-chevron-right"></i></button>
+                            <button onclick="changeLedgerEmployee(1)"
+                                class="w-8 h-8 rounded-full bg-slate-100 hover:bg-indigo-100 text-slate-500 hover:text-indigo-600 flex items-center justify-center transition"><i
+                                    class="fa-solid fa-chevron-right"></i></button>
                         </div>
                         <div class="flex-1"></div>
-                        <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg shadow-sm border border-slate-200">
-                            <button onclick="changeLedgerMonth(-1)" class="text-slate-400 hover:text-indigo-600"><i class="fa-solid fa-chevron-left"></i></button>
-                            <span id="ledger-month-label" class="text-sm font-bold text-slate-800 min-w-[120px] text-center uppercase">--</span>
-                            <button onclick="changeLedgerMonth(1)" class="text-slate-400 hover:text-indigo-600"><i class="fa-solid fa-chevron-right"></i></button>
+                        <div
+                            class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg shadow-sm border border-slate-200">
+                            <button onclick="changeLedgerMonth(-1)" class="text-slate-400 hover:text-indigo-600"><i
+                                    class="fa-solid fa-chevron-left"></i></button>
+                            <span id="ledger-month-label"
+                                class="text-sm font-bold text-slate-800 min-w-[120px] text-center uppercase">--</span>
+                            <button onclick="changeLedgerMonth(1)" class="text-slate-400 hover:text-indigo-600"><i
+                                    class="fa-solid fa-chevron-right"></i></button>
                         </div>
                     </div>
 
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                        <div class="bg-slate-50 border-b border-slate-200 p-4 flex flex-wrap gap-6 items-center justify-between">
+                        <div
+                            class="bg-slate-50 border-b border-slate-200 p-4 flex flex-wrap gap-6 items-center justify-between">
                             <div class="flex gap-6">
                                 <div id="financial-salary-container">
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase" id="salary-label">Basic Salary</label>
-                                    <div class="flex items-center text-slate-700 font-bold"><span>₹</span><input type="number" id="ledger-salary" onchange="saveFinancials()" class="bg-transparent border-b border-slate-300 w-24 focus:border-indigo-500 outline-none px-1" placeholder="0"></div>
+                                    <label class="block text-[10px] font-bold text-slate-400 uppercase"
+                                        id="salary-label">Basic Salary</label>
+                                    <div class="flex items-center text-slate-700 font-bold"><span>₹</span><input
+                                            type="number" id="ledger-salary" onchange="saveFinancials()"
+                                            class="bg-transparent border-b border-slate-300 w-24 focus:border-indigo-500 outline-none px-1"
+                                            placeholder="0"></div>
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-bold text-slate-400 uppercase">Advance Taken</label>
-                                    <div class="flex items-center text-red-600 font-bold"><span>₹</span><input type="number" id="ledger-advance" onchange="saveFinancials()" class="bg-transparent border-b border-red-200 w-24 focus:border-red-500 outline-none px-1" placeholder="0"></div>
+                                    <label class="block text-[10px] font-bold text-slate-400 uppercase">Advance
+                                        Taken</label>
+                                    <div class="flex items-center text-red-600 font-bold"><span>₹</span><input
+                                            type="number" id="ledger-advance" onchange="saveFinancials()"
+                                            class="bg-transparent border-b border-red-200 w-24 focus:border-red-500 outline-none px-1"
+                                            placeholder="0"></div>
                                 </div>
                             </div>
                             <div id="salary-calc-btn-container">
-                                <button onclick="calculateSalary()" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-md hover:bg-slate-700 transition flex items-center gap-2"><i class="fa-solid fa-calculator"></i> Calculate Pay</button>
+                                <button onclick="calculateSalary()"
+                                    class="bg-slate-800 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-md hover:bg-slate-700 transition flex items-center gap-2"><i
+                                        class="fa-solid fa-calculator"></i> Calculate Pay</button>
                             </div>
-                            <div class="text-xs text-slate-500 bg-blue-50 text-blue-700 px-3 py-2 rounded-lg border border-blue-100" id="ledger-hints"></div>
+                            <div class="text-xs text-slate-500 bg-blue-50 text-blue-700 px-3 py-2 rounded-lg border border-blue-100"
+                                id="ledger-hints"></div>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm border-collapse" id="staff-table">
@@ -494,7 +615,9 @@
                                 <tbody id="ledger-table-body" class="divide-y divide-slate-100"></tbody>
                             </table>
                             <div id="pcs-add-row-container" class="p-3 text-center border-t border-slate-100 hidden">
-                                 <button onclick="addPcsRow()" class="text-emerald-600 font-bold text-sm hover:underline flex items-center justify-center gap-2 w-full py-2 hover:bg-emerald-50/50 rounded-lg transition"><i class="fa-solid fa-plus"></i> Add Row (Alt+N / Enter at end)</button>
+                                <button onclick="addPcsRow()"
+                                    class="text-emerald-600 font-bold text-sm hover:underline flex items-center justify-center gap-2 w-full py-2 hover:bg-emerald-50/50 rounded-lg transition"><i
+                                        class="fa-solid fa-plus"></i> Add Row (Alt+N / Enter at end)</button>
                             </div>
                         </div>
                     </div>
@@ -507,18 +630,25 @@
                         <h2 class="text-3xl font-bold text-slate-800">Attendance Register</h2>
                         <p class="text-slate-500 mt-1">Manage daily logs or view monthly consolidated book.</p>
                     </div>
-                    
+
                     <div class="flex items-center gap-4 bg-white p-2 rounded-xl border border-slate-200 shadow-sm">
                         <div class="flex bg-slate-100 p-1 rounded-lg">
-                            <button onclick="switchAttView('daily')" id="btn-att-daily" class="px-4 py-1.5 rounded-md text-sm font-bold shadow-sm bg-white text-indigo-600 transition">Daily</button>
-                            <button onclick="switchAttView('monthly')" id="btn-att-monthly" class="px-4 py-1.5 rounded-md text-sm font-bold text-slate-500 hover:text-slate-700 transition">Monthly Book</button>
+                            <button onclick="switchAttView('daily')" id="btn-att-daily"
+                                class="px-4 py-1.5 rounded-md text-sm font-bold shadow-sm bg-white text-indigo-600 transition">Daily</button>
+                            <button onclick="switchAttView('monthly')" id="btn-att-monthly"
+                                class="px-4 py-1.5 rounded-md text-sm font-bold text-slate-500 hover:text-slate-700 transition">Monthly
+                                Book</button>
                         </div>
 
                         <div id="att-daily-controls">
-                            <input type="date" id="attendance-date" class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500" onchange="renderAttendanceView()">
+                            <input type="date" id="attendance-date"
+                                class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500"
+                                onchange="renderAttendanceView()">
                         </div>
                         <div id="att-monthly-controls" class="hidden">
-                            <input type="month" id="attendance-month" class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500" onchange="renderAttendanceBook()">
+                            <input type="month" id="attendance-month"
+                                class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm font-medium outline-none focus:ring-2 focus:ring-indigo-500"
+                                onchange="renderAttendanceBook()">
                         </div>
                     </div>
                 </div>
@@ -542,7 +672,8 @@
                     </div>
                 </div>
 
-                <div id="att-monthly-view" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div id="att-monthly-view"
+                    class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full text-xs text-left border-collapse whitespace-nowrap">
                             <thead class="bg-slate-50 text-slate-600 font-bold uppercase" id="att-book-head"></thead>
@@ -556,11 +687,20 @@
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-bold text-slate-800">History Archives</h2>
                     <div class="flex items-center gap-4 bg-white px-4 py-2 rounded-full border" id="history-controls">
-                        <button onclick="changePage(1)"><i class="fa-solid fa-chevron-left"></i></button><span id="history-month-label" class="text-sm font-bold">--</span><button onclick="changePage(-1)"><i class="fa-solid fa-chevron-right"></i></button>
+                        <button onclick="changePage(1)"><i class="fa-solid fa-chevron-left"></i></button><span
+                            id="history-month-label" class="text-sm font-bold">--</span><button
+                            onclick="changePage(-1)"><i class="fa-solid fa-chevron-right"></i></button>
                     </div>
                 </div>
-                <div class="mb-4 relative max-w-md"><div class="relative"><input type="text" id="history-search" oninput="renderHistoryPage()" placeholder="Search..." class="w-full pl-10 pr-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none"><i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-slate-400"></i></div></div>
-                <div class="glass-panel rounded-lg min-h-[500px] overflow-hidden"><div id="history-page-content"></div></div>
+                <div class="mb-4 relative max-w-md">
+                    <div class="relative"><input type="text" id="history-search" oninput="renderHistoryPage()"
+                            placeholder="Search..."
+                            class="w-full pl-10 pr-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none"><i
+                            class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-slate-400"></i></div>
+                </div>
+                <div class="glass-panel rounded-lg min-h-[500px] overflow-hidden">
+                    <div id="history-page-content"></div>
+                </div>
             </div>
 
             <div id="accounts" class="tab-content fade-in max-w-7xl mx-auto">
@@ -580,30 +720,42 @@
                         <h3 class="font-bold text-slate-700 mb-4">New Transaction</h3>
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Type</label>
                         <div class="flex gap-2 mb-4">
-                            <button onclick="setTransType('credit')" id="btn-credit" class="flex-1 py-2 rounded-lg border border-emerald-500 text-emerald-600 font-bold hover:bg-emerald-50 active-type">Credit (+)</button>
-                            <button onclick="setTransType('debit')" id="btn-debit" class="flex-1 py-2 rounded-lg border border-slate-200 text-slate-400 font-bold hover:bg-red-50 hover:text-red-500 hover:border-red-200">Debit (-)</button>
+                            <button onclick="setTransType('credit')" id="btn-credit"
+                                class="flex-1 py-2 rounded-lg border border-emerald-500 text-emerald-600 font-bold hover:bg-emerald-50 active-type">Credit
+                                (+)</button>
+                            <button onclick="setTransType('debit')" id="btn-debit"
+                                class="flex-1 py-2 rounded-lg border border-slate-200 text-slate-400 font-bold hover:bg-red-50 hover:text-red-500 hover:border-red-200">Debit
+                                (-)</button>
                         </div>
                         <input type="hidden" id="trans-type" value="credit">
 
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Date</label>
-                        <input type="date" id="trans-date" class="w-full mb-3 p-2 border rounded-lg outline-none focus:border-indigo-500">
+                        <input type="date" id="trans-date"
+                            class="w-full mb-3 p-2 border rounded-lg outline-none focus:border-indigo-500">
 
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Description</label>
-                        <input type="text" id="trans-desc" placeholder="e.g. Fabric from Surat" class="w-full mb-3 p-2 border rounded-lg outline-none focus:border-indigo-500">
+                        <input type="text" id="trans-desc" placeholder="e.g. Fabric from Surat"
+                            class="w-full mb-3 p-2 border rounded-lg outline-none focus:border-indigo-500">
 
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Amount (₹)</label>
-                        <input type="number" id="trans-amt" placeholder="0.00" class="w-full mb-6 p-2 border rounded-lg outline-none focus:border-indigo-500 text-lg font-bold">
+                        <input type="number" id="trans-amt" placeholder="0.00"
+                            class="w-full mb-6 p-2 border rounded-lg outline-none focus:border-indigo-500 text-lg font-bold">
 
-                        <button onclick="addTransaction()" class="w-full bg-slate-800 text-white py-3 rounded-xl font-bold hover:bg-slate-700 transition shadow-lg">Save Entry</button>
+                        <button onclick="addTransaction()"
+                            class="w-full bg-slate-800 text-white py-3 rounded-xl font-bold hover:bg-slate-700 transition shadow-lg">Save
+                            Entry</button>
                     </div>
 
-                    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-                        <div class="p-4 border-b border-slate-100 bg-slate-50 font-bold text-slate-600 flex justify-between">
+                    <div
+                        class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+                        <div
+                            class="p-4 border-b border-slate-100 bg-slate-50 font-bold text-slate-600 flex justify-between">
                             <span>Recent Transactions</span>
                         </div>
                         <div class="overflow-y-auto flex-1 max-h-[600px]">
                             <table class="w-full text-sm text-left">
-                                <thead class="bg-white text-slate-400 font-bold text-xs uppercase sticky top-0 shadow-sm">
+                                <thead
+                                    class="bg-white text-slate-400 font-bold text-xs uppercase sticky top-0 shadow-sm">
                                     <tr>
                                         <th class="p-4">Date</th>
                                         <th class="p-4">Description</th>
@@ -619,179 +771,358 @@
             </div>
 
             <div id="inventory" class="tab-content fade-in max-w-7xl mx-auto">
-    <div class="mb-8 flex justify-between items-center">
-        <div>
-            <h2 class="text-3xl font-bold text-slate-800">Store Inventory</h2>
-            <p class="text-slate-500 mt-1">Track Raw Materials (Fabric, Trims, Packaging)</p>
-        </div>
-        <div class="flex gap-4">
-             <div class="bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200">
-                 <p class="text-[10px] uppercase font-bold text-slate-400">Total Items</p>
-                 <p class="text-xl font-bold text-slate-800" id="inv-stat-total">0</p>
-             </div>
-             <div class="bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200">
-                 <p class="text-[10px] uppercase font-bold text-slate-400">Low Stock</p>
-                 <p class="text-xl font-bold text-red-500" id="inv-stat-low">0</p>
-             </div>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 h-fit sticky top-4">
-            <h3 class="font-bold text-slate-700 mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-plus-circle text-indigo-500"></i> Add Stock
-            </h3>
-            
-            <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Item Name</label>
-            <input type="text" id="inv-new-name" placeholder="e.g. Denim Navy Roll #402" class="w-full mb-3 p-2 border rounded-lg outline-none focus:border-indigo-500">
-
-            <div class="grid grid-cols-2 gap-3 mb-3">
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Type</label>
-                    <select id="inv-new-type" class="w-full p-2 border rounded-lg outline-none focus:border-indigo-500 bg-white">
-                        <option value="Fabric">Fabric</option>
-                        <option value="Trim">Trim/Accessory</option>
-                        <option value="Packaging">Packaging</option>
-                        <option value="Machine">Machine Part</option>
-                    </select>
+                <div class="mb-8 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-3xl font-bold text-slate-800">Store Inventory</h2>
+                        <p class="text-slate-500 mt-1">Track Raw Materials (Fabric, Trims, Packaging)</p>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200">
+                            <p class="text-[10px] uppercase font-bold text-slate-400">Total Items</p>
+                            <p class="text-xl font-bold text-slate-800" id="inv-stat-total">0</p>
+                        </div>
+                        <div class="bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200">
+                            <p class="text-[10px] uppercase font-bold text-slate-400">Low Stock</p>
+                            <p class="text-xl font-bold text-red-500" id="inv-stat-low">0</p>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Supplier</label>
-                    <input type="text" id="inv-new-supplier" placeholder="e.g. Surat Tex" class="w-full p-2 border rounded-lg outline-none focus:border-indigo-500">
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 h-fit sticky top-4">
+                        <h3 class="font-bold text-slate-700 mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-plus-circle text-indigo-500"></i> Add Stock
+                        </h3>
+
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Item Name</label>
+                        <input type="text" id="inv-new-name" placeholder="e.g. Denim Navy Roll #402"
+                            class="w-full mb-3 p-2 border rounded-lg outline-none focus:border-indigo-500">
+
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Type</label>
+                                <select id="inv-new-type"
+                                    class="w-full p-2 border rounded-lg outline-none focus:border-indigo-500 bg-white">
+                                    <option value="Fabric">Fabric</option>
+                                    <option value="Trim">Trim/Accessory</option>
+                                    <option value="Packaging">Packaging</option>
+                                    <option value="Machine">Machine Part</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Supplier</label>
+                                <input type="text" id="inv-new-supplier" placeholder="e.g. Surat Tex"
+                                    class="w-full p-2 border rounded-lg outline-none focus:border-indigo-500">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 mb-6">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Quantity</label>
+                                <input type="number" id="inv-new-qty" placeholder="0"
+                                    class="w-full p-2 border rounded-lg outline-none focus:border-indigo-500 font-bold">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Unit</label>
+                                <select id="inv-new-unit"
+                                    class="w-full p-2 border rounded-lg outline-none focus:border-indigo-500 bg-white">
+                                    <option value="Meters">Meters</option>
+                                    <option value="Kg">Kg</option>
+                                    <option value="Pcs">Pcs</option>
+                                    <option value="Rolls">Rolls</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button onclick="addInventoryItem()"
+                            class="w-full bg-slate-800 text-white py-3 rounded-xl font-bold hover:bg-slate-700 transition shadow-lg">
+                            Add to Inventory
+                        </button>
+                    </div>
+
+                    <div
+                        class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col min-h-[500px]">
+                        <div
+                            class="p-4 border-b border-slate-100 bg-slate-50 font-bold text-slate-600 flex justify-between">
+                            <span>Current Stock</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left">
+                                <thead
+                                    class="bg-white text-slate-400 font-bold text-xs uppercase sticky top-0 shadow-sm z-10">
+                                    <tr>
+                                        <th class="p-4">Item Details</th>
+                                        <th class="p-4 text-center">Type</th>
+                                        <th class="p-4 text-right">Available Qty</th>
+                                        <th class="p-4 text-center">Last Updated</th>
+                                        <th class="p-4 w-24 text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inventory-list-body" class="divide-y divide-slate-50">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <div class="grid grid-cols-2 gap-3 mb-6">
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Quantity</label>
-                    <input type="number" id="inv-new-qty" placeholder="0" class="w-full p-2 border rounded-lg outline-none focus:border-indigo-500 font-bold">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Unit</label>
-                    <select id="inv-new-unit" class="w-full p-2 border rounded-lg outline-none focus:border-indigo-500 bg-white">
-                        <option value="Meters">Meters</option>
-                        <option value="Kg">Kg</option>
-                        <option value="Pcs">Pcs</option>
-                        <option value="Rolls">Rolls</option>
-                    </select>
-                </div>
-            </div>
-
-            <button onclick="addInventoryItem()" class="w-full bg-slate-800 text-white py-3 rounded-xl font-bold hover:bg-slate-700 transition shadow-lg">
-                Add to Inventory
-            </button>
-        </div>
-
-        <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col min-h-[500px]">
-            <div class="p-4 border-b border-slate-100 bg-slate-50 font-bold text-slate-600 flex justify-between">
-                <span>Current Stock</span>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left">
-                    <thead class="bg-white text-slate-400 font-bold text-xs uppercase sticky top-0 shadow-sm z-10">
-                        <tr>
-                            <th class="p-4">Item Details</th>
-                            <th class="p-4 text-center">Type</th>
-                            <th class="p-4 text-right">Available Qty</th>
-                            <th class="p-4 text-center">Last Updated</th>
-                            <th class="p-4 w-24 text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="inventory-list-body" class="divide-y divide-slate-50">
-                        </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
 
         </main>
 
-        <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around p-2 pb-4 z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-    
-    <button id="mobile-nav-home" onclick="switchTab('home')" class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-400 hover:text-indigo-600 transition">
-        <i class="fa-solid fa-house text-xl mb-1"></i>
-        <span class="text-[10px] font-bold">Home</span>
-    </button>
+        <div
+            class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around p-2 pb-4 z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
 
-    <button id="mobile-nav-dashboard" onclick="switchTab('dashboard')" class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-400 hover:text-indigo-600 transition">
-        <i class="fa-solid fa-chart-pie text-xl mb-1"></i>
-        <span class="text-[10px] font-bold">Stats</span>
-    </button>
+            <button id="mobile-nav-home" onclick="switchTab('home')"
+                class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-400 hover:text-indigo-600 transition">
+                <i class="fa-solid fa-house text-xl mb-1"></i>
+                <span class="text-[10px] font-bold">Home</span>
+            </button>
 
-    <button onclick="toggleSidebar()" class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition border border-transparent active:scale-95">
-        <i class="fa-solid fa-bars text-xl mb-1"></i>
-        <span class="text-[10px] font-bold">Menu</span>
-    </button>
+            <button id="mobile-nav-dashboard" onclick="switchTab('dashboard')"
+                class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-400 hover:text-indigo-600 transition">
+                <i class="fa-solid fa-chart-pie text-xl mb-1"></i>
+                <span class="text-[10px] font-bold">Stats</span>
+            </button>
 
-    <button id="mobile-nav-staff" onclick="switchTab('staff')" class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-400 hover:text-indigo-600 transition">
-        <i class="fa-solid fa-users text-xl mb-1"></i>
-        <span class="text-[10px] font-bold">Staff</span>
-    </button>
+            <button onclick="toggleSidebar()"
+                class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition border border-transparent active:scale-95">
+                <i class="fa-solid fa-bars text-xl mb-1"></i>
+                <span class="text-[10px] font-bold">Menu</span>
+            </button>
 
-    <button id="mobile-nav-attendance" onclick="switchTab('attendance')" class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-400 hover:text-indigo-600 transition">
-        <i class="fa-solid fa-calendar-check text-xl mb-1"></i>
-        <span class="text-[10px] font-bold">Attn.</span>
-    </button>
+            <button id="mobile-nav-staff" onclick="switchTab('staff')"
+                class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-400 hover:text-indigo-600 transition">
+                <i class="fa-solid fa-users text-xl mb-1"></i>
+                <span class="text-[10px] font-bold">Staff</span>
+            </button>
 
-</div>
+            <button id="mobile-nav-attendance" onclick="switchTab('attendance')"
+                class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-400 hover:text-indigo-600 transition">
+                <i class="fa-solid fa-calendar-check text-xl mb-1"></i>
+                <span class="text-[10px] font-bold">Attn.</span>
+            </button>
+
+        </div>
     </div>
 
-    <div id="salary-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm p-4">
+    <div id="salary-modal"
+        class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh]">
             <div class="bg-slate-800 text-white p-4 flex justify-between items-center shrink-0 no-print">
                 <h3 class="text-lg font-bold">Salary Slip</h3>
-                <button onclick="closeSalaryModal()" class="hover:text-slate-300"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeSalaryModal()" class="hover:text-slate-300"><i
+                        class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-6 overflow-y-auto flex-1" id="salary-modal-content"></div>
             <div class="bg-slate-50 p-4 text-right border-t border-slate-200 shrink-0 no-print">
-                 <button onclick="closeSalaryModal()" class="bg-slate-800 text-white px-6 py-2 rounded-lg font-bold hover:bg-slate-700 transition">Done</button>
+                <button onclick="closeSalaryModal()"
+                    class="bg-slate-800 text-white px-6 py-2 rounded-lg font-bold hover:bg-slate-700 transition">Done</button>
             </div>
         </div>
     </div>
 
-    <div id="settings-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-end md:items-center justify-center p-4 fade-in">
+    <div id="settings-modal"
+        class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-end md:items-center justify-center p-4 fade-in">
         <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl overflow-hidden transform transition-all scale-100">
             <div class="bg-slate-50 p-6 border-b border-slate-100 flex justify-between items-center">
                 <div>
                     <h3 class="text-xl font-bold text-slate-800">App Settings</h3>
                     <p class="text-xs text-slate-500">Manage your factory data</p>
                 </div>
-                <button onclick="closeSettings()" class="w-8 h-8 rounded-full bg-white border border-slate-200 text-slate-400 hover:text-slate-700 flex items-center justify-center transition">
+                <button onclick="closeSettings()"
+                    class="w-8 h-8 rounded-full bg-white border border-slate-200 text-slate-400 hover:text-slate-700 flex items-center justify-center transition">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
             <div class="p-6 space-y-3">
                 <div class="flex items-center gap-4 p-4 bg-indigo-50 rounded-2xl border border-indigo-100 mb-6">
-                    <div class="w-12 h-12 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xl font-bold"><i class="fa-solid fa-user-tie"></i></div>
-                    <div><p class="font-bold text-indigo-900 text-sm">Owner Account</p><p class="text-xs text-indigo-500">Admin Access</p></div>
+                    <div
+                        class="w-12 h-12 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-user-tie"></i>
+                    </div>
+                    <div>
+                        <p class="font-bold text-indigo-900 text-sm">Owner Account</p>
+                        <p class="text-xs text-indigo-500">Admin Access</p>
+                    </div>
                 </div>
                 <p class="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Data Management</p>
-                <button onclick="downloadBackup()" class="w-full text-left p-4 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-slate-200 transition flex items-center gap-4 group">
-                    <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition"><i class="fa-solid fa-cloud-arrow-down"></i></div>
-                    <div><p class="font-bold text-slate-700 text-sm">Backup Data</p><p class="text-[10px] text-slate-400">Download JSON file</p></div>
+                <button onclick="downloadBackup()"
+                    class="w-full text-left p-4 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-slate-200 transition flex items-center gap-4 group">
+                    <div
+                        class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition">
+                        <i class="fa-solid fa-cloud-arrow-down"></i>
+                    </div>
+                    <div>
+                        <p class="font-bold text-slate-700 text-sm">Backup Data</p>
+                        <p class="text-[10px] text-slate-400">Download JSON file</p>
+                    </div>
+                </button>
+
+                <div class="h-px bg-slate-100 my-2"></div>
+
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Control Panel</p>
+                <button onclick="openControlPanel()"
+                    class="w-full text-left p-4 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-slate-200 transition flex items-center gap-4 group">
+                    <div
+                        class="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center group-hover:bg-slate-800 group-hover:text-white transition">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <div>
+                        <p class="font-bold text-slate-700 text-sm">Restricted Access</p>
+                        <p class="text-[10px] text-slate-400">Owner Configuration</p>
+                    </div>
                 </button>
                 <div class="h-px bg-slate-100 my-2"></div>
                 <p class="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Session</p>
-                <button onclick="logout()" class="w-full text-left p-4 rounded-xl border border-red-50 hover:bg-red-50 hover:border-red-100 transition flex items-center gap-4 group">
-                    <div class="w-10 h-10 rounded-full bg-red-100 text-red-500 flex items-center justify-center group-hover:scale-110 transition"><i class="fa-solid fa-power-off"></i></div>
-                    <div><p class="font-bold text-red-600 text-sm">Sign Out</p><p class="text-[10px] text-red-300">End current session</p></div>
+                <button onclick="logout()"
+                    class="w-full text-left p-4 rounded-xl border border-red-50 hover:bg-red-50 hover:border-red-100 transition flex items-center gap-4 group">
+                    <div
+                        class="w-10 h-10 rounded-full bg-red-100 text-red-500 flex items-center justify-center group-hover:scale-110 transition">
+                        <i class="fa-solid fa-power-off"></i>
+                    </div>
+                    <div>
+                        <p class="font-bold text-red-600 text-sm">Sign Out</p>
+                        <p class="text-[10px] text-red-300">End current session</p>
+                    </div>
                 </button>
             </div>
-            <div class="bg-slate-50 p-3 text-center border-t border-slate-100"><p class="text-[10px] text-slate-300 font-mono">v5.5 Build 2025</p></div>
+            <div class="bg-slate-50 p-3 text-center border-t border-slate-100">
+                <p class="text-[10px] text-slate-300 font-mono">v5.5 Build 2025</p>
+            </div>
         </div>
     </div>
 
-    <div id="details-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm p-4">
+    <!-- CPIN MODAL -->
+    <div id="cpin-modal"
+        class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] flex items-center justify-center p-4 fade-in">
+        <div class="bg-white w-full max-w-xs rounded-3xl shadow-2xl overflow-hidden p-6 text-center relative">
+            <button onclick="closeCPINModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700"><i
+                    class="fa-solid fa-xmark text-lg"></i></button>
+
+            <div
+                class="w-16 h-16 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800 mb-1" id="cpin-title">Security Check</h3>
+            <p class="text-xs text-slate-500 mb-6" id="cpin-desc">Enter CPIN to access protected settings.</p>
+
+            <div class="mb-4">
+                <input type="password" id="cpin-input" maxlength="6"
+                    class="w-full text-center text-2xl font-bold tracking-[0.5em] py-3 border-b-2 border-slate-200 focus:border-slate-800 outline-none bg-transparent"
+                    placeholder="••••••" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6)">
+            </div>
+
+            <button onclick="submitCPIN()"
+                class="w-full bg-slate-800 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-slate-700 transition mb-3">
+                <i class="fa-solid fa-lock-open mr-2"></i> Access
+            </button>
+
+            <button onclick="handleForgotCPIN()" class="text-xs font-bold text-slate-400 hover:text-red-500 transition">
+                Forgot PIN / Reset
+            </button>
+        </div>
+    </div>
+
+    <!-- ACTUAL CONTROL PANEL MODAL (MOVED HERE) -->
+    <div id="control-panel-modal"
+        class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] flex items-center justify-center p-4 fade-in">
+        <div class="bg-white w-full max-w-sm rounded-[32px] shadow-2xl overflow-hidden">
+            <div class="bg-slate-800 p-6 flex justify-between items-center text-white">
+                <div>
+                    <h3 class="text-lg font-bold">Control Panel</h3>
+                    <p class="text-xs text-slate-400">Restricted Owner Settings</p>
+                </div>
+                <button onclick="closeRealControlPanel()"
+                    class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-6">
+                <div class="p-5 rounded-2xl border border-slate-100 bg-slate-50 mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-xs font-bold text-slate-500 uppercase">System Config</span>
+                        <div class="flex items-center gap-2">
+                            <span
+                                class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">ACTIVE</span>
+                            <button onclick="toggleConfigEdit()" id="btn-config-edit"
+                                class="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition">EDIT</button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Owner Name</label>
+                            <input type="text" id="conf-owner"
+                                class="w-full text-sm font-bold text-slate-700 border-b border-slate-200 py-1 outline-none bg-transparent"
+                                disabled>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">OT Rate
+                                    /Hr</label>
+                                <input type="number" id="conf-ot"
+                                    class="w-full text-sm font-bold text-slate-700 border-b border-slate-200 py-1 outline-none bg-transparent"
+                                    disabled>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">NPL
+                                    Fine</label>
+                                <input type="number" id="conf-npl"
+                                    class="w-full text-sm font-bold text-slate-700 border-b border-slate-200 py-1 outline-none bg-transparent"
+                                    disabled>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Attn. Bonus</label>
+                            <input type="number" id="conf-bonus"
+                                class="w-full text-sm font-bold text-slate-700 border-b border-slate-200 py-1 outline-none bg-transparent"
+                                disabled>
+                        </div>
+                    </div>
+
+                    <button onclick="saveConfig()" id="btn-config-save"
+                        class="hidden w-full mt-4 bg-indigo-600 text-white py-3 rounded-xl text-sm font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition">
+                        <i class="fa-solid fa-floppy-disk mr-2"></i> Save Changes
+                    </button>
+                </div>
+
+                <div class="p-4 rounded-xl bg-red-50 border border-red-100">
+                    <p class="text-xs font-bold text-red-400 uppercase tracking-wider mb-3">Danger Zone</p>
+                    <button onclick="factoryReset()"
+                        class="w-full text-left p-3 rounded-lg bg-white border border-red-100 hover:border-red-300 transition flex items-center gap-3 group">
+                        <i class="fa-solid fa-triangle-exclamation text-red-500"></i>
+                        <div>
+                            <p class="font-bold text-red-600 text-xs">Factory Reset</p>
+                            <p class="text-[9px] text-red-300">Wipe all data & settings</p>
+                        </div>
+                    </button>
+                    <button onclick="resetCPINonly()"
+                        class="w-full text-left p-3 mt-2 rounded-lg bg-white border border-red-100 hover:border-red-300 transition flex items-center gap-3 group">
+                        <i class="fa-solid fa-key text-red-400"></i>
+                        <div>
+                            <p class="font-bold text-slate-600 text-xs">Reset CPIN</p>
+                            <p class="text-[9px] text-slate-400">Clear PIN security</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="details-modal"
+        class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden h-[80vh] flex flex-col">
             <div class="bg-slate-800 text-white p-4 flex justify-between items-center shrink-0">
                 <h3 class="text-lg font-bold">Monthly Wage Summary</h3>
-                <button onclick="toggleDetailsModal()" class="hover:text-slate-300"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="toggleDetailsModal()" class="hover:text-slate-300"><i
+                        class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-4 bg-slate-50 border-b border-slate-200 shrink-0">
                 <div class="flex items-center gap-3">
                     <label class="text-sm font-bold text-slate-600">Select Month:</label>
-                    <input type="month" id="details-month" class="border border-slate-300 rounded-lg px-3 py-1 text-sm outline-none focus:border-indigo-500" onchange="renderDetailsSummary()">
+                    <input type="month" id="details-month"
+                        class="border border-slate-300 rounded-lg px-3 py-1 text-sm outline-none focus:border-indigo-500"
+                        onchange="renderDetailsSummary()">
                 </div>
             </div>
             <div class="p-6 overflow-y-auto flex-1" id="details-modal-content"></div>
@@ -802,43 +1133,56 @@
         </div>
     </div>
 
-    <div id="add-staff-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm p-4">
+    <div id="add-staff-modal"
+        class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm p-4">
         <div class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-md">
             <h3 class="text-xl font-bold mb-4">New Employee</h3>
-            <input type="text" id="new-staff-name" placeholder="Full Name" class="w-full mb-3 p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
-            <div class="flex items-center border rounded-lg mb-3 overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500 bg-white">
+            <input type="text" id="new-staff-name" placeholder="Full Name"
+                class="w-full mb-3 p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+            <div
+                class="flex items-center border rounded-lg mb-3 overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500 bg-white">
                 <div class="bg-slate-100 px-3 py-3 border-r text-slate-500 font-bold text-sm">+91</div>
-                <input type="tel" id="new-staff-phone" placeholder="9876543210" maxlength="10" class="w-full p-3 outline-none text-slate-700" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)">
+                <input type="tel" id="new-staff-phone" placeholder="9876543210" maxlength="10"
+                    class="w-full p-3 outline-none text-slate-700"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)">
             </div>
             <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Work Type</label>
-            <select id="new-staff-type" onchange="updateRoleOptions()" class="w-full mb-4 p-3 border rounded-lg bg-slate-50 focus:ring-2 focus:ring-indigo-500 outline-none">
+            <select id="new-staff-type" onchange="updateRoleOptions()"
+                class="w-full mb-4 p-3 border rounded-lg bg-slate-50 focus:ring-2 focus:ring-indigo-500 outline-none">
                 <option value="timings">Based on Timings (Salary)</option>
                 <option value="pcs">Based on Pcs (Piece Work)</option>
             </select>
             <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Role</label>
-            
-            <select id="new-staff-role" onchange="checkCustomRole()" class="w-full mb-2 p-3 border rounded-lg bg-slate-50 focus:ring-2 focus:ring-indigo-500 outline-none"></select>
-            
-            <input type="text" id="new-staff-role-custom" placeholder="Enter Role Name" class="hidden w-full mb-4 p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none animate-fade-in-up">
-            
+
+            <select id="new-staff-role" onchange="checkCustomRole()"
+                class="w-full mb-2 p-3 border rounded-lg bg-slate-50 focus:ring-2 focus:ring-indigo-500 outline-none"></select>
+
+            <input type="text" id="new-staff-role-custom" placeholder="Enter Role Name"
+                class="hidden w-full mb-4 p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none animate-fade-in-up">
+
             <div class="mb-2"></div>
             <div class="flex gap-2">
-                <button onclick="toggleAddStaffModal()" class="flex-1 py-2 bg-slate-100 rounded-lg hover:bg-slate-200 transition">Cancel</button>
-                <button onclick="saveNewStaff()" class="flex-1 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">Save & View</button>
+                <button onclick="toggleAddStaffModal()"
+                    class="flex-1 py-2 bg-slate-100 rounded-lg hover:bg-slate-200 transition">Cancel</button>
+                <button onclick="saveNewStaff()"
+                    class="flex-1 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">Save &
+                    View</button>
             </div>
         </div>
     </div>
 
-    <div id="advance-modal" class="hidden fixed inset-0 bg-slate-900/50 z-[60] flex items-center justify-center backdrop-blur-sm p-4 fade-in">
+    <div id="advance-modal"
+        class="hidden fixed inset-0 bg-slate-900/50 z-[60] flex items-center justify-center backdrop-blur-sm p-4 fade-in">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
             <div class="bg-slate-50 p-4 border-b border-slate-200 flex justify-between items-center">
                 <div>
                     <h3 class="font-bold text-slate-700">Advance History</h3>
                     <p class="text-xs text-slate-400" id="adv-modal-month">loading...</p>
                 </div>
-                <button onclick="closeAdvanceModal()" class="text-slate-400 hover:text-slate-700 transition"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <button onclick="closeAdvanceModal()" class="text-slate-400 hover:text-slate-700 transition"><i
+                        class="fa-solid fa-xmark text-lg"></i></button>
             </div>
-            
+
             <div class="p-0 max-h-[300px] overflow-y-auto">
                 <table class="w-full text-sm text-left">
                     <thead class="bg-slate-50 text-xs uppercase text-slate-500 font-bold sticky top-0">
@@ -850,25 +1194,30 @@
                         </tr>
                     </thead>
                     <tbody id="advance-list-body" class="divide-y divide-slate-100">
-                        </tbody>
+                    </tbody>
                 </table>
-                <div id="adv-empty-msg" class="text-center p-6 text-slate-400 text-xs italic hidden">No advances taken this month.</div>
+                <div id="adv-empty-msg" class="text-center p-6 text-slate-400 text-xs italic hidden">No advances taken
+                    this month.</div>
             </div>
 
             <div class="p-4 bg-slate-50 border-t border-slate-200">
                 <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Add New Advance</p>
                 <div class="flex gap-2">
-                    <input type="date" id="adv-new-date" class="w-1/3 p-2 border rounded-lg text-xs outline-none focus:border-indigo-500">
-                    <input type="number" id="adv-new-amount" placeholder="₹ Amount" class="w-1/3 p-2 border rounded-lg text-xs outline-none focus:border-indigo-500 font-bold text-slate-700">
-                    <button onclick="addAdvanceEntry()" class="w-10 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition shadow-sm">
+                    <input type="date" id="adv-new-date"
+                        class="w-1/3 p-2 border rounded-lg text-xs outline-none focus:border-indigo-500">
+                    <input type="number" id="adv-new-amount" placeholder="₹ Amount"
+                        class="w-1/3 p-2 border rounded-lg text-xs outline-none focus:border-indigo-500 font-bold text-slate-700">
+                    <button onclick="addAdvanceEntry()"
+                        class="w-10 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition shadow-sm">
                         <i class="fa-solid fa-plus"></i>
                     </button>
                 </div>
                 <div class="mt-2">
-                        <input type="text" id="adv-new-note" placeholder="Reason (Optional)" class="w-full p-2 border rounded-lg text-xs outline-none focus:border-indigo-500">
+                    <input type="text" id="adv-new-note" placeholder="Reason (Optional)"
+                        class="w-full p-2 border rounded-lg text-xs outline-none focus:border-indigo-500">
                 </div>
             </div>
-            
+
             <div class="p-4 bg-indigo-50 flex justify-between items-center border-t border-indigo-100">
                 <span class="text-xs font-bold text-indigo-800 uppercase">Total Advance</span>
                 <span class="text-xl font-bold text-indigo-700" id="adv-modal-total">₹ 0</span>
@@ -896,4 +1245,5 @@
     <script src="js/main.js"></script>
 
 </body>
+
 </html>
