@@ -16,6 +16,7 @@ window.handleGlobalKeydown = (e) => {
             case '5': switchTab('history'); break;
             case '6': switchTab('accounts'); break;
             case '7': switchTab('inventory'); break;
+            case '8': switchTab('catalogue'); break;
             case 'n': case 'N': e.preventDefault(); handleAddShortcut(); break;
         }
     }
@@ -136,6 +137,8 @@ const performSwitchTab = (id) => {
         if (window.renderAccounts) window.renderAccounts();
     }
     if (id === 'inventory' && window.renderInventory) window.renderInventory();
+
+    if (id === 'catalogue' && window.initCatalogue) window.initCatalogue();
 
     window.closeSidebarOnMobile();
 };

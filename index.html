@@ -12,6 +12,7 @@
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&family=Roboto:wght@400;500;700&display=swap"
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/catalogue.js"></script>
 
     <link rel="stylesheet" href="css/style.css">
     <link rel="manifest" href="manifest.json">
@@ -99,6 +100,13 @@
                     id="nav-home">
                     <i class="fa-solid fa-house w-5"></i> <span class="nav-label">Home</span> <span class="nav-label ml-auto text-[10px] opacity-50">Alt+1</span>
                 </button>
+
+                <button onclick="switchTab('catalogue')"
+                    class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3"
+                    id="nav-catalogue">
+                    <i class="fa-solid fa-book-open w-5"></i> <span class="nav-label">Catalogue</span> <span class="nav-label ml-auto text-[10px] opacity-50">Alt+8</span>
+                </button>
+
 
                 <button onclick="switchTab('dashboard')"
                     class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3"
@@ -308,37 +316,236 @@
                 </div>
 
                 <div id="holiday-menu-modal"
-                    class="hidden absolute top-0 left-0 right-0 bottom-0 bg-white/95 backdrop-blur-sm z-50 flex flex-col items-center justify-center m-4 rounded-3xl border-4 border-indigo-50 shadow-2xl">
-                    <h4 class="text-2xl font-bold text-slate-800 mb-1" id="holiday-modal-date"></h4>
-                    <p class="text-slate-400 text-sm mb-6 font-medium uppercase tracking-wider">Owner Actions</p>
-
-                    <div id="holiday-action-buttons" class="w-full max-w-xs space-y-3"></div>
-
-                    <div id="holiday-grant-form"
-                        class="hidden w-full max-w-xs p-4 bg-indigo-50 rounded-xl border border-indigo-100 mt-4 animate-fade-in-up">
-                        <label class="block text-xs font-bold text-indigo-600 uppercase mb-1">Title</label>
-                        <input type="text" id="holiday-title-input"
-                            class="w-full p-2 border rounded-lg bg-white text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            placeholder="e.g. Dasara">
-
-                        <label class="block text-xs font-bold text-indigo-600 uppercase mb-1">Type</label>
-                        <select id="holiday-type-select"
-                            class="w-full p-2 border rounded-lg bg-white text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <option value="HOLIDAY">Holiday</option>
-                            <option value="PAID_LEAVE">No Work (Paid)</option>
-                        </select>
-
-                        <button onclick="saveHolidayAnnouncement()"
-                            class="w-full bg-emerald-600 text-white py-2 rounded-lg font-bold hover:bg-emerald-700 transition shadow-md">Save
-                            Changes</button>
+                    class="hidden fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+                    
+                    <!-- Inner Card -->
+                    <div class="bg-white p-8 rounded-[32px] shadow-2xl w-full max-w-sm border border-slate-100 relative animate-fade-in-up flex flex-col items-center">
+                        <h4 class="text-2xl font-bold text-slate-800 mb-1" id="holiday-modal-date"></h4>
+                        <p class="text-slate-400 text-sm mb-6 font-medium uppercase tracking-wider">Owner Actions</p>
+    
+                        <div id="holiday-action-buttons" class="w-full space-y-3"></div>
+    
+                        <div id="holiday-grant-form"
+                            class="hidden w-full p-4 bg-indigo-50 rounded-xl border border-indigo-100 mt-4 animate-fade-in-up">
+                            <label class="block text-xs font-bold text-indigo-600 uppercase mb-1">Title</label>
+                            <input type="text" id="holiday-title-input"
+                                class="w-full p-2 border rounded-lg bg-white text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                placeholder="e.g. Dasara">
+    
+                            <label class="block text-xs font-bold text-indigo-600 uppercase mb-1">Type</label>
+                            <select id="holiday-type-select"
+                                class="w-full p-2 border rounded-lg bg-white text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="HOLIDAY">Holiday</option>
+                                <option value="PAID_LEAVE">No Work (Paid)</option>
+                            </select>
+    
+                            <button onclick="saveHolidayAnnouncement()"
+                                class="w-full bg-emerald-600 text-white py-2 rounded-lg font-bold hover:bg-emerald-700 transition shadow-md">Save
+                                Changes</button>
+                        </div>
+    
+                        <button onclick="closeHolidayMenu()"
+                            class="mt-6 text-slate-400 font-bold hover:text-slate-600 transition text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-xmark"></i> Close
+                        </button>
                     </div>
-
-                    <button onclick="closeHolidayMenu()"
-                        class="mt-6 text-slate-400 font-bold hover:text-slate-600 transition text-sm flex items-center gap-2">
-                        <i class="fa-solid fa-xmark"></i> Close
-                    </button>
                 </div>
 
+            </div>
+
+            <div id="catalogue" class="tab-content max-w-7xl mx-auto fade-in">
+                <div id="catalogue-list-view">
+                <!-- Header Section -->
+                <div class="text-center mb-12 mt-8">
+                    <h1 class="text-4xl md:text-5xl font-normal text-slate-800 mb-6 tracking-tight">
+                        Production Catalogue<br>& Specifications
+                    </h1>
+                    <p class="text-slate-500 max-w-2xl mx-auto text-lg mb-8 leading-relaxed">
+                        Reference guide for manufacturing standards. Access detailed composition, stitching, and finishing specifications to ensure production consistency.
+                    </p>
+
+                    <!-- Search Bar -->
+                    <div class="max-w-2xl mx-auto mb-8 relative">
+                        <div class="relative">
+                            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
+                            <input type="text" placeholder="Search catalog" 
+                                class="w-full bg-slate-100 border-none rounded-full py-4 pl-12 pr-6 text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm transition hover:bg-white hover:shadow-md">
+                            <button class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-2">
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filter Chips -->
+                    <div class="flex flex-wrap justify-center gap-3 relative z-40">
+                        <div class="relative group">
+                            <button id="filter-btn-fabric" onclick="toggleFilterDropdown('fabric')" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-2 shadow-sm transition">
+                                Fabric <i class="fa-solid fa-caret-down text-xs"></i>
+                            </button>
+                            <ul id="filter-dropdown-fabric" class="hidden absolute top-12 left-0 w-48 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 max-h-60 overflow-y-auto"></ul>
+                        </div>
+                        
+                        <div class="relative group">
+                            <button id="filter-btn-pattern" onclick="toggleFilterDropdown('pattern')" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-2 shadow-sm transition">
+                                Pattern <i class="fa-solid fa-caret-down text-xs"></i>
+                            </button>
+                            <ul id="filter-dropdown-pattern" class="hidden absolute top-12 left-0 w-48 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 max-h-60 overflow-y-auto"></ul>
+                        </div>
+
+                        <div class="relative group">
+                            <button id="filter-btn-brand" onclick="toggleFilterDropdown('brand')" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-2 shadow-sm transition">
+                                Brand <i class="fa-solid fa-caret-down text-xs"></i>
+                            </button>
+                            <ul id="filter-dropdown-brand" class="hidden absolute top-12 left-0 w-48 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 max-h-60 overflow-y-auto"></ul>
+                        </div>
+
+                        <div class="relative group">
+                            <button id="filter-btn-fitting" onclick="toggleFilterDropdown('fitting')" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-2 shadow-sm transition">
+                                Fitting <i class="fa-solid fa-caret-down text-xs"></i>
+                            </button>
+                            <ul id="filter-dropdown-fitting" class="hidden absolute top-12 left-0 w-48 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 max-h-60 overflow-y-auto"></ul>
+                        </div>
+
+                         <div class="relative group">
+                            <button id="filter-btn-duration" onclick="toggleFilterDropdown('duration')" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-2 shadow-sm transition">
+                                Duration <i class="fa-solid fa-caret-down text-xs"></i>
+                            </button>
+                            <ul id="filter-dropdown-duration" class="hidden absolute top-12 left-0 w-48 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 max-h-60 overflow-y-auto"></ul>
+                        </div>
+                    </div>
+
+                    <div id="catalogue-result-count" class="mt-8 text-left text-slate-500 font-medium">
+                        <!-- Count will be injected by JS -->
+                    </div>
+                </div>
+
+                <!-- Actions Row -->
+                <div class="flex justify-between items-center max-w-7xl mx-auto mb-6 px-2">
+                    <h2 class="text-2xl font-bold text-slate-800">My Catalogue</h2>
+                    <button onclick="document.getElementById('catalogue-upload').click()" 
+                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-full font-bold shadow-lg transition flex items-center gap-2">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Upload Image
+                    </button>
+                    <input type="file" id="catalogue-upload" class="hidden" accept="image/*" onchange="handleCatalogueUpload(this)">
+                </div>
+
+                <!-- Empty State -->
+                <div id="catalogue-empty" class="text-center py-20 hidden">
+                    <div class="w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fa-regular fa-images text-4xl text-indigo-300"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">No images yet</h3>
+                    <p class="text-slate-500 max-w-md mx-auto mb-8">Upload images of your products or designs to build your visual catalogue.</p>
+                </div>
+
+                <!-- Dynamic Grid -->
+                <div id="catalogue-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+                    <!-- Cards will be injected here by JS -->
+                </div>
+            </div>
+
+
+
+            <!-- Detail View (Hidden by default) -->
+            <div id="catalogue-detail-view" class="hidden min-h-screen flex flex-col pb-20">
+                <!-- Header (Back & Menu) -->
+                <div class="flex items-center justify-between mb-2 pt-4 relative z-10">
+                    <button onclick="closeCatalogueDetail()" class="text-slate-500 hover:text-slate-800 transition flex items-center gap-2 font-medium">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Catalog
+                    </button>
+                    <div class="relative">
+                        <button onclick="toggleCatalogueSettings()" class="w-10 h-10 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-500 transition">
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                        </button>
+                        <!-- Dropdown Menu -->
+                        <div id="catalogue-settings-menu" class="hidden absolute right-0 top-12 w-48 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-20">
+                            <button onclick="enableEditMode()" class="w-full text-left px-4 py-3 hover:bg-slate-50 text-slate-700 flex items-center gap-3 transition text-sm">
+                                <i class="fa-solid fa-pen-to-square"></i> Edit Details
+                            </button>
+                            <button onclick="renameCatalogueItem()" class="w-full text-left px-4 py-3 hover:bg-slate-50 text-slate-700 flex items-center gap-3 transition text-sm">
+                                <i class="fa-solid fa-pen"></i> Rename
+                            </button>
+                            <button onclick="deleteActiveCatalogueItem()" class="w-full text-left px-4 py-3 hover:bg-red-50 text-red-600 flex items-center gap-3 transition text-sm">
+                                <i class="fa-solid fa-trash"></i> Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Centered Title -->
+                <h1 id="detail-title" class="text-3xl md:text-4xl font-normal text-slate-800 mb-8 text-center tracking-tight">Item Name</h1>
+
+                <!-- Single Panel Content -->
+                <div class="bg-white rounded-[40px] shadow-sm border border-slate-100 p-8 md:p-12">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 align-top">
+                        
+                        <!-- Left: Large Image -->
+                        <div class="rounded-[32px] overflow-hidden bg-slate-50 h-[500px] flex items-center justify-center border border-slate-100 relative group">
+                            <img id="detail-image" src="" class="max-w-full max-h-full object-contain" alt="Catalogue Item">
+                        </div>
+
+                        <!-- Right: Details Form -->
+                        <div class="flex flex-col">
+                            <h2 class="text-2xl font-bold text-slate-800 mb-6">Product Details</h2>
+                            
+                            <div class="mb-8">
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Description</label>
+                                <textarea id="detail-description" disabled class="detail-input w-full h-32 bg-slate-50 border-none rounded-2xl p-4 text-slate-600 focus:ring-2 focus:ring-indigo-500/20 outline-none resize-none transition disabled:bg-transparent disabled:cursor-default disabled:resize-none" 
+                                    placeholder="Add a description..."></textarea>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-6 mb-8">
+                                <!-- Fabric -->
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Fabric</label>
+                                    <input type="text" id="detail-fabric" disabled class="detail-input w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500/20 outline-none transition disabled:bg-transparent disabled:cursor-default" 
+                                        placeholder="e.g. Cotton 100%">
+                                </div>
+
+                                <!-- Brand -->
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Brand</label>
+                                    <input type="text" id="detail-brand" disabled class="detail-input w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500/20 outline-none transition disabled:bg-transparent disabled:cursor-default" 
+                                        placeholder="e.g. Levi's">
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-6">
+                                    <!-- Fitting -->
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Fitting</label>
+                                        <select id="detail-fitting" disabled aria-label="Fitting" class="detail-input w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500/20 outline-none transition appearance-none disabled:bg-transparent disabled:cursor-default">
+                                            <option value="">Select...</option>
+                                            <option value="Regular">Regular</option>
+                                            <option value="Slim">Slim</option>
+                                            <option value="Loose">Loose</option>
+                                            <option value="Oversized">Oversized</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Pattern -->
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Pattern</label>
+                                        <input type="text" id="detail-pattern" disabled class="detail-input w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500/20 outline-none transition disabled:bg-transparent disabled:cursor-default" 
+                                            placeholder="e.g. Solid">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Date (Editable) -->
+                            <div class="mt-auto pt-6 border-t border-slate-100 flex items-center justify-between h-16">
+                                <div class="w-full max-w-[200px]">
+                                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Date</label>
+                                    <input type="date" id="detail-date" disabled aria-label="Date" class="detail-input w-full bg-transparent border-none p-0 text-slate-700 font-medium outline-none focus:ring-0 disabled:text-slate-700 disabled:opacity-100">
+                                </div>
+                                <button id="save-catalogue-btn" onclick="saveCatalogueDetail()" class="hidden px-6 py-2 bg-indigo-600 text-white rounded-full text-sm font-bold hover:bg-indigo-700 transition shadow-md animate-fade-in-up">
+                                    Save Changes
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
             </div>
 
             <div id="dashboard" class="tab-content max-w-7xl mx-auto fade-in">
@@ -1210,6 +1417,29 @@
                 <span class="text-xs font-bold text-indigo-800 uppercase">Total Advance</span>
                 <span class="text-xl font-bold text-indigo-700" id="adv-modal-total">₹ 0</span>
             </div>
+        </div>
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div id="catalogue-lightbox" class="fixed inset-0 z-[100] bg-black/95 hidden flex flex-col transition-opacity duration-300 opacity-0">
+        <!-- Toolbar -->
+        <div class="absolute top-6 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-white/10 backdrop-blur-md px-6 py-3 rounded-full border border-white/20 z-50">
+            <button onclick="catalogueZoom(-0.2)" class="text-white hover:text-indigo-400 text-xl w-8 h-8 flex items-center justify-center transition" title="Zoom Out">
+                <i class="fa-solid fa-minus"></i>
+            </button>
+            <span id="lightbox-zoom-level" class="text-white/80 font-mono text-sm w-12 text-center">100%</span>
+            <button onclick="catalogueZoom(0.2)" class="text-white hover:text-indigo-400 text-xl w-8 h-8 flex items-center justify-center transition" title="Zoom In">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+            <div class="w-px h-6 bg-white/20 mx-2"></div>
+            <button onclick="closeLightbox()" class="text-white hover:text-red-400 text-xl w-8 h-8 flex items-center justify-center transition" title="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Image Container -->
+        <div class="flex-1 flex items-center justify-center overflow-hidden p-10 cursor-move" onmousedown="startDrag(event)">
+            <img id="lightbox-image" src="" class="max-w-[90vw] max-h-[90vh] object-contain transition-transform duration-200 origin-center" draggable="false">
         </div>
     </div>
 
