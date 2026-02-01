@@ -83,21 +83,21 @@ const performSwitchTab = (id) => {
 
     // 2. Desktop Sidebar Styling
     document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('bg-indigo-50', 'text-indigo-600', 'ring-1', 'ring-indigo-100');
-        btn.classList.add('text-slate-500');
+        btn.classList.remove('bg-blue-50', 'text-blue-700', 'font-bold'); // Reset new styles
+        btn.classList.add('text-slate-500', 'font-medium');
     });
 
     const btnId = 'nav-' + id;
     const btn = document.getElementById(btnId);
     if (btn) {
-        btn.classList.remove('text-slate-500');
-        btn.classList.add('bg-indigo-50', 'text-indigo-600', 'ring-1', 'ring-indigo-100');
+        btn.classList.remove('text-slate-500', 'font-medium');
+        btn.classList.add('bg-blue-50', 'text-blue-700', 'font-bold'); // #e8f0fe bg, #1a73e8 text approx
     }
 
     // 3. Mobile Bottom Nav Styling (NEW ADDITION)
     document.querySelectorAll('.nav-btn-mobile').forEach(mb => {
         // Reset to default grey
-        mb.classList.remove('text-indigo-600', 'bg-indigo-50');
+        mb.classList.remove('text-blue-700', 'bg-blue-50');
         mb.classList.add('text-slate-400');
     });
 
@@ -106,7 +106,7 @@ const performSwitchTab = (id) => {
     if (mobileBtn) {
         // Highlight active button (Blue text + light blue background)
         mobileBtn.classList.remove('text-slate-400');
-        mobileBtn.classList.add('text-indigo-600', 'bg-indigo-50');
+        mobileBtn.classList.add('text-blue-700', 'bg-blue-50');
     }
 
     // 4. Trigger specific renders
@@ -150,6 +150,45 @@ window.switchTab = (id) => {
 
 window.toggleSidebar = () => {
     document.getElementById('sidebar').classList.toggle('-translate-x-full');
+};
+
+window.toggleDesktopSidebar = () => {
+    console.log("Toggle Sidebar Clicked");
+    const sidebar = document.getElementById('sidebar');
+    const labels = document.querySelectorAll('.nav-label');
+    const logoText = document.getElementById('sidebar-logo-text');
+
+    // Toggle Width
+    if (sidebar.classList.contains('w-64')) {
+        // COLLAPSE
+        console.log("Collapsing sidebar...");
+        sidebar.classList.remove('w-64');
+        sidebar.classList.add('w-20');
+
+        // Hide Text
+        labels.forEach(el => el.classList.add('hidden'));
+        if (logoText) logoText.closest('div').classList.add('hidden'); // Hide the wrapper div
+
+        // Adjust elements for centered icons
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.classList.add('justify-center');
+        });
+
+    } else {
+        // EXPAND
+        console.log("Expanding sidebar...");
+        sidebar.classList.remove('w-20');
+        sidebar.classList.add('w-64');
+
+        // Show Text
+        labels.forEach(el => el.classList.remove('hidden'));
+        if (logoText) logoText.closest('div').classList.remove('hidden');
+
+        // Restore elements
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.classList.remove('justify-center');
+        });
+    }
 };
 
 window.closeSidebarOnMobile = () => {

@@ -142,10 +142,11 @@ thead .sticky-col-left { background-color: #f8fafc; z-index: 30; }
 }
 
 /* Make the dashboard cards float when hovered */
-.bg-white.rounded-2xl {
+/* Make the dashboard cards float when hovered */
+.bg-white.rounded-2xl, .bg-white.rounded-\[32px\] {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.bg-white.rounded-2xl:hover {
+.bg-white.rounded-2xl:hover, .bg-white.rounded-\[32px\]:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
     border-color: #6366f1; /* Indigo-500 highlight */
