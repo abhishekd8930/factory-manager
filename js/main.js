@@ -4,19 +4,21 @@ console.log("Main Controller Loaded");
 
 window.handleGlobalKeydown = (e) => {
     // Ignore shortcuts if on login screen
-    if (document.getElementById('login-view').classList.contains('hidden') === false) return;
+    // Ignore shortcuts if on login screen
+    const loginView = document.getElementById('login-view');
+    if (loginView && !loginView.classList.contains('hidden')) return;
 
     // Tab Switching (Alt + 1-6)
     if (e.altKey) {
         switch (e.key) {
-            case '1': switchTab('home'); break;
-            case '2': switchTab('dashboard'); break;
-            case '3': switchTab('staff'); break;
-            case '4': switchTab('attendance'); break;
-            case '5': switchTab('history'); break;
-            case '6': switchTab('accounts'); break;
-            case '7': switchTab('inventory'); break;
-            case '8': switchTab('catalogue'); break;
+            case '1': window.location.hash = '#/home'; break;
+            case '2': window.location.hash = '#/dashboard'; break;
+            case '3': window.location.hash = '#/staff'; break;
+            case '4': window.location.hash = '#/attendance'; break;
+            case '5': window.location.hash = '#/history'; break;
+            case '6': window.location.hash = '#/accounts'; break;
+            case '7': window.location.hash = '#/inventory'; break;
+            case '8': window.location.hash = '#/catalogue'; break;
             case 'n': case 'N': e.preventDefault(); handleAddShortcut(); break;
         }
     }
@@ -76,78 +78,15 @@ function moveFocusToNextInput(currentInput) {
 
 // Define the core switch function first
 // Define the core switch function first
-const performSwitchTab = (id) => {
-    // 1. Hide all tabs, Show target tab
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-    const target = document.getElementById(id);
-    if (target) target.classList.add('active');
+// 2. NAVIGATION LOGIC (SPA Adapter)
 
-    // 2. Desktop Sidebar Styling
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('bg-blue-50', 'text-blue-700', 'font-bold'); // Reset new styles
-        btn.classList.add('text-slate-500', 'font-medium');
-    });
-
-    const btnId = 'nav-' + id;
-    const btn = document.getElementById(btnId);
-    if (btn) {
-        btn.classList.remove('text-slate-500', 'font-medium');
-        btn.classList.add('bg-blue-50', 'text-blue-700', 'font-bold'); // #e8f0fe bg, #1a73e8 text approx
-    }
-
-    // 3. Mobile Bottom Nav Styling (NEW ADDITION)
-    document.querySelectorAll('.nav-btn-mobile').forEach(mb => {
-        // Reset to default grey
-        mb.classList.remove('text-blue-700', 'bg-blue-50');
-        mb.classList.add('text-slate-400');
-    });
-
-    const mobileBtnId = 'mobile-nav-' + id;
-    const mobileBtn = document.getElementById(mobileBtnId);
-    if (mobileBtn) {
-        // Highlight active button (Blue text + light blue background)
-        mobileBtn.classList.remove('text-slate-400');
-        mobileBtn.classList.add('text-blue-700', 'bg-blue-50');
-    }
-
-    // 4. Trigger specific renders
-    if (id === 'home' && window.renderHome) window.renderHome();
-    if (id === 'dashboard' && window.renderCharts) window.renderCharts();
-    if (id === 'staff') {
-        if (window.closeLedgerView) window.closeLedgerView();
-        if (window.renderStaffGrid) window.renderStaffGrid();
-    }
-    if (id === 'attendance') {
-        const attDate = document.getElementById('attendance-date');
-        if (attDate && !attDate.value) attDate.value = state.today;
-
-        const now = new Date();
-        const yyyy = now.getFullYear();
-        const mm = String(now.getMonth() + 1).padStart(2, '0');
-        document.getElementById('attendance-month').value = `${yyyy}-${mm}`;
-
-        const isDaily = document.getElementById('btn-att-daily').classList.contains('bg-white');
-        if (isDaily && window.renderAttendanceView) window.renderAttendanceView();
-        else if (window.renderAttendanceBook) window.renderAttendanceBook();
-    }
-    if (id === 'history' && window.renderHistoryPage) window.renderHistoryPage();
-    if (id === 'accounts') {
-        const transDate = document.getElementById('trans-date');
-        if (transDate) transDate.value = state.today;
-        if (window.renderAccounts) window.renderAccounts();
-    }
-    if (id === 'inventory' && window.renderInventory) window.renderInventory();
-
-    if (id === 'catalogue' && window.initCatalogue) window.initCatalogue();
-
-    window.closeSidebarOnMobile();
-};
-
-// Helper wrapper to save state
 window.switchTab = (id) => {
-    localStorage.setItem('srf_last_tab', id);
-    performSwitchTab(id);
+    // Compatibility wrapper for legacy calls
+    window.location.hash = '#/' + id;
 };
+
+// performSwitchTab is removed as Router handles rendering.
+
 
 // --- 3. SIDEBAR LOGIC ---
 
@@ -431,33 +370,14 @@ if (settingsModal) {
 
 // --- 5. INITIALIZATION ---
 
+// --- 5. INITIALIZATION ---
+
 document.addEventListener('DOMContentLoaded', () => {
-    const attDate = document.getElementById('attendance-date');
-    if (attDate) attDate.value = state.today;
-
-    // RESTORE SESSION
-    const lastTab = localStorage.getItem('srf_last_tab') || 'home';
-    const lastEmpId = localStorage.getItem('srf_last_emp_id');
-
-    // Use internal function to avoid wiping 'srf_last_emp_id' which switchTab might do indirectly via closeLedgerView
-    // Actually, switchTab calls closeLedgerView which removes the ID.
-    // FIX: We manually restore tab, THEN if it was staff+ledger, we re-open it.
-
-    // 1. Render the basic tab view
-    performSwitchTab(lastTab);
-
-    // 2. If we were deep inside a ledger, restore that specifically
-    if (lastTab === 'staff' && lastEmpId) {
-        // Wait for grid to render
-        setTimeout(() => {
-            if (window.openLedger) window.openLedger(lastEmpId, false);
-        }, 50);
+    // Legacy initialization moved to Router or handled by view rendering.
+    // Keeping auth check if needed
+    if (window.checkLogin) {
+        window.checkLogin();
     }
-
-    if (window.addLedgerRow) window.addLedgerRow();
-    // In js/main.js inside performSwitchTab(id):
-
-    if (id === 'inventory' && window.renderInventory) window.renderInventory();
 });
 
 // ==========================================
@@ -549,34 +469,4 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.checkLogin) {
         window.checkLogin();
     }
-
-    // 2. If we are on the home screen, force a calendar render
-    const homeGrid = document.getElementById('home-calendar-grid');
-    if (homeGrid && window.renderHome) {
-        window.renderHome();
-    }
-});
-// ==========================================
-// 3. SYSTEM INITIALIZATION (Race Condition Fix)
-// ==========================================
-
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("DOM Fully Loaded. Initializing App Components...");
-
-    // 1. Force a delay-render for the calendar
-    // This solves the issue where the white box exists but dates are missing
-    setTimeout(() => {
-        if (typeof window.renderHomeCalendar === 'function') {
-            console.log("Rendering Calendar...");
-            window.renderHomeCalendar();
-        }
-
-        if (typeof window.renderTodoList === 'function') {
-            window.renderTodoList();
-        }
-
-        if (typeof window.updateGreeting === 'function') {
-            window.updateGreeting();
-        }
-    }, 100); // 100ms delay to ensure HTML paint is complete
 });

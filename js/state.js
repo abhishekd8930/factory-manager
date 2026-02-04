@@ -92,7 +92,9 @@ window.initializeData = async () => {
     if (window.renderStaffGrid) window.renderStaffGrid();
     if (window.renderCharts) window.renderCharts();
     if (window.renderAccounts) window.renderAccounts();
-    if (window.renderTodoList) window.renderTodoList();
+    if (window.renderHome) window.renderHome();
+    if (window.renderAttendanceView) window.renderAttendanceView(); // Fix: Ensure attendance renders
+
     if (window.loadFromCloud) await syncArray('inventoryData', 'srf_inventory', 'inventoryData');
     // If a ledger is currently open, re-render it to show merged data
     if (state.currentLedgerEmp && window.renderLedgerTable) {

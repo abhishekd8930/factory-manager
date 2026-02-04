@@ -3,13 +3,13 @@ console.log("Home Module Loaded");
 // --- INITIALIZATION ---
 const TODO_STORAGE_KEY = 'srf_owner_todos';
 
-if (!window.state) window.state = {}; 
+if (!window.state) window.state = {};
 if (!window.state.ownerTodos) {
     window.state.ownerTodos = JSON.parse(localStorage.getItem(TODO_STORAGE_KEY) || '[]');
 }
 
 // Date State Setup
-if (!state.calendarViewDate) state.calendarViewDate = new Date(); 
+if (!state.calendarViewDate) state.calendarViewDate = new Date();
 if (!state.today) state.today = new Date().toISOString().split('T')[0]; // Safety Fix: Ensure state.today exists
 if (!state.selectedTodoDate) state.selectedTodoDate = state.today;
 
@@ -21,7 +21,7 @@ window.state.ownerTodos = window.state.ownerTodos.map(t => {
 
 // --- MAIN RENDER FUNCTION ---
 window.renderHome = () => {
-    if(window.updateGreeting) window.updateGreeting();
+    if (window.updateGreeting) window.updateGreeting();
 
     const today = new Date();
     const yest = new Date(today);
@@ -35,10 +35,10 @@ window.renderHome = () => {
         const m = dateObj.getMonth() + 1;
         const y = dateObj.getFullYear();
         let count = 0;
-        if(state.staffData) {
+        if (state.staffData) {
             state.staffData.forEach(emp => {
                 const lId = `${emp.id}_${y}_${m}`;
-                if (state.staffLedgers && state.staffLedgers[lId] && state.staffLedgers[lId].days[d]) {
+                if (state.staffLedgers && state.staffLedgers[lId] && state.staffLedgers[lId].days && state.staffLedgers[lId].days[d]) {
                     const dayData = state.staffLedgers[lId].days[d];
                     if (dayData.status === 'PRESENT' || (dayData.hours && parseFloat(dayData.hours) > 0)) {
                         count++;
@@ -50,21 +50,21 @@ window.renderHome = () => {
     };
 
     const getProdCount = (dateStr) => {
-        if(!state.historyData) return 0;
+        if (!state.historyData) return 0;
         return state.historyData
             .filter(item => item.fullDate === dateStr && item.type === 'production')
             .reduce((sum, item) => sum + (Number(item.total) || 0), 0);
     };
 
     const getWashCount = (dateStr) => {
-        if(!state.washingData) return 0;
+        if (!state.washingData) return 0;
         return state.washingData
             .filter(item => item.fullDate === dateStr)
             .reduce((sum, item) => sum + (Number(item.total) || 0), 0);
     };
 
     const elStaffT = document.getElementById('stat-staff-today');
-    if(elStaffT) {
+    if (elStaffT) {
         const staffToday = getStaffCount(today);
         const staffYest = getStaffCount(yest);
         const prodToday = getProdCount(todayStr);
@@ -78,22 +78,22 @@ window.renderHome = () => {
         document.getElementById('stat-prod-yest').innerText = prodYest;
         document.getElementById('stat-wash-today').innerText = washToday;
         document.getElementById('stat-wash-yest').innerText = washYest;
-        
+
         localUpdateTrend('staff', staffToday, staffYest);
         localUpdateTrend('prod', prodToday, prodYest);
         localUpdateTrend('wash', washToday, washYest);
     }
-    
+
     // Explicitly call the global render functions
-    if(window.renderHomeCalendar) window.renderHomeCalendar();
-    if(window.renderTodoList) window.renderTodoList();
+    if (window.renderHomeCalendar) window.renderHomeCalendar();
+    if (window.renderTodoList) window.renderTodoList();
 };
 
 function localUpdateTrend(type, current, prev) {
     const el = document.getElementById(`trend-${type}`);
-    if(!el) return;
-    
-    if(current >= prev) {
+    if (!el) return;
+
+    if (current >= prev) {
         const diff = current - prev;
         el.innerHTML = `<i class="fa-solid fa-arrow-trend-up"></i> ${diff} more than yesterday`;
         el.className = "text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full inline-block mt-2";
@@ -123,17 +123,17 @@ window.selectTodoDate = (dateStr) => {
 window.renderHomeCalendar = () => {
     const calendarGrid = document.getElementById('home-calendar-grid');
     const calendarTitle = document.getElementById('home-calendar-title');
-    
+
     // CRITICAL FIX: If element not found, stop immediately to prevent errors
-    if(!calendarGrid) return;
+    if (!calendarGrid) return;
 
     const viewDate = state.calendarViewDate || new Date();
     const year = viewDate.getFullYear();
     const month = viewDate.getMonth();
-    
+
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    
-    if(calendarTitle) {
+
+    if (calendarTitle) {
         calendarTitle.className = "flex justify-between items-center w-full";
         calendarTitle.innerHTML = `
             <button onclick="changeCalendarMonth(-1)" class="w-8 h-8 rounded-full hover:bg-slate-100 text-slate-500 transition"><i class="fa-solid fa-chevron-left"></i></button>
@@ -142,41 +142,41 @@ window.renderHomeCalendar = () => {
         `;
     }
 
-    const firstDay = new Date(year, month, 1).getDay(); 
+    const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
     let html = '';
 
-    for(let i=0; i<firstDay; i++) { html += `<div class="h-10"></div>`; }
+    for (let i = 0; i < firstDay; i++) { html += `<div class="h-10"></div>`; }
 
-    for(let i=1; i<=daysInMonth; i++) {
+    for (let i = 1; i <= daysInMonth; i++) {
         const currentDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-        
+
         const isToday = (currentDateStr === state.today);
         const isSelected = (currentDateStr === state.selectedTodoDate);
         const dayOfWeek = new Date(year, month, i).getDay();
         const isSunday = (dayOfWeek === 0);
-        
+
         let hasHoliday = false;
         let holidayTitle = "";
-        
+
         // Safety Check: Only check holidays if staff data is actually loaded
         if (state.staffData && state.staffData.length > 0) {
-             const firstEmpId = state.staffData[0].id;
-             const lId = `${firstEmpId}_${year}_${month + 1}`;
-             
-             if(state.staffLedgers && state.staffLedgers[lId] && state.staffLedgers[lId].days) {
-                 const dayData = state.staffLedgers[lId].days[i];
-                 if(dayData?.status === 'HOLIDAY' || dayData?.status === 'NPL' || dayData?.status === 'PAID_LEAVE') {
-                     hasHoliday = true;
-                     if(dayData.status === 'PAID_LEAVE') holidayTitle = dayData.holidayTitle || 'Paid Leave';
-                     else holidayTitle = dayData.holidayTitle || 'Holiday';
-                 }
-             }
+            const firstEmpId = state.staffData[0].id;
+            const lId = `${firstEmpId}_${year}_${month + 1}`;
+
+            if (state.staffLedgers && state.staffLedgers[lId] && state.staffLedgers[lId].days) {
+                const dayData = state.staffLedgers[lId].days[i];
+                if (dayData?.status === 'HOLIDAY' || dayData?.status === 'NPL' || dayData?.status === 'PAID_LEAVE') {
+                    hasHoliday = true;
+                    if (dayData.status === 'PAID_LEAVE') holidayTitle = dayData.holidayTitle || 'Paid Leave';
+                    else holidayTitle = dayData.holidayTitle || 'Holiday';
+                }
+            }
         }
-        
+
         let classes = `h-10 flex flex-col items-center justify-center rounded-lg text-sm font-medium transition cursor-pointer relative group select-none`;
-        
+
         if (isSelected) {
             classes += " bg-indigo-600 text-white font-bold shadow-md transform scale-105 z-10";
         } else if (isToday) {
@@ -194,7 +194,7 @@ window.renderHomeCalendar = () => {
                     ondblclick="openHolidayMenu('${currentDateStr}')"
                     title="Click for Tasks, Double-Click for Holiday">
                     <span class="leading-none">${i}</span>
-                    ${hasHoliday ? `<span class="text-[7px] uppercase tracking-tighter leading-none absolute bottom-0.5 truncate w-full px-1">${holidayTitle.substring(0,8)}</span>` : ''}
+                    ${hasHoliday ? `<span class="text-[7px] uppercase tracking-tighter leading-none absolute bottom-0.5 truncate w-full px-1">${holidayTitle.substring(0, 8)}</span>` : ''}
                 </div>`;
     }
 
@@ -207,16 +207,16 @@ window.saveTodoItem = () => {
     const input = document.getElementById('todo-input');
     const task = input.value.trim();
     if (task) {
-        window.state.ownerTodos.push({ 
-            id: Date.now(), 
-            text: task, 
-            completed: false, 
+        window.state.ownerTodos.push({
+            id: Date.now(),
+            text: task,
+            completed: false,
             starred: false,
-            date: state.selectedTodoDate 
+            date: state.selectedTodoDate
         });
         saveTodos();
         input.value = '';
-        input.focus(); 
+        input.focus();
     }
 };
 
@@ -247,7 +247,7 @@ window.deleteTodoItem = (id) => {
 
 function saveTodos() {
     localStorage.setItem(TODO_STORAGE_KEY, JSON.stringify(window.state.ownerTodos));
-    if(window.saveToCloud) window.saveToCloud('srf_owner_todos', window.state.ownerTodos);
+    if (window.saveToCloud) window.saveToCloud('srf_owner_todos', window.state.ownerTodos);
     window.renderTodoList();
 }
 
@@ -256,8 +256,8 @@ window.renderTodoList = () => {
     const listEl = document.getElementById('todo-list');
     const emptyEl = document.getElementById('todo-empty');
     const inputEl = document.getElementById('todo-input');
-    
-    if(inputEl && !inputEl.onkeydown) inputEl.onkeydown = window.handleTodoKey;
+
+    if (inputEl && !inputEl.onkeydown) inputEl.onkeydown = window.handleTodoKey;
     if (!listEl) return;
 
     const viewDate = state.selectedTodoDate;
@@ -272,33 +272,33 @@ window.renderTodoList = () => {
     let score = 0;
     if (isViewingToday) {
         visibleTodos.forEach(t => {
-            if(t.completed) score += (t.starred ? 10 : 5);
+            if (t.completed) score += (t.starred ? 10 : 5);
         });
     }
 
     const todoHeader = inputEl ? inputEl.closest('.bg-white').querySelector('h3') : null;
-    if(todoHeader) {
+    if (todoHeader) {
         let scoreBox = document.getElementById('todo-score-box');
-        if(!scoreBox) {
+        if (!scoreBox) {
             const container = document.createElement('div');
             container.className = "flex items-center justify-between w-full";
             const titleSpan = document.createElement('span');
             titleSpan.id = 'todo-header-title';
             titleSpan.className = "flex items-center gap-2";
-            
+
             scoreBox = document.createElement('span');
             scoreBox.id = 'todo-score-box';
             scoreBox.className = "ml-auto bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm transition-all";
-            
+
             container.appendChild(titleSpan);
             container.appendChild(scoreBox);
             todoHeader.innerHTML = '';
             todoHeader.appendChild(container);
         }
-        
+
         const dateObj = new Date(viewDate);
         const dateNice = dateObj.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
-        
+
         document.getElementById('todo-header-title').innerHTML = `<i class="fa-solid fa-list-check text-indigo-500"></i> ${isViewingToday ? "Today's Tasks" : dateNice}`;
         scoreBox.innerHTML = `<i class="fa-solid fa-trophy text-yellow-300 mr-1"></i> ${score} pts`;
         inputEl.placeholder = isViewingToday ? "Add a new task..." : `Add task for ${dateNice}...`;
@@ -312,15 +312,15 @@ window.renderTodoList = () => {
 
     if (visibleTodos.length === 0) {
         listEl.innerHTML = '';
-        if(emptyEl) {
+        if (emptyEl) {
             emptyEl.classList.remove('hidden');
             emptyEl.innerText = isViewingToday ? "No tasks for today." : "No tasks for this date.";
         }
         return;
     }
 
-    if(emptyEl) emptyEl.classList.add('hidden');
-    
+    if (emptyEl) emptyEl.classList.add('hidden');
+
     listEl.innerHTML = visibleTodos.map(item => {
         const starClass = item.starred ? "text-yellow-400 fa-solid" : "text-slate-300 fa-regular hover:text-yellow-400";
         const rowBg = item.starred ? "bg-yellow-50/50 border-yellow-100" : (item.completed ? "bg-emerald-50/50 border-emerald-100" : "bg-white border-slate-100");
@@ -360,15 +360,15 @@ window.openHolidayMenu = (dateStr) => {
     window.state.selectedCalendarDate = dateStr;
     const dateObj = new Date(dateStr);
     const dateReadable = dateObj.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' });
-    
+
     document.getElementById('holiday-modal-date').innerText = dateReadable;
     const modal = document.getElementById('holiday-menu-modal');
     const btnContainer = document.getElementById('holiday-action-buttons');
     const form = document.getElementById('holiday-grant-form');
-    
-    modal.classList.remove('hidden');       
-    btnContainer.classList.remove('hidden'); 
-    form.classList.add('hidden');           
+
+    modal.classList.remove('hidden');
+    btnContainer.classList.remove('hidden');
+    form.classList.add('hidden');
 
     let existingHoliday = null;
     const d = dateObj.getDate();
@@ -390,13 +390,13 @@ window.openHolidayMenu = (dateStr) => {
     if (existingHoliday) {
         let statusText = existingHoliday.holidayTitle || "Holiday";
         let statusSub = "Paid";
-        
-        if(existingHoliday.status === 'NPL') { 
-            statusText = "No Pay Leave"; 
-            statusSub = "Salary Deducted"; 
-        } else if(existingHoliday.status === 'PAID_LEAVE') { 
-            statusText = "Factory Closed"; 
-            statusSub = "Paid Leave"; 
+
+        if (existingHoliday.status === 'NPL') {
+            statusText = "No Pay Leave";
+            statusSub = "Salary Deducted";
+        } else if (existingHoliday.status === 'PAID_LEAVE') {
+            statusText = "Factory Closed";
+            statusSub = "Paid Leave";
         }
 
         btnContainer.innerHTML = `
@@ -441,10 +441,10 @@ window.saveHolidayAnnouncement = () => {
     const dateStr = window.state.selectedCalendarDate;
     const title = document.getElementById('holiday-title-input').value.trim();
     const statusType = document.getElementById('holiday-type-select').value;
-    
-    if(!dateStr) return alert("Error: No date selected.");
-    if(!title) return alert("Please enter a title.");
-    
+
+    if (!dateStr) return alert("Error: No date selected.");
+    if (!title) return alert("Please enter a title.");
+
     const selDate = new Date(dateStr);
     const d = selDate.getDate();
     const m = selDate.getMonth() + 1;
@@ -453,9 +453,9 @@ window.saveHolidayAnnouncement = () => {
     let count = 0;
     state.staffData.forEach(emp => {
         const lId = `${emp.id}_${y}_${m}`;
-        if(!state.staffLedgers[lId]) state.staffLedgers[lId] = { days: {} };
-        if(!state.staffLedgers[lId].days[d]) state.staffLedgers[lId].days[d] = {};
-        
+        if (!state.staffLedgers[lId]) state.staffLedgers[lId] = { days: {} };
+        if (!state.staffLedgers[lId].days[d]) state.staffLedgers[lId].days[d] = {};
+
         state.staffLedgers[lId].days[d].status = statusType;
         state.staffLedgers[lId].days[d].holidayTitle = title;
         state.staffLedgers[lId].days[d].in = '';
@@ -466,18 +466,18 @@ window.saveHolidayAnnouncement = () => {
     });
 
     localStorage.setItem('srf_staff_ledgers', JSON.stringify(state.staffLedgers));
-    if(window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
-    
+    if (window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
+
     closeHolidayMenu();
-    window.renderHomeCalendar(); 
-    if(document.getElementById('attendance').classList.contains('active')) {
+    window.renderHomeCalendar();
+    if (document.getElementById('attendance').classList.contains('active')) {
         window.renderAttendanceView();
     }
 };
 
 window.deleteHolidayAnnouncement = () => {
     const dateStr = window.state.selectedCalendarDate;
-    if(!confirm(`Are you sure you want to REMOVE the status on ${dateStr}?`)) return;
+    if (!confirm(`Are you sure you want to REMOVE the status on ${dateStr}?`)) return;
 
     const selDate = new Date(dateStr);
     const d = selDate.getDate();
@@ -486,9 +486,9 @@ window.deleteHolidayAnnouncement = () => {
 
     state.staffData.forEach(emp => {
         const lId = `${emp.id}_${y}_${m}`;
-        if(state.staffLedgers[lId] && state.staffLedgers[lId].days[d]) {
+        if (state.staffLedgers[lId] && state.staffLedgers[lId].days[d]) {
             const dayData = state.staffLedgers[lId].days[d];
-            if(['HOLIDAY', 'NPL', 'PAID_LEAVE'].includes(dayData.status)) {
+            if (['HOLIDAY', 'NPL', 'PAID_LEAVE'].includes(dayData.status)) {
                 dayData.status = '';
                 dayData.holidayTitle = '';
                 // Optional: clear times just in case
@@ -500,12 +500,12 @@ window.deleteHolidayAnnouncement = () => {
     });
 
     localStorage.setItem('srf_staff_ledgers', JSON.stringify(state.staffLedgers));
-    if(window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
-    
+    if (window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
+
     closeHolidayMenu();
     window.renderHomeCalendar();
-    if(document.getElementById('attendance').classList.contains('active')) {
+    if (document.getElementById('attendance').classList.contains('active')) {
         window.renderAttendanceView();
-        if(window.renderAttendanceBook) window.renderAttendanceBook();
+        if (window.renderAttendanceBook) window.renderAttendanceBook();
     }
 };

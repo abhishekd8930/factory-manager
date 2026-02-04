@@ -3,7 +3,7 @@ console.log("Auth Module Loaded");
 
 // --- 1. LOGIN LOGIC ---
 window.handleLogin = (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
 
     const userIn = document.getElementById('login-user').value.trim();
     const passIn = document.getElementById('login-pass').value.trim();
@@ -23,12 +23,12 @@ window.handleLogin = (e) => {
         })
         .catch((error) => {
             console.error("Login Failed:", error.code, error.message);
-            
+
             // Error Animation
             btn.classList.add('bg-red-500', 'animate-shake');
             btn.innerText = "Invalid Credentials";
             btn.disabled = false;
-            
+
             setTimeout(() => {
                 btn.classList.remove('bg-red-500', 'animate-shake');
                 btn.innerText = originalText;
@@ -41,7 +41,7 @@ window.logout = () => {
     if (confirm("Are you sure you want to sign out?")) {
         window.signOut(window.auth).then(() => {
             console.log("Signed Out");
-            window.location.reload(); 
+            window.location.reload();
         }).catch((error) => {
             console.error("Sign Out Error", error);
         });
@@ -59,23 +59,21 @@ document.addEventListener('firebase-ready', () => {
         } else {
             // User is signed out.
             console.log("User is Guest");
-            // Ensure login screen is visible
-            document.getElementById('login-view').classList.remove('hidden');
-            document.getElementById('app-view').classList.add('hidden');
+            // Redirect to login route
+            window.location.hash = '#/login';
         }
     });
 });
 
 // --- 4. VIEW SWITCHER ---
 function initAppView() {
-    const loginView = document.getElementById('login-view');
-    const appView = document.getElementById('app-view');
+    // In SPA mode, we just ensure we are at the home route or dashboard
+    if (!window.location.hash || window.location.hash === '#/login') {
+        window.location.hash = '#/home';
+    }
 
-    loginView.classList.add('hidden');
-    appView.classList.remove('hidden');
-
-    if (window.renderHome) window.renderHome();
-    if (window.updateGreeting) window.updateGreeting();
+    // Safety check just in case legacy code calls this
+    console.log("App View Initialized via Router");
 }
 
 // --- 5. BACKUP DATA UTILITY ---
