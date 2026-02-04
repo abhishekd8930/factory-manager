@@ -20,7 +20,7 @@
     "url": "https://github.com/abhishekd8930/factory-manager/issues"
   },
   "homepage": "https://github.com/abhishekd8930/factory-manager#readme",
-  "devDependencies": {
+  "dependencies": {
     "tailwindcss": "^3.4.17"
   }
 }
