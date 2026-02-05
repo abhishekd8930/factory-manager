@@ -10,7 +10,8 @@ const ROUTES = {
     '/attendance': { template: 'attendance', init: 'renderAttendanceView' },
     '/history': { template: 'history', init: 'renderHistoryPage' },
     '/accounts': { template: 'accounts', init: 'renderAccounts' },
-    '/inventory': { template: 'inventory', init: 'renderInventory' }
+    '/inventory': { template: 'inventory', init: 'renderInventory' },
+    '/units': { template: 'units', init: 'renderUnitsView' }
 };
 
 export const Router = {

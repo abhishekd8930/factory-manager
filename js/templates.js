@@ -55,39 +55,35 @@ export const Templates = {
                     <i class="fa-solid fa-house w-5"></i> <span class="nav-label">Home</span> <span class="nav-label ml-auto text-[10px] opacity-50">Alt+1</span>
                 </a>
                 <a href="#/catalogue" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-catalogue">
-                    <i class="fa-solid fa-book-open w-5"></i> <span class="nav-label">Catalogue</span> <span class="nav-label ml-auto text-[10px] opacity-50">Alt+8</span>
+                    <i class="fa-solid fa-book-open w-5"></i> <span class="nav-label">Catalogue</span> <span class="nav-label ml-auto text-[10px] opacity-50">Alt+2</span>
                 </a>
-                <a href="#/dashboard" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-dashboard">
-                    <i class="fa-solid fa-chart-pie w-5"></i> <span class="nav-label">Analytics</span> <span class="nav-label ml-auto text-[10px] opacity-50">Alt+2</span>
+                <a href="#/units" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-units">
+                    <i class="fa-solid fa-sitemap w-5"></i> <span class="nav-label">Managing Units</span> <span class="nav-label ml-auto text-[10px] opacity-50">Alt+3</span>
                 </a>
                 <a href="#/staff" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-staff">
-                    <i class="fa-solid fa-users w-5"></i> <span class="nav-label">Staff & Ledger</span> <span class="nav-label ml-auto text-[10px] opacity-50">Alt+3</span>
-                </a>
-                <a href="#/attendance" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-attendance">
-                    <i class="fa-solid fa-calendar-check w-5"></i> <span class="nav-label">Attendance</span> <span class="nav-label ml-auto text-[10px] opacity-50">Alt+4</span>
+                    <i class="fa-solid fa-users w-5"></i> <span class="nav-label">Staff</span> <span class="nav-label ml-auto text-[10px] opacity-50">Alt+4</span>
                 </a>
                 <a href="#/history" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-history">
                     <i class="fa-solid fa-clock-rotate-left w-5"></i> <span class="nav-label">History</span> <span class="nav-label ml-auto text-[10px] opacity-50">Alt+5</span>
                 </a>
-                <a href="#/accounts" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-accounts">
-                    <i class="fa-solid fa-wallet w-5"></i> <span class="nav-label">Accounts</span> <span class="nav-label ml-auto text-[10px] opacity-50">Alt+6</span>
-                </a>
-                <a href="#/inventory" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-inventory">
-                    <i class="fa-solid fa-boxes-stacked w-5"></i> <span class="nav-label">Store</span> <span class="nav-label ml-auto text-[10px] opacity-50">Alt+7</span>
+                <a href="#/dashboard" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-dashboard">
+                    <i class="fa-solid fa-chart-pie w-5"></i> <span class="nav-label">Analytics</span> <span class="nav-label ml-auto text-[10px] opacity-50">Alt+6</span>
                 </a>
             </nav>
             <div class="p-4 border-t border-slate-100 bg-slate-50/50">
-                <button onclick="openSettings()" class="w-full mb-4 text-left p-3 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-md transition font-bold text-sm flex items-center justify-between group">
-                    <span class="nav-label flex items-center gap-3">
-                        <i class="fa-solid fa-gear group-hover:rotate-90 transition duration-500"></i> Settings
-                    </span>
+                <button onclick="openSettings()" class="nav-btn w-full mb-4 text-left p-3 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-md transition font-bold text-sm flex items-center gap-3 group">
+                    <i class="fa-solid fa-gear group-hover:rotate-90 transition duration-500 w-5"></i>
+                    <span class="nav-label flex-1">Settings</span>
                     <i class="nav-label fa-solid fa-chevron-right text-xs opacity-30"></i>
                 </button>
-                <div class="bg-white rounded-xl p-3 border border-slate-200 shadow-sm">
-                    <p class="nav-label text-xs text-slate-400 font-semibold uppercase">System Status</p>
-                    <div class="flex items-center gap-2 mt-2">
-                        <div class="w-2 h-2 rounded-full bg-emerald-500" id="status-dot"></div>
-                        <span class="nav-label text-xs font-bold text-slate-600" id="status-text">Local Data Active</span>
+                <div class="bg-white rounded-xl p-3 border border-slate-200 shadow-sm flex items-center gap-3 justify-center">
+                    <i id="status-cloud-icon" class="fa-solid fa-cloud text-slate-400 text-lg transition-colors duration-300"></i>
+                    <div class="nav-label flex-1 relative overflow-hidden">
+                        <p class="text-xs text-slate-400 font-semibold uppercase whitespace-nowrap">System Status</p>
+                        <div class="flex items-center gap-2 mt-1">
+                            <div class="w-2 h-2 rounded-full bg-emerald-500 shrink-0" id="status-dot"></div>
+                            <span class="text-xs font-bold text-slate-600 whitespace-nowrap truncate" id="status-text">Local Data Active</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -129,9 +125,9 @@ export const Templates = {
                     <span id="greet-msg">Hello,</span> <span id="greet-name" class="font-bold">Manager</span>
                 </h1>
                 <p class="text-slate-500 max-w-lg mb-6">Start now to set your priorities and progress toward your goals with a clear, structured plan.</p>
-                <a href="#/catalogue" class="bg-blue-600 text-white font-medium py-2.5 px-6 rounded-full hover:bg-blue-700 transition inline-block">
-                    Explore catalog
-                </a>
+                <button onclick="window.openSettings()" class="bg-blue-600 text-white font-medium py-2.5 px-6 rounded-full hover:bg-blue-700 transition inline-block">
+                    View Profile
+                </button>
             </div>
             <div class="shrink-0">
                 <img src="assets/images/welcome-parrot.jpg" alt="Welcome" class="h-40 w-auto object-contain drop-shadow-sm hover:scale-105 transition duration-500">
@@ -521,6 +517,9 @@ export const Templates = {
                     <p class="text-slate-500 mt-1">Select an employee to view their ledger.</p>
                 </div>
                 <div class="flex gap-3">
+                    <a href="#/attendance" class="bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 px-4 py-2 rounded-lg font-bold shadow-sm transition flex items-center gap-2">
+                        <i class="fa-solid fa-clipboard-user"></i> Attendance
+                    </a>
                     <button onclick="toggleAddStaffModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-medium shadow-lg transition flex items-center gap-2">
                         <i class="fa-solid fa-user-plus"></i> Add Employee
                     </button>
@@ -729,6 +728,84 @@ export const Templates = {
                         <tbody id="acc-table-body" class="divide-y divide-slate-50"></tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+    </div>`,
+
+    units: () => `
+    <div id="units" class="fade-in max-w-7xl mx-auto">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-slate-800">Managing Units</h2>
+            <p class="text-slate-500 mt-1">Overview of factory production units and assigned staff.</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Cutting Unit -->
+            <div onclick="window.filterUnit('Cutting')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md hover:border-indigo-200 transition cursor-pointer group">
+                <div class="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
+                    <i class="fa-solid fa-scissors"></i>
+                </div>
+                <h3 class="font-bold text-slate-700 text-lg">Cutting Unit</h3>
+                <p class="text-xs text-slate-400 mt-1">Fabric & Pattern Cutting</p>
+                <div class="mt-4 pt-4 border-t border-slate-50 flex justify-between items-center">
+                    <span class="text-xs font-bold text-slate-500">Staff Count</span>
+                    <span class="text-lg font-bold text-indigo-600" id="count-cutting">0</span>
+                </div>
+            </div>
+
+            <!-- FB Unit -->
+            <div onclick="window.filterUnit('FB')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md hover:border-emerald-200 transition cursor-pointer group">
+                <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
+                    <i class="fa-solid fa-vest"></i>
+                </div>
+                <h3 class="font-bold text-slate-700 text-lg">Front & Back</h3>
+                <p class="text-xs text-slate-400 mt-1">Stitching Operations</p>
+                <div class="mt-4 pt-4 border-t border-slate-50 flex justify-between items-center">
+                    <span class="text-xs font-bold text-slate-500">Staff Count</span>
+                    <span class="text-lg font-bold text-emerald-600" id="count-fb">0</span>
+                </div>
+            </div>
+
+            <!-- Assembly Unit -->
+            <div onclick="window.filterUnit('Assembly')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md hover:border-blue-200 transition cursor-pointer group">
+                <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
+                    <i class="fa-solid fa-people-group"></i>
+                </div>
+                <h3 class="font-bold text-slate-700 text-lg">Assembly Unit</h3>
+                <p class="text-xs text-slate-400 mt-1">Final Assembly</p>
+                <div class="mt-4 pt-4 border-t border-slate-50 flex justify-between items-center">
+                    <span class="text-xs font-bold text-slate-500">Staff Count</span>
+                    <span class="text-lg font-bold text-blue-600" id="count-assembly">0</span>
+                </div>
+            </div>
+
+            <!-- Finishing Unit -->
+            <div onclick="window.filterUnit('Finishing')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md hover:border-orange-200 transition cursor-pointer group">
+                <div class="w-12 h-12 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
+                    <i class="fa-solid fa-shirt"></i>
+                </div>
+                <h3 class="font-bold text-slate-700 text-lg">Finishing Unit</h3>
+                <p class="text-xs text-slate-400 mt-1">Ironing & Packing</p>
+                <div class="mt-4 pt-4 border-t border-slate-50 flex justify-between items-center">
+                    <span class="text-xs font-bold text-slate-500">Staff Count</span>
+                    <span class="text-lg font-bold text-orange-600" id="count-finishing">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Unit Details Section -->
+        <div id="unit-details-panel" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden fade-in">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-800" id="selected-unit-title">Unit Name</h3>
+                    <p class="text-xs text-slate-500">Assigned Employees</p>
+                </div>
+                <button onclick="closeUnitDetails()" class="w-8 h-8 rounded-full bg-white border border-slate-200 text-slate-400 hover:text-slate-700 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="unit-staff-list">
+                <!-- Staff Cards Injected Here -->
             </div>
         </div>
     </div>`,

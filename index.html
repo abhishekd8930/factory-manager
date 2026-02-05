@@ -291,6 +291,16 @@
                 <option value="timings">Based on Timings (Salary)</option>
                 <option value="pcs">Based on Pcs (Piece Work)</option>
             </select>
+
+            <label class="block text-xs font-bold text-slate-500 uppercase mb-1" for="new-staff-unit">Unit Assignment <span class="text-red-500">*</span></label>
+            <select id="new-staff-unit"
+                class="w-full mb-4 p-3 border rounded-lg bg-slate-50 focus:ring-2 focus:ring-indigo-500 outline-none">
+                <option value="">-- Select Unit --</option>
+                <option value="Cutting">Cutting Unit</option>
+                <option value="FB">Front & Back (FB)</option>
+                <option value="Assembly">Assembly Unit</option>
+                <option value="Finishing">Finishing Unit</option>
+            </select>
             <label class="block text-xs font-bold text-slate-500 uppercase mb-1" for="new-staff-role">Role</label>
 
             <select id="new-staff-role" onchange="checkCustomRole()"
@@ -407,6 +417,7 @@
     <script src="js/modules/history.js"></script>
     <script src="js/modules/accounting.js"></script>
     <script src="js/modules/inventory.js"></script>
+    <script src="js/modules/units.js"></script>
 
     <script src="js/main.js"></script>
     <script type="module">

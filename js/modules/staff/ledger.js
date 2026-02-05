@@ -4,20 +4,29 @@ console.log("Staff Ledger Module Loaded");
 
 window.openLedger = (empId, restoreSession = false) => {
     const emp = state.staffData.find(e => e.id === empId);
-    if(!emp) return;
-    
+    if (!emp) return;
+
+    // --- RESTRICTION: UNIT REQUIRED ---
+    if (!emp.unit) {
+        if (confirm(`⛔ ACCESS DENIED: ${emp.name} is not assigned to a Managing Unit.\n\nOnly staff assigned to a Unit (Cutting, FB, Assembly, Finishing) can access ledgers.\n\nPlease delete and re-add this staff member with a valid Unit assignment.`)) {
+            // Optional: Could redirect to edit mode if that existed, but for now we block.
+        }
+        return;
+    }
+    // ----------------------------------
+
     localStorage.setItem('srf_last_emp_id', empId);
     state.currentLedgerEmp = emp;
 
-    if(restoreSession) {
+    if (restoreSession) {
         const savedDate = localStorage.getItem('srf_last_ledger_date');
-        if(savedDate) state.currentLedgerDate = new Date(savedDate);
+        if (savedDate) state.currentLedgerDate = new Date(savedDate);
         else state.currentLedgerDate = new Date();
     } else {
         state.currentLedgerDate = new Date();
         localStorage.setItem('srf_last_ledger_date', state.currentLedgerDate.toISOString());
     }
-    
+
     // --- NEW: AUTO-CLEANUP LOGIC ---
     // If it's a Piece Work staff, clean up empty rows before showing
     if (emp.type === 'pcs') {
@@ -29,9 +38,15 @@ window.openLedger = (empId, restoreSession = false) => {
     document.getElementById('staff-ledger-view').classList.remove('hidden');
     document.getElementById('ledger-emp-name').innerText = emp.name;
     document.getElementById('ledger-emp-role').innerText = emp.role;
-    
+
+    // Show Unit Badge (Optional but helpful)
+    const unitBadge = document.createElement('span');
+    unitBadge.className = 'ml-2 text-xs font-bold text-white bg-indigo-500 px-2 py-0.5 rounded';
+    unitBadge.innerText = emp.unit;
+    // Clear previous badges if any inside role container? No, just keep it simple.
+
     const advInput = document.getElementById('ledger-advance');
-    if(advInput) {
+    if (advInput) {
         advInput.ondblclick = window.openAdvanceModal;
         advInput.setAttribute('title', 'Double-click to view details');
     }
@@ -54,7 +69,7 @@ window.changeLedgerMonth = (delta) => {
 };
 
 window.changeLedgerEmployee = (delta) => {
-    if(!state.currentLedgerEmp) return;
+    if (!state.currentLedgerEmp) return;
 
     // 1. Get the Type of the currently viewed employee (e.g., 'timings' or 'pcs')
     const currentType = state.currentLedgerEmp.type;
@@ -62,17 +77,17 @@ window.changeLedgerEmployee = (delta) => {
     // 2. Create a filtered list containing ONLY staff of that specific type
     const filteredList = state.staffData
         .filter(e => e.type === currentType)
-        .sort((a,b) => a.name.localeCompare(b.name));
+        .sort((a, b) => a.name.localeCompare(b.name));
 
     // 3. Find where the current employee is in this specific list
     const idx = filteredList.findIndex(e => e.id === state.currentLedgerEmp.id);
 
     // 4. Calculate the new index
     let newIdx = idx + delta;
-    
+
     // Handle Loop (Last -> First, First -> Last)
-    if(newIdx < 0) newIdx = filteredList.length - 1;
-    if(newIdx >= filteredList.length) newIdx = 0;
+    if (newIdx < 0) newIdx = filteredList.length - 1;
+    if (newIdx >= filteredList.length) newIdx = 0;
 
     // 5. Open the new ledger
     window.openLedger(filteredList[newIdx].id, true);
@@ -80,12 +95,12 @@ window.changeLedgerEmployee = (delta) => {
 
 window.renderLedgerTable = () => {
     const emp = state.currentLedgerEmp;
-    if(!emp) return;
+    if (!emp) return;
 
     const tableEl = document.getElementById('staff-table');
     if (tableEl) {
-        tableEl.className = "ledger-table"; 
-        if(tableEl.parentElement) tableEl.parentElement.className = "ledger-scroll-container";
+        tableEl.className = "ledger-table";
+        if (tableEl.parentElement) tableEl.parentElement.className = "ledger-scroll-container";
     }
 
     if (emp.type === 'timings') renderTimeLedgerTable();
@@ -97,23 +112,23 @@ window.renderLedgerTable = () => {
 window.renderTimeLedgerTable = () => {
     const date = state.currentLedgerDate;
     const lId = getLedgerId();
-    
-    if(!state.staffLedgers[lId]) state.staffLedgers[lId] = { days: {}, advance: '' };
-    if(!state.staffLedgers[lId].days) state.staffLedgers[lId].days = {};
+
+    if (!state.staffLedgers[lId]) state.staffLedgers[lId] = { days: {}, advance: '' };
+    if (!state.staffLedgers[lId].days) state.staffLedgers[lId].days = {};
 
     const pcsBtn = document.getElementById('pcs-add-row-container');
     const salaryBtn = document.getElementById('salary-calc-btn-container');
     const salaryDiv = document.getElementById('financial-salary-container');
 
-    if(pcsBtn) pcsBtn.classList.add('hidden');
-    if(salaryDiv) salaryDiv.style.display = 'block';
-    
+    if (pcsBtn) pcsBtn.classList.add('hidden');
+    if (salaryDiv) salaryDiv.style.display = 'block';
+
     // Ensure button says "Calculate Pay" for Time staff
-    if(salaryBtn) {
+    if (salaryBtn) {
         salaryBtn.classList.remove('hidden');
         salaryBtn.querySelector('button').innerHTML = `<i class="fa-solid fa-calculator"></i> Calculate Pay`;
     }
-    
+
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     document.getElementById('ledger-month-label').innerText = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
 
@@ -138,18 +153,18 @@ window.renderTimeLedgerTable = () => {
     tbody.innerHTML = '';
     const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
 
-    for(let i = 1; i <= daysInMonth; i++) {
+    for (let i = 1; i <= daysInMonth; i++) {
         const dayData = state.staffLedgers[lId].days[i] || { in: '', out: '', ot: '', hours: '', status: '' };
         const dayDate = new Date(date.getFullYear(), date.getMonth(), i);
         const dayName = dayDate.toLocaleDateString('en-US', { weekday: 'short' });
-        
+
         const isWeekend = dayName === 'Sun';
         const isHoliday = dayData.status === 'HOLIDAY';
-        
+
         let workingDisplay = '-';
-        if(dayData.status && ['LEAVE', 'NPL', 'HOLIDAY', 'PAID_LEAVE'].includes(dayData.status)) {
-            if(dayData.status === 'HOLIDAY') workingDisplay = 'Holiday';
-            else if(dayData.status === 'PAID_LEAVE') workingDisplay = 'Paid Leave';
+        if (dayData.status && ['LEAVE', 'NPL', 'HOLIDAY', 'PAID_LEAVE'].includes(dayData.status)) {
+            if (dayData.status === 'HOLIDAY') workingDisplay = 'Holiday';
+            else if (dayData.status === 'PAID_LEAVE') workingDisplay = 'Paid Leave';
             else workingDisplay = dayData.status;
         } else if (isWeekend) {
             workingDisplay = 'Sunday';
@@ -161,8 +176,8 @@ window.renderTimeLedgerTable = () => {
         }
 
         let otDisplay = '-';
-        if ((isWeekend || isHoliday) && dayData.hours) { otDisplay = dayData.hours + ' hrs'; } 
-        else if (dayData.ot && dayData.ot > 0) { otDisplay = dayData.ot + ' hrs'; } 
+        if ((isWeekend || isHoliday) && dayData.hours) { otDisplay = dayData.hours + ' hrs'; }
+        else if (dayData.ot && dayData.ot > 0) { otDisplay = dayData.ot + ' hrs'; }
         else if (['LEAVE', 'NPL'].includes(dayData.status)) { otDisplay = '0'; }
 
         const isLocked = ['LEAVE', 'NPL', 'PAID_LEAVE'].includes(dayData.status) && !isHoliday;
@@ -170,7 +185,7 @@ window.renderTimeLedgerTable = () => {
 
         const tr = document.createElement('tr');
         tr.className = isWeekend ? "bg-slate-50 border-b border-slate-100" : "hover:bg-indigo-50/20 border-b border-slate-100";
-        
+
         tr.innerHTML = `
             <td class="p-3 border-r border-slate-100 text-slate-600 font-medium">
                 <span class="inline-block w-6 font-bold ${isWeekend ? 'text-red-500' : 'text-slate-800'}">${i}</span>
@@ -215,24 +230,24 @@ window.renderTimeLedgerTable = () => {
 window.renderPcsLedgerTable = () => {
     const date = state.currentLedgerDate;
     const lId = getLedgerId();
-    
+
     if (!state.staffLedgers[lId]) state.staffLedgers[lId] = { days: {}, advance: '', pcsEntries: [] };
     if (!state.staffLedgers[lId].pcsEntries) state.staffLedgers[lId].pcsEntries = [];
 
     // --- FIX: START WITH 1 ROW IF EMPTY ---
     if (state.staffLedgers[lId].pcsEntries.length === 0) {
-        state.staffLedgers[lId].pcsEntries.push({ item:'', style:'', fabric:'', quantity:'', rate:'', total:0 });
+        state.staffLedgers[lId].pcsEntries.push({ item: '', style: '', fabric: '', quantity: '', rate: '', total: 0 });
     }
 
     // Toggle Buttons
     const pcsBtn = document.getElementById('pcs-add-row-container');
     const salaryBtn = document.getElementById('salary-calc-btn-container');
-    
-    if(pcsBtn) pcsBtn.classList.remove('hidden'); 
-    
+
+    if (pcsBtn) pcsBtn.classList.remove('hidden');
+
     // SHOW the button, but change text to "View Bill"
-    if(salaryBtn) {
-        salaryBtn.classList.remove('hidden'); 
+    if (salaryBtn) {
+        salaryBtn.classList.remove('hidden');
         salaryBtn.querySelector('button').innerHTML = `<i class="fa-solid fa-file-invoice"></i> View Bill`;
     }
 
@@ -257,7 +272,7 @@ window.renderPcsLedgerTable = () => {
     const lData = state.staffLedgers[lId];
     let totalEarnings = 0;
     lData.pcsEntries.forEach(row => totalEarnings += Number(row.total || 0));
-    
+
     document.getElementById('salary-label').innerText = 'Total Earnings';
     const salInput = document.getElementById('ledger-salary');
     salInput.value = totalEarnings;
@@ -292,30 +307,30 @@ window.renderPcsLedgerTable = () => {
 
 window.handleBlur = (e, input, day) => {
     updateRowCalculations(day);
-    if(window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
+    if (window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
 };
 
 window.handleTimeKey = (e, input, type) => {
-    if(['d','D'].includes(e.key)) { e.preventDefault(); input.value = type==='in'?'09:30 AM':'07:00 PM'; updateRowCalculations(input.dataset.day); return; }
-    if(['a','A'].includes(e.key)) { e.preventDefault(); input.value = input.value.toUpperCase().replace('PM','AM'); if(!input.value.includes('AM')) input.value+=' AM'; updateRowCalculations(input.dataset.day); return; }
-    if(['p','P'].includes(e.key)) { e.preventDefault(); input.value = input.value.toUpperCase().replace('AM','PM'); if(!input.value.includes('PM')) input.value+=' PM'; updateRowCalculations(input.dataset.day); return; }
-    
+    if (['d', 'D'].includes(e.key)) { e.preventDefault(); input.value = type === 'in' ? '09:30 AM' : '07:00 PM'; updateRowCalculations(input.dataset.day); return; }
+    if (['a', 'A'].includes(e.key)) { e.preventDefault(); input.value = input.value.toUpperCase().replace('PM', 'AM'); if (!input.value.includes('AM')) input.value += ' AM'; updateRowCalculations(input.dataset.day); return; }
+    if (['p', 'P'].includes(e.key)) { e.preventDefault(); input.value = input.value.toUpperCase().replace('AM', 'PM'); if (!input.value.includes('PM')) input.value += ' PM'; updateRowCalculations(input.dataset.day); return; }
+
     if (e.key === 'Enter') {
         e.preventDefault();
-        if(input.value && !input.value.includes(':')) {
+        if (input.value && !input.value.includes(':')) {
             const p = window.parseTime12h(input.value, type);
-            if(p) input.value = p.formatted;
+            if (p) input.value = p.formatted;
         }
-        if(!input.value) input.value = type==='in'?'09:30 AM':'07:00 PM';
+        if (!input.value) input.value = type === 'in' ? '09:30 AM' : '07:00 PM';
         updateRowCalculations(input.dataset.day);
-        
-        if(window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
 
-        if(type==='in') input.closest('tr').querySelector('.time-out').focus();
+        if (window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
+
+        if (type === 'in') input.closest('tr').querySelector('.time-out').focus();
         else {
-             const allInputs = Array.from(document.querySelectorAll('input:not([type="hidden"]):not([disabled])'));
-             const index = allInputs.indexOf(input);
-             if (index > -1 && index < allInputs.length - 1) allInputs[index + 1].focus();
+            const allInputs = Array.from(document.querySelectorAll('input:not([type="hidden"]):not([disabled])'));
+            const index = allInputs.indexOf(input);
+            if (index > -1 && index < allInputs.length - 1) allInputs[index + 1].focus();
         }
     }
 };
@@ -329,12 +344,12 @@ window.handleStatusKey = (e, input) => {
         if (key === 'L') status = 'LEAVE';
         else if (key === 'N') status = 'NPL';
         else if (key === 'H') status = 'HOLIDAY';
-        
-        saveDayData(day, { status, in:'', out:'', ot:'', hours:'' });
+
+        saveDayData(day, { status, in: '', out: '', ot: '', hours: '' });
         renderTimeLedgerTable();
         setTimeout(() => {
             const newInput = document.querySelector(`.status-input[data-day="${day}"]`);
-            if(newInput) newInput.focus();
+            if (newInput) newInput.focus();
         }, 0);
     }
 };
@@ -352,10 +367,10 @@ window.updateRowCalculations = (day) => {
         return;
     }
 
-    if(window.calculateWorkHours) {
+    if (window.calculateWorkHours) {
         const result = window.calculateWorkHours(inVal, outVal);
         saveDayData(day, { in: startObj.formatted, out: endObj.formatted, hours: result.hours, ot: result.ot, status: '' });
-        
+
         const worked = Number(result.hours) - Number(result.ot || 0);
         row.querySelector('.ot-cell').innerText = result.ot > 0 ? result.ot + ' hrs' : '-';
         row.querySelector('.total-hrs-cell').innerText = result.hours + ' hrs';
@@ -370,20 +385,20 @@ window.updateRowCalculations = (day) => {
 window.addPcsRow = () => {
     const lId = getLedgerId();
     if (!state.staffLedgers[lId]) state.staffLedgers[lId] = { days: {}, pcsEntries: [] };
-    state.staffLedgers[lId].pcsEntries.push({ item:'', style:'', fabric:'', quantity:'', rate:'', total:0 });
-    
+    state.staffLedgers[lId].pcsEntries.push({ item: '', style: '', fabric: '', quantity: '', rate: '', total: 0 });
+
     localStorage.setItem('srf_staff_ledgers', JSON.stringify(state.staffLedgers));
-    if(window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
-    
+    if (window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
+
     renderPcsLedgerTable();
-    
+
     // Auto-scroll to bottom and focus
     setTimeout(() => {
         const tableContainer = document.querySelector('.ledger-scroll-container');
-        if(tableContainer) tableContainer.scrollTop = tableContainer.scrollHeight;
-        
+        if (tableContainer) tableContainer.scrollTop = tableContainer.scrollHeight;
+
         const rows = document.querySelectorAll('#ledger-table-body tr');
-        rows[rows.length-1]?.querySelector('input').focus();
+        rows[rows.length - 1]?.querySelector('input').focus();
     }, 50);
 };
 
@@ -401,26 +416,26 @@ window.updatePcsRow = (input) => {
 
     const lId = getLedgerId();
     state.staffLedgers[lId].pcsEntries[index] = { item, style, fabric, quantity, rate, total };
-    
+
     let sum = 0;
     state.staffLedgers[lId].pcsEntries.forEach(r => sum += Number(r.total || 0));
     document.getElementById('ledger-salary').value = sum;
     state.staffLedgers[lId].salary = sum;
 
     localStorage.setItem('srf_staff_ledgers', JSON.stringify(state.staffLedgers));
-    if(window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
+    if (window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
 };
 
 window.handlePcsEnter = (e, input) => {
-    if(e.key === 'Enter') {
+    if (e.key === 'Enter') {
         const index = parseInt(input.dataset.index);
         const lId = getLedgerId();
-        if(index === state.staffLedgers[lId].pcsEntries.length - 1) {
+        if (index === state.staffLedgers[lId].pcsEntries.length - 1) {
             addPcsRow();
         } else {
-             const allInputs = Array.from(document.querySelectorAll('input:not([type="hidden"]):not([disabled])'));
-             const idx = allInputs.indexOf(input);
-             if (idx > -1 && idx < allInputs.length - 1) allInputs[idx + 1].focus();
+            const allInputs = Array.from(document.querySelectorAll('input:not([type="hidden"]):not([disabled])'));
+            const idx = allInputs.indexOf(input);
+            if (idx > -1 && idx < allInputs.length - 1) allInputs[idx + 1].focus();
         }
     }
 };
@@ -428,22 +443,22 @@ window.handlePcsEnter = (e, input) => {
 window.deletePcsRow = (index) => {
     const lId = getLedgerId();
     state.staffLedgers[lId].pcsEntries.splice(index, 1);
-    
+
     localStorage.setItem('srf_staff_ledgers', JSON.stringify(state.staffLedgers));
-    if(window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
-    
+    if (window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
+
     renderPcsLedgerTable();
 };
 
 window.quickSave = (input) => {
     const day = input.dataset.day;
     const lId = getLedgerId();
-    if(!state.staffLedgers[lId]) state.staffLedgers[lId] = { days: {} };
-    if(!state.staffLedgers[lId].days[day]) state.staffLedgers[lId].days[day] = {};
-    
-    if(input.classList.contains('time-in')) state.staffLedgers[lId].days[day].in = input.value;
-    if(input.classList.contains('time-out')) state.staffLedgers[lId].days[day].out = input.value;
-    
+    if (!state.staffLedgers[lId]) state.staffLedgers[lId] = { days: {} };
+    if (!state.staffLedgers[lId].days[day]) state.staffLedgers[lId].days[day] = {};
+
+    if (input.classList.contains('time-in')) state.staffLedgers[lId].days[day].in = input.value;
+    if (input.classList.contains('time-out')) state.staffLedgers[lId].days[day].out = input.value;
+
     localStorage.setItem('srf_staff_ledgers', JSON.stringify(state.staffLedgers));
 };
 
@@ -451,31 +466,31 @@ window.quickSave = (input) => {
 // Removes rows that have no Item, Style, Fabric, Qty, or Rate
 window.cleanPcsLedger = (empId) => {
     const date = state.currentLedgerDate;
-    if(!date) return;
-    
+    if (!date) return;
+
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const lId = `${empId}_${year}_${month}`;
-    
+
     if (!state.staffLedgers[lId] || !state.staffLedgers[lId].pcsEntries) return;
 
     // Filter: Keep row ONLY if it has some data
     const cleanEntries = state.staffLedgers[lId].pcsEntries.filter(row => {
-        const hasText = (row.item && row.item.trim().length > 0) || 
-                        (row.style && row.style.trim().length > 0) || 
-                        (row.fabric && row.fabric.trim().length > 0);
+        const hasText = (row.item && row.item.trim().length > 0) ||
+            (row.style && row.style.trim().length > 0) ||
+            (row.fabric && row.fabric.trim().length > 0);
         const hasNum = (row.quantity && row.quantity > 0) || (row.rate && row.rate > 0);
-        
+
         return hasText || hasNum; // Keep if it has text OR numbers
     });
 
     // Always ensure at least ONE row exists for data entry
     if (cleanEntries.length === 0) {
-        cleanEntries.push({ item:'', style:'', fabric:'', quantity:'', rate:'', total:0 });
+        cleanEntries.push({ item: '', style: '', fabric: '', quantity: '', rate: '', total: 0 });
     }
 
     state.staffLedgers[lId].pcsEntries = cleanEntries;
-    
+
     // Update LocalStorage immediately
     localStorage.setItem('srf_staff_ledgers', JSON.stringify(state.staffLedgers));
 };

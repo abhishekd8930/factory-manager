@@ -12,13 +12,11 @@ window.handleGlobalKeydown = (e) => {
     if (e.altKey) {
         switch (e.key) {
             case '1': window.location.hash = '#/home'; break;
-            case '2': window.location.hash = '#/dashboard'; break;
-            case '3': window.location.hash = '#/staff'; break;
-            case '4': window.location.hash = '#/attendance'; break;
+            case '2': window.location.hash = '#/catalogue'; break;
+            case '3': window.location.hash = '#/units'; break;
+            case '4': window.location.hash = '#/staff'; break;
             case '5': window.location.hash = '#/history'; break;
-            case '6': window.location.hash = '#/accounts'; break;
-            case '7': window.location.hash = '#/inventory'; break;
-            case '8': window.location.hash = '#/catalogue'; break;
+            case '6': window.location.hash = '#/dashboard'; break;
             case 'n': case 'N': e.preventDefault(); handleAddShortcut(); break;
         }
     }

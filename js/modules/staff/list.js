@@ -5,7 +5,7 @@ console.log("Staff List Module Loaded");
 window.toggleSort = (type) => {
     const key = type === 'timings' ? 'sortTimings' : 'sortPcs';
     const currentMode = state[key] || 'alpha_asc';
-    
+
     let nextMode = 'alpha_asc';
     if (currentMode === 'alpha_asc') nextMode = 'alpha_desc';
     else if (currentMode === 'alpha_desc') nextMode = 'pay_high';
@@ -13,16 +13,16 @@ window.toggleSort = (type) => {
     else nextMode = 'alpha_asc';
 
     state[key] = nextMode;
-    
+
     const icon = document.getElementById(`sort-icon-${type}`);
-    if(icon) {
-        icon.className = ""; 
-        if(nextMode === 'alpha_asc') icon.className = "fa-solid fa-arrow-down-a-z";
-        else if(nextMode === 'alpha_desc') icon.className = "fa-solid fa-arrow-up-a-z";
-        else if(nextMode === 'pay_high') icon.className = "fa-solid fa-arrow-down-9-1 text-emerald-600"; 
-        else if(nextMode === 'pay_low') icon.className = "fa-solid fa-arrow-up-1-9 text-red-400"; 
+    if (icon) {
+        icon.className = "";
+        if (nextMode === 'alpha_asc') icon.className = "fa-solid fa-arrow-down-a-z";
+        else if (nextMode === 'alpha_desc') icon.className = "fa-solid fa-arrow-up-a-z";
+        else if (nextMode === 'pay_high') icon.className = "fa-solid fa-arrow-down-9-1 text-emerald-600";
+        else if (nextMode === 'pay_low') icon.className = "fa-solid fa-arrow-up-1-9 text-red-400";
     }
-    
+
     window.renderStaffGrid();
 };
 
@@ -45,9 +45,9 @@ window.handleStaffSearch = (type, val) => {
 window.renderStaffGrid = () => {
     const timingsContainer = document.getElementById('staff-grid-timings');
     const pcsContainer = document.getElementById('staff-grid-pcs');
-    
+
     if (!timingsContainer || !pcsContainer) return;
-    if (!state.staffData) return; 
+    if (!state.staffData) return;
 
     // Helper to calculate pay for sorting
     const getPay = (emp) => {
@@ -56,9 +56,9 @@ window.renderStaffGrid = () => {
         const month = date.getMonth() + 1;
         const lId = `${emp.id}_${year}_${month}`;
         const ledger = state.staffLedgers[lId];
-        
+
         if (!ledger) return 0;
-        
+
         if (emp.type === 'timings') {
             return Number(ledger.salary) || 0;
         } else {
@@ -71,13 +71,13 @@ window.renderStaffGrid = () => {
 
     const processList = (type, sortKey, searchVal) => {
         let list = state.staffData.filter(e => e.type === type);
-        
+
         if (searchVal) {
             list = list.filter(e => e.name.toLowerCase().includes(searchVal) || e.role.toLowerCase().includes(searchVal));
         }
 
         const sortMode = state[sortKey] || 'alpha_asc';
-        
+
         list.sort((a, b) => {
             if (sortMode === 'alpha_asc') return a.name.localeCompare(b.name);
             if (sortMode === 'alpha_desc') return b.name.localeCompare(a.name);
@@ -85,7 +85,7 @@ window.renderStaffGrid = () => {
             if (sortMode === 'pay_low') return getPay(a) - getPay(b);
             return 0;
         });
-        
+
         return list;
     };
 
@@ -96,7 +96,7 @@ window.renderStaffGrid = () => {
         let earningsBadge = '';
         const sortKey = emp.type === 'timings' ? 'sortTimings' : 'sortPcs';
         const currentMode = state[sortKey];
-        
+
         if (currentMode === 'pay_high' || currentMode === 'pay_low') {
             const pay = getPay(emp);
             earningsBadge = `<div class="absolute top-2 right-2 bg-emerald-100 text-emerald-700 text-[9px] font-bold px-1.5 py-0.5 rounded-md shadow-sm">₹${pay}</div>`;
@@ -145,7 +145,7 @@ window.renderStaffGrid = () => {
     // --- PIECE WORK SECTION (Render & Icon Update) ---
     // Update the Header Icon Here using DOM manipulation before rendering cards
     const pcsHeader = document.getElementById('staff-grid-pcs')?.previousElementSibling?.querySelector('h3');
-    if(pcsHeader) {
+    if (pcsHeader) {
         // Updated to use 'fa-layer-group' (Stacks of Pants) instead of 'fa-shirt'
         pcsHeader.innerHTML = `<i class="fa-solid fa-layer-group text-emerald-500"></i> Piece Work Staff`;
     }
@@ -161,12 +161,12 @@ window.renderStaffGrid = () => {
 
 window.toggleAddStaffModal = () => {
     const modal = document.getElementById('add-staff-modal');
-    if(modal.classList.contains('hidden')) {
+    if (modal.classList.contains('hidden')) {
         modal.classList.remove('hidden');
         document.getElementById('new-staff-name').value = '';
         document.getElementById('new-staff-phone').value = '';
         document.getElementById('new-staff-type').value = 'timings';
-        if(window.updateRoleOptions) window.updateRoleOptions();
+        if (window.updateRoleOptions) window.updateRoleOptions();
         document.getElementById('new-staff-name').focus();
     } else {
         modal.classList.add('hidden');
@@ -177,14 +177,14 @@ window.updateRoleOptions = () => {
     const type = document.getElementById('new-staff-type').value;
     const roleSelect = document.getElementById('new-staff-role');
     const customInput = document.getElementById('new-staff-role-custom');
-    
-    if(!roleSelect) return;
+
+    if (!roleSelect) return;
 
     roleSelect.innerHTML = '';
     customInput.classList.add('hidden');
-    
+
     let roles = [];
-    if(type === 'timings') {
+    if (type === 'timings') {
         roles = ['Helper', 'Supervisor', 'Manager', 'Entrepreneur', 'Cutting Master', 'Part-time Worker', 'Other'];
     } else {
         roles = [
@@ -194,12 +194,12 @@ window.updateRoleOptions = () => {
             'Five-thread Operator',
             'Double Needle Operator',
             'Belt & Label',
-            'Button & Kaja', 
-            'Bartack',       
+            'Button & Kaja',
+            'Bartack',
             'Other'
         ];
     }
-    
+
     roles.forEach(r => {
         const opt = document.createElement('option');
         opt.value = r;
@@ -211,7 +211,7 @@ window.updateRoleOptions = () => {
 window.checkCustomRole = () => {
     const val = document.getElementById('new-staff-role').value;
     const customInput = document.getElementById('new-staff-role-custom');
-    if(val === 'Other') {
+    if (val === 'Other') {
         customInput.classList.remove('hidden');
         customInput.focus();
     } else {
@@ -223,33 +223,37 @@ window.saveNewStaff = () => {
     const name = document.getElementById('new-staff-name').value.trim();
     const phone = document.getElementById('new-staff-phone').value.trim();
     const type = document.getElementById('new-staff-type').value;
+    const unit = document.getElementById('new-staff-unit').value;
     let role = document.getElementById('new-staff-role').value;
-    
-    if(role === 'Other') {
+
+    if (role === 'Other') {
         role = document.getElementById('new-staff-role-custom').value.trim();
     }
-    
-    if(!name) return alert("Please enter a name.");
-    if(!role) return alert("Please enter a role.");
-    
+
+    if (!name) return alert("Please enter a name.");
+    if (!unit) return alert("Please select a Managing Unit.");
+    if (!role) return alert("Please enter a role.");
+
     const newEmp = {
         id: Date.now().toString(),
         name: name,
         phone: phone,
         type: type,
+        unit: unit,
         role: role,
         joined: new Date().toISOString()
     };
-    
+
     state.staffData.push(newEmp);
-    
+
     localStorage.setItem('srf_staff_list', JSON.stringify(state.staffData));
-    if(window.saveToCloud) window.saveToCloud('staffData', state.staffData);
-    
+    if (window.saveToCloud) window.saveToCloud('staffData', state.staffData);
+
     window.toggleAddStaffModal();
     window.renderStaffGrid();
-    
-    if(confirm("Employee Added! Open their ledger now?")) {
+
+    // Auto-open ledger (Unit check will pass since we just assigned it)
+    if (confirm("Employee Added! Open their ledger now?")) {
         window.openLedger(newEmp.id);
     }
 };
@@ -261,7 +265,7 @@ window.deleteStaff = (e, id, name) => {
     e.stopPropagation();
 
     // 2. Confirmation
-    if(!confirm(`⚠ WARNING: Are you sure you want to remove ${name}?\n\nThis will hide them from the list, but their ledger history will remain in the database.`)) {
+    if (!confirm(`⚠ WARNING: Are you sure you want to remove ${name}?\n\nThis will hide them from the list, but their ledger history will remain in the database.`)) {
         return;
     }
 
@@ -270,9 +274,9 @@ window.deleteStaff = (e, id, name) => {
 
     // 4. Save to Storage
     localStorage.setItem('srf_staff_list', JSON.stringify(state.staffData));
-    
+
     // 5. Sync to Cloud
-    if(window.saveToCloud) window.saveToCloud('staffData', state.staffData);
+    if (window.saveToCloud) window.saveToCloud('staffData', state.staffData);
 
     // 6. Refresh Grid
     window.renderStaffGrid();
