@@ -62,82 +62,82 @@ Object.defineProperty(window, 'CONFIG', {
 
 // --- CLOUD SYNCHRONIZATION ---
 
-window.initializeData = async () => {
-    if (!window.loadFromCloud) {
-        console.log("Firebase not configured. Using Offline Data.");
+// DEPRECATED: Old One-time Sync
+// window.initializeData = ... (Removed)
+
+window.setupRealTimeSync = () => {
+    if (!window.onValue || !window.dbRef || !window.db) {
+        console.log("Firebase not ready. Using Offline Data.");
         return;
     }
 
-    console.log("Syncing data...");
+    console.log("Initializing Real-Time Sync...");
 
-    // Helper: Deep Merge to prevent overwriting local work
-    // If local has data for Employee A, and Cloud has data for Employee B, keep BOTH.
-    const safeSyncLedgers = async () => {
-        const cloudData = await window.loadFromCloud('staffLedgers');
-        if (cloudData) {
-            // MERGE Logic: 
-            // 1. Take Cloud Data
-            // 2. Overwrite with Local Data (Priority to recent unsaved edits)
-            // Note: In a real app, we'd check timestamps. For this project, we prioritize preserving local inputs.
+    // Helper: Sync Helper
+    const syncNode = (path, stateKey, localKey, isObject = false) => {
+        const ref = window.dbRef(window.db, path);
+        window.onValue(ref, (snapshot) => {
+            const val = snapshot.val();
+            if (val) {
+                // Determine Clean Data
+                let cleanData;
+                if (isObject) {
+                    cleanData = val;
+                } else {
+                    cleanData = Array.isArray(val) ? val : Object.values(val);
+                }
 
-            // Actually, safest is: Take Local, fill gaps with Cloud.
-            // But if Cloud has new data from another device, we want that too.
+                // Update State
+                state[stateKey] = cleanData;
+                localStorage.setItem(localKey, JSON.stringify(cleanData));
+                console.log(`[Sync] Updated ${stateKey}`);
 
-            // STRATEGY: We assume 'staffLedgers' is an object keyed by "ID_YEAR_MONTH".
-            // We merge the keys.
-            const merged = { ...cloudData, ...state.staffLedgers };
-
-            state.staffLedgers = merged;
-            localStorage.setItem('srf_staff_ledgers', JSON.stringify(merged));
-        }
+                // Refresh UI
+                refreshUI(stateKey);
+            }
+        });
     };
 
-    const syncArray = async (key, localKey, stateKey) => {
-        const cloudData = await window.loadFromCloud(key);
-        if (cloudData) {
-            // For Arrays (Lists), we usually trust the cloud, 
-            // UNLESS local has more items (recently added).
-            // Simple approach: Trust Cloud for lists to ensure consistency across devices.
+    // 1. Sync Lists
+    syncNode('staffData', 'staffData', 'srf_staff_list');
+    syncNode('historyData', 'historyData', 'srf_production_history');
+    syncNode('washingData', 'washingData', 'srf_washing_history');
+    syncNode('accountsData', 'accountsData', 'srf_accounts');
+    syncNode('ownerTodos', 'ownerTodos', 'srf_owner_todos');
+    syncNode('notifications', 'notifications', 'srf_notifications');
+    syncNode('inventoryData', 'inventoryData', 'srf_inventory');
+    syncNode('catalogueItems', 'catalogueItems', 'catalogueItems'); // NEW
 
-            let cleanData = Array.isArray(cloudData) ? cloudData : Object.values(cloudData);
-            state[stateKey] = cleanData;
-            localStorage.setItem(localKey, JSON.stringify(cleanData));
-        }
-    };
-
-    // 1. Sync Lists (Trust Cloud)
-    await syncArray('staffData', 'srf_staff_list', 'staffData');
-    await syncArray('historyData', 'srf_production_history', 'historyData');
-    await syncArray('washingData', 'srf_washing_history', 'washingData');
-    await syncArray('accountsData', 'srf_accounts', 'accountsData');
-    await syncArray('accountsData', 'srf_accounts', 'accountsData');
-    await syncArray('ownerTodos', 'srf_owner_todos', 'ownerTodos');
-    await syncArray('notifications', 'srf_notifications', 'notifications');
-
-    // 2. Sync Ledgers (Smart Merge)
-    await safeSyncLedgers();
-
-    console.log("Sync Complete. Refreshing UI...");
-
-    // Refresh UI
-    if (window.renderStaffGrid) window.renderStaffGrid();
-    if (window.renderCharts) window.renderCharts();
-    if (window.renderAccounts) window.renderAccounts();
-    if (window.renderHome) window.renderHome();
-    if (window.renderAttendanceView) window.renderAttendanceView(); // Fix: Ensure attendance renders
-    if (window.updateNotificationBadge) window.updateNotificationBadge();
-
-    if (window.loadFromCloud) await syncArray('inventoryData', 'srf_inventory', 'inventoryData');
-    // If a ledger is currently open, re-render it to show merged data
-    if (state.currentLedgerEmp && window.renderLedgerTable) {
-        window.renderLedgerTable();
-    }
+    // 2. Sync Ledgers (Object Mode)
+    syncNode('staffLedgers', 'staffLedgers', 'srf_staff_ledgers', true);
 };
+
+function refreshUI(key) {
+    if (key === 'staffData' && window.renderStaffGrid) window.renderStaffGrid(); // Refresh Staff List
+    if (key === 'historyData' && window.renderHistoryPage) window.renderHistoryPage();
+    if (key === 'washingData' && window.renderDashboard) window.renderDashboard();
+    if (key === 'accountsData' && window.renderAccounts) window.renderAccounts();
+    if (key === 'ownerTodos' && window.renderHome) window.renderHome(); // Home has Todos
+    if (key === 'notifications' && window.renderNotifications) window.renderNotifications();
+
+    // Catalogue & Ledgers
+    if (key === 'catalogueItems' && window.renderCatalogue) window.renderCatalogue();
+    if (key === 'staffLedgers' || key === 'catalogueItems') {
+        // If a ledger is open, re-render it
+        if (state.currentLedgerEmp && window.renderLedgerTable) window.renderLedgerTable();
+        // Specifically for Catalogue Ledger
+        if (window.activeCatalogueId && window.renderLedgerTable) window.renderLedgerTable(); // Catalogue ledger needs this
+    }
+
+    // Charts rely on multiple data sources
+    if (window.renderCharts) window.renderCharts();
+    if (window.updateNotificationBadge) window.updateNotificationBadge();
+}
 
 const startSync = () => {
     if (window.hasSynced) return;
     window.hasSynced = true;
-    window.initializeData();
+    window.setupRealTimeSync();
 };
 
 if (window.isFirebaseReady) {

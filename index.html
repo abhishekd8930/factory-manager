@@ -45,7 +45,7 @@
                 <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
                     <i class="fa-solid fa-bell text-indigo-500"></i> Notifications
                 </h3>
-                <button onclick="closeNotifications()" class="w-8 h-8 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-600 flex items-center justify-center transition">
+                <button onclick="closeNotifications()" aria-label="Close Notifications" class="w-8 h-8 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-600 flex items-center justify-center transition">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -161,17 +161,19 @@
             <h3 class="text-lg font-bold text-slate-800 mb-1" id="cpin-title">Security Check</h3>
             <p class="text-xs text-slate-500 mb-6" id="cpin-desc">Enter CPIN to access protected settings.</p>
 
-            <div class="mb-4">
-                <label for="cpin-input" class="sr-only">Security PIN</label>
-                <input type="password" id="cpin-input" maxlength="6"
-                    class="w-full text-center text-2xl font-bold tracking-[0.5em] py-3 border-b-2 border-slate-200 focus:border-slate-800 outline-none bg-transparent"
-                    placeholder="••••••" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6)">
-            </div>
+            <form onsubmit="event.preventDefault(); submitCPIN()">
+                <div class="mb-4">
+                    <label for="cpin-input" class="sr-only">Security PIN</label>
+                    <input type="password" id="cpin-input" maxlength="6" autocomplete="off"
+                        class="w-full text-center text-2xl font-bold tracking-[0.5em] py-3 border-b-2 border-slate-200 focus:border-slate-800 outline-none bg-transparent"
+                        placeholder="••••••" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6)">
+                </div>
 
-            <button onclick="submitCPIN()"
-                class="w-full bg-slate-800 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-slate-700 transition mb-3">
-                <i class="fa-solid fa-lock-open mr-2"></i> Access
-            </button>
+                <button type="submit"
+                    class="w-full bg-slate-800 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-slate-700 transition mb-3">
+                    <i class="fa-solid fa-lock-open mr-2"></i> Access
+                </button>
+            </form>
 
             <button onclick="handleForgotCPIN()" class="text-xs font-bold text-slate-400 hover:text-red-500 transition">
                 Forgot PIN / Reset

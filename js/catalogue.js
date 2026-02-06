@@ -415,6 +415,7 @@ window.addCatalogueLedgerRow = () => {
     });
 
     localStorage.setItem('catalogueItems', JSON.stringify(catalogueItems));
+    if (window.saveToCloud) window.saveToCloud('catalogueItems', catalogueItems);
     renderLedgerTable();
 
     // Focus new row
@@ -450,6 +451,7 @@ window.updateLedgerRow = (rowIndex, field, value) => {
     }
 
     localStorage.setItem('catalogueItems', JSON.stringify(catalogueItems));
+    if (window.saveToCloud) window.saveToCloud('catalogueItems', catalogueItems);
 
     // OPTIMIZATION: Do NOT re-render the whole table. 
     // Just update the total cell if needed.
@@ -470,6 +472,7 @@ window.deleteLedgerRow = (rowIndex) => {
 
     catalogueItems[idx].ledger.splice(rowIndex, 1);
     localStorage.setItem('catalogueItems', JSON.stringify(catalogueItems));
+    if (window.saveToCloud) window.saveToCloud('catalogueItems', catalogueItems);
     renderLedgerTable();
 };
 
@@ -534,6 +537,7 @@ window.deleteActiveCatalogueItem = () => {
     if (confirm("Are you sure you want to delete this Catalogue item?")) {
         catalogueItems = catalogueItems.filter(i => i.id !== activeCatalogueId);
         localStorage.setItem('catalogueItems', JSON.stringify(catalogueItems));
+        if (window.saveToCloud) window.saveToCloud('catalogueItems', catalogueItems);
         closeCatalogueDetail();
     }
 };
@@ -544,6 +548,7 @@ function updateItem(id, updates) {
     if (idx !== -1) {
         catalogueItems[idx] = { ...catalogueItems[idx], ...updates };
         localStorage.setItem('catalogueItems', JSON.stringify(catalogueItems));
+        if (window.saveToCloud) window.saveToCloud('catalogueItems', catalogueItems);
     }
 }
 
@@ -574,6 +579,7 @@ window.handleCatalogueUpload = (input) => {
             catalogueItems = JSON.parse(localStorage.getItem('catalogueItems')) || [];
             catalogueItems.unshift(newItem);
             localStorage.setItem('catalogueItems', JSON.stringify(catalogueItems));
+            if (window.saveToCloud) window.saveToCloud('catalogueItems', catalogueItems);
 
             // Notification: Item Added
             if (window.addNotification) {

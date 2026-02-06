@@ -17,13 +17,13 @@ export const Templates = {
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <i class="fa-solid fa-user text-indigo-200/50 group-focus-within:text-white transition-colors"></i>
                     </div>
-                    <input type="text" id="login-user" class="w-full bg-black/20 text-white placeholder-white/40 rounded-xl py-3.5 pl-12 pr-4 border border-white/10 focus:border-white/30 focus:bg-black/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium" placeholder="Username">
+                    <input type="text" id="login-user" autocomplete="username" class="w-full bg-black/20 text-white placeholder-white/40 rounded-xl py-3.5 pl-12 pr-4 border border-white/10 focus:border-white/30 focus:bg-black/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium" placeholder="Username">
                 </div>
                 <div class="relative group">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <i class="fa-solid fa-lock text-indigo-200/50 group-focus-within:text-white transition-colors"></i>
                     </div>
-                    <input type="password" id="login-pass" class="w-full bg-black/20 text-white placeholder-white/40 rounded-xl py-3.5 pl-12 pr-12 border border-white/10 focus:border-white/30 focus:bg-black/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium" placeholder="Password">
+                    <input type="password" id="login-pass" autocomplete="current-password" class="w-full bg-black/20 text-white placeholder-white/40 rounded-xl py-3.5 pl-12 pr-12 border border-white/10 focus:border-white/30 focus:bg-black/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium" placeholder="Password">
                     <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-4 flex items-center text-indigo-200/50 hover:text-white transition-colors cursor-pointer outline-none">
                         <i class="fa-solid fa-eye" id="pass-icon"></i>
                     </button>

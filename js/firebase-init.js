@@ -22,6 +22,9 @@ const auth = getAuth(app); // NEW: Initialize the Guard
 
 // Expose Auth functions to window so other files can use them
 window.auth = auth;
+window.db = db; // NEW: Expose Database Instance
+window.dbRef = ref; // NEW: Expose ref
+window.onValue = onValue; // NEW: Expose Listener
 window.signInWithEmailAndPassword = signInWithEmailAndPassword;
 window.signOut = signOut;
 window.onAuthStateChanged = onAuthStateChanged;
