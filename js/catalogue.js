@@ -11,6 +11,7 @@ const FIXED_FILTERS = {
 // State
 let catalogueItems = JSON.parse(localStorage.getItem('catalogueItems')) || [];
 let activeCatalogueId = null;
+let activeSearchQuery = ""; // New State
 let activeFilters = {
     fabric: null,
     pattern: null, // Keeping pattern as dynamic/optional since not in fixed list
@@ -51,6 +52,37 @@ window.renderCatalogue = () => {
 
     // Apply Active Filters
     let displayItems = catalogueItems.filter(item => {
+        // 1. Search Query Filter (Global substring match)
+        if (activeSearchQuery) {
+            const query = activeSearchQuery.toLowerCase();
+
+            // Format dates for friendly search
+            let dateDisplay = "";
+            let dateRaw = "";
+            if (item.date) {
+                dateRaw = item.date; // YYYY-MM-DD
+                const d = new Date(item.date);
+                dateDisplay = d.toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' }).toLowerCase();
+            } else {
+                const d = new Date(item.id);
+                dateDisplay = d.toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' }).toLowerCase();
+            }
+
+            // Check if ANY field contains the query
+            const matches = (
+                (item.name && item.name.toLowerCase().includes(query)) ||
+                (item.fabric && item.fabric.toLowerCase().includes(query)) ||
+                (item.brand && item.brand.toLowerCase().includes(query)) ||
+                (item.fitting && item.fitting.toLowerCase().includes(query)) ||
+                (item.pattern && item.pattern.toLowerCase().includes(query)) ||
+                (dateDisplay.includes(query)) ||
+                (dateRaw.includes(query))
+            );
+
+            if (!matches) return false;
+        }
+
+        // 2. Category Filters
         // Fabric: Partial/Includes Match (e.g. "Dobby" matches "Heavy Dobby")
         if (activeFilters.fabric && (!item.fabric || !item.fabric.toLowerCase().includes(activeFilters.fabric.toLowerCase()))) return false;
 
@@ -234,6 +266,13 @@ function isInRelativeDateRange(date, range) {
 }
 
 
+// --- SEARCH LOGIC ---
+window.handleCatalogueSearch = (query) => {
+    activeSearchQuery = query;
+    renderCatalogue();
+};
+
+
 // --- DETAIL VIEW LOGIC ---
 
 window.openCatalogueDetail = (id) => {
@@ -267,6 +306,7 @@ window.openCatalogueDetail = (id) => {
     const inputs = document.querySelectorAll('#catalogue-detail-view .detail-input');
     inputs.forEach(input => input.disabled = true);
     document.getElementById('save-catalogue-btn').classList.add('hidden');
+    document.getElementById('cancel-catalogue-btn').classList.add('hidden');
     document.getElementById('catalogue-settings-menu').classList.add('hidden');
 };
 
@@ -275,6 +315,162 @@ window.closeCatalogueDetail = () => {
     document.getElementById('catalogue-detail-view').classList.add('hidden');
     document.getElementById('catalogue-list-view').classList.remove('hidden');
     renderCatalogue();
+};
+
+// --- LEDGER LOGIC ---
+
+window.switchDetailTab = (tabName) => {
+    // Buttons
+    document.getElementById('tab-btn-details').className = tabName === 'details'
+        ? "px-6 py-3 font-bold text-indigo-600 border-b-2 border-indigo-600 transition"
+        : "px-6 py-3 font-medium text-slate-500 hover:text-slate-800 transition";
+
+    document.getElementById('tab-btn-ledger').className = tabName === 'ledger'
+        ? "px-6 py-3 font-bold text-indigo-600 border-b-2 border-indigo-600 transition"
+        : "px-6 py-3 font-medium text-slate-500 hover:text-slate-800 transition";
+
+    // Content
+    document.getElementById('tab-content-details').className = tabName === 'details' ? '' : 'hidden';
+    document.getElementById('tab-content-ledger').className = tabName === 'ledger' ? '' : 'hidden';
+
+    if (tabName === 'ledger') {
+        renderLedgerTable();
+    }
+};
+
+window.renderLedgerTable = () => {
+    catalogueItems = JSON.parse(localStorage.getItem('catalogueItems')) || [];
+    const item = catalogueItems.find(i => i.id === activeCatalogueId);
+    if (!item) return;
+
+    // Ensure at least one row exists
+    if (!item.ledger || item.ledger.length === 0) {
+        addCatalogueLedgerRow();
+        return; // addLedgerRow will trigger re-render
+    }
+
+    const tbody = document.getElementById('catalogue-ledger-body');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    const ledger = item.ledger;
+
+    ledger.forEach((row, index) => {
+        const tr = document.createElement('tr');
+        tr.className = "border-b border-slate-100 last:border-0 hover:bg-slate-50";
+        // Check if this is the last row for Enter key logic on specific fields if needed, 
+        // but user asked "at the end", implying anywhere or specifically last row. 
+        // We'll apply to all rows for consistency or just check in the handler.
+
+        tr.innerHTML = `
+            <td class="p-2"><input type="number" value="${row.slNo || ''}" onchange="updateLedgerRow(${index}, 'slNo', this.value)" onkeydown="handleLedgerKeydown(event, ${index}, 'slNo')" class="w-full text-center bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-indigo-100 rounded-md py-1" placeholder="#"></td>
+            <td class="p-2"><input type="number" step="0.01" value="${row.meters || ''}" onchange="updateLedgerRow(${index}, 'meters', this.value)" onkeydown="handleLedgerKeydown(event, ${index}, 'meters')" class="w-full text-center bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-indigo-100 rounded-md py-1" placeholder="0.0"></td>
+            
+            <td class="p-2 border-l border-slate-100"><input type="number" value="${row.s30 || ''}" onchange="updateLedgerRow(${index}, 's30', this.value)" onkeydown="handleLedgerKeydown(event, ${index}, 's30')" class="w-full text-center bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-indigo-100 rounded-md py-1 font-medium text-slate-600" placeholder="-"></td>
+            <td class="p-2"><input type="number" value="${row.s32 || ''}" onchange="updateLedgerRow(${index}, 's32', this.value)" onkeydown="handleLedgerKeydown(event, ${index}, 's32')" class="w-full text-center bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-indigo-100 rounded-md py-1 font-medium text-slate-600" placeholder="-"></td>
+            <td class="p-2"><input type="number" value="${row.s34 || ''}" onchange="updateLedgerRow(${index}, 's34', this.value)" onkeydown="handleLedgerKeydown(event, ${index}, 's34')" class="w-full text-center bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-indigo-100 rounded-md py-1 font-medium text-slate-600" placeholder="-"></td>
+            <td class="p-2"><input type="number" value="${row.s36 || ''}" onchange="updateLedgerRow(${index}, 's36', this.value)" onkeydown="handleLedgerKeydown(event, ${index}, 's36')" class="w-full text-center bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-indigo-100 rounded-md py-1 font-medium text-slate-600" placeholder="-"></td>
+            
+            <td class="p-2 text-center font-bold text-indigo-600 border-l border-slate-100">${row.total || 0}</td>
+            <td class="p-2 text-center">
+                <button onclick="deleteLedgerRow(${index})" class="text-slate-300 hover:text-red-500 transition"><i class="fa-solid fa-trash"></i></button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+};
+
+window.handleLedgerKeydown = (e, index, field) => {
+    if (e.key === 'Enter') {
+        // 1. Force save the current input value first
+        //    (The onchange event happens on blur, so we must manually save here)
+        updateLedgerRow(index, field, e.target.value);
+
+        catalogueItems = JSON.parse(localStorage.getItem('catalogueItems')) || [];
+        const item = catalogueItems.find(i => i.id === activeCatalogueId);
+        if (!item || !item.ledger) return;
+
+        // Only add if it's the last row
+        if (index === item.ledger.length - 1) {
+            addCatalogueLedgerRow();
+        }
+    }
+};
+
+window.addCatalogueLedgerRow = () => {
+    catalogueItems = JSON.parse(localStorage.getItem('catalogueItems')) || [];
+    const idx = catalogueItems.findIndex(i => i.id === activeCatalogueId);
+    if (idx === -1) return;
+
+    if (!catalogueItems[idx].ledger) catalogueItems[idx].ledger = [];
+
+    // Auto-increment Sl No prediction
+    const lastSl = catalogueItems[idx].ledger.length > 0 ? parseInt(catalogueItems[idx].ledger[catalogueItems[idx].ledger.length - 1].slNo) : 0;
+
+    catalogueItems[idx].ledger.push({
+        slNo: lastSl ? lastSl + 1 : 1,
+        meters: '',
+        s30: '', s32: '', s34: '', s36: '',
+        total: 0
+    });
+
+    localStorage.setItem('catalogueItems', JSON.stringify(catalogueItems));
+    renderLedgerTable();
+
+    // Focus new row
+    setTimeout(() => {
+        const tbody = document.getElementById('catalogue-ledger-body');
+        if (tbody && tbody.lastElementChild) {
+            const firstInput = tbody.lastElementChild.querySelector('input');
+            if (firstInput) {
+                firstInput.focus();
+                firstInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    }, 50);
+};
+
+window.updateLedgerRow = (rowIndex, field, value) => {
+    catalogueItems = JSON.parse(localStorage.getItem('catalogueItems')) || [];
+    const idx = catalogueItems.findIndex(i => i.id === activeCatalogueId);
+    if (idx === -1) return;
+
+    let row = catalogueItems[idx].ledger[rowIndex];
+    row[field] = value;
+
+    // Recalculate Total
+    let newTotal = row.total || 0;
+    if (['s30', 's32', 's34', 's36'].includes(field)) {
+        const s30 = parseInt(row.s30) || 0;
+        const s32 = parseInt(row.s32) || 0;
+        const s34 = parseInt(row.s34) || 0;
+        const s36 = parseInt(row.s36) || 0;
+        newTotal = s30 + s32 + s34 + s36;
+        row.total = newTotal;
+    }
+
+    localStorage.setItem('catalogueItems', JSON.stringify(catalogueItems));
+
+    // OPTIMIZATION: Do NOT re-render the whole table. 
+    // Just update the total cell if needed.
+    if (['s30', 's32', 's34', 's36'].includes(field)) {
+        const tbody = document.getElementById('catalogue-ledger-body');
+        if (tbody && tbody.children[rowIndex]) {
+            // The total cell is the 7th cell (index 6)
+            const totalCell = tbody.children[rowIndex].children[6];
+            if (totalCell) totalCell.innerText = newTotal;
+        }
+    }
+};
+
+window.deleteLedgerRow = (rowIndex) => {
+    catalogueItems = JSON.parse(localStorage.getItem('catalogueItems')) || [];
+    const idx = catalogueItems.findIndex(i => i.id === activeCatalogueId);
+    if (idx === -1) return;
+
+    catalogueItems[idx].ledger.splice(rowIndex, 1);
+    localStorage.setItem('catalogueItems', JSON.stringify(catalogueItems));
+    renderLedgerTable();
 };
 
 // --- SETTINGS & EDITING ---
@@ -289,8 +485,16 @@ window.enableEditMode = () => {
     inputs.forEach(input => input.disabled = false);
 
     document.getElementById('save-catalogue-btn').classList.remove('hidden');
-    document.getElementById('detail-fabric').focus();
+    document.getElementById('cancel-catalogue-btn').classList.remove('hidden'); // Show Cancel
+    document.getElementById('detail-description').focus();
     document.getElementById('catalogue-settings-menu').classList.add('hidden');
+};
+
+window.cancelEditMode = () => {
+    // Reload items to revert changes
+    openCatalogueDetail(activeCatalogueId);
+    // Buttons hidden by openCatalogueDetail logic implicitly, but explicit validation:
+    // openCatalogueDetail resets everything including hiding buttons.
 };
 
 window.renameCatalogueItem = () => {
@@ -311,11 +515,19 @@ window.saveCatalogueDetail = () => {
         pattern: document.getElementById('detail-pattern').value,
         date: document.getElementById('detail-date').value
     };
+
+    // Validation
+    if (!changes.fabric || !changes.brand || !changes.fitting || !changes.pattern) {
+        alert("Please fill in all product details (Fabric, Brand, Fitting, Pattern) before saving.");
+        return;
+    }
+
     updateItem(activeCatalogueId, changes);
 
     const inputs = document.querySelectorAll('#catalogue-detail-view .detail-input');
     inputs.forEach(input => input.disabled = true);
     document.getElementById('save-catalogue-btn').classList.add('hidden');
+    document.getElementById('cancel-catalogue-btn').classList.add('hidden');
 };
 
 window.deleteActiveCatalogueItem = () => {
@@ -362,7 +574,22 @@ window.handleCatalogueUpload = (input) => {
             catalogueItems = JSON.parse(localStorage.getItem('catalogueItems')) || [];
             catalogueItems.unshift(newItem);
             localStorage.setItem('catalogueItems', JSON.stringify(catalogueItems));
+
+            // Notification: Item Added
+            if (window.addNotification) {
+                window.addNotification({
+                    type: 'action',
+                    title: 'New Catalogue Item',
+                    msg: `Item "${newItem.name}" added. Please update dispatch date.`,
+                    link: newItem.id
+                });
+            }
+
             renderCatalogue();
+
+            // Auto-open and Edit
+            openCatalogueDetail(newItem.id);
+            enableEditMode();
         };
         reader.readAsDataURL(file);
     }

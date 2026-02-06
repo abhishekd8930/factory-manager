@@ -23,7 +23,36 @@ const state = {
     searchPcs: '',
 
     // DYNAMIC CONFIG
-    config: JSON.parse(localStorage.getItem('srf_config')) || DEFAULT_CONFIG
+    config: JSON.parse(localStorage.getItem('srf_config')) || DEFAULT_CONFIG,
+
+    // NOTIFICATIONS (Persistent)
+    notifications: JSON.parse(localStorage.getItem('srf_notifications')) || []
+};
+
+// --- HELPER: ADD NOTIFICATION ---
+window.addNotification = (notification) => {
+    // Add timestamp if missing
+    if (!notification.time) notification.time = new Date().toISOString();
+    if (!notification.id) notification.id = Date.now().toString();
+
+    // Default to unread
+    if (notification.read === undefined) notification.read = false;
+
+    // Add to state
+    state.notifications.unshift(notification);
+
+    // Limit to 50
+    if (state.notifications.length > 50) state.notifications.pop();
+
+    // Persist
+    localStorage.setItem('srf_notifications', JSON.stringify(state.notifications));
+
+    // Sync
+    if (window.saveToCloud) window.saveToCloud('notifications', state.notifications);
+
+    // Update UI if notification modal is open (or just to show badge if we had one)
+    if (window.renderNotifications) window.renderNotifications();
+    if (window.updateNotificationBadge) window.updateNotificationBadge();
 };
 
 // Expose CONFIG globally for backward compatibility
@@ -81,7 +110,9 @@ window.initializeData = async () => {
     await syncArray('historyData', 'srf_production_history', 'historyData');
     await syncArray('washingData', 'srf_washing_history', 'washingData');
     await syncArray('accountsData', 'srf_accounts', 'accountsData');
+    await syncArray('accountsData', 'srf_accounts', 'accountsData');
     await syncArray('ownerTodos', 'srf_owner_todos', 'ownerTodos');
+    await syncArray('notifications', 'srf_notifications', 'notifications');
 
     // 2. Sync Ledgers (Smart Merge)
     await safeSyncLedgers();
@@ -94,6 +125,7 @@ window.initializeData = async () => {
     if (window.renderAccounts) window.renderAccounts();
     if (window.renderHome) window.renderHome();
     if (window.renderAttendanceView) window.renderAttendanceView(); // Fix: Ensure attendance renders
+    if (window.updateNotificationBadge) window.updateNotificationBadge();
 
     if (window.loadFromCloud) await syncArray('inventoryData', 'srf_inventory', 'inventoryData');
     // If a ledger is currently open, re-render it to show merged data

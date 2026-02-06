@@ -51,8 +51,10 @@ export const Templates = {
                 </div>
             </div>
             <nav class="flex-1 px-4 space-y-2 mt-6 overflow-y-auto">
-                <a href="#/home" class="nav-btn w-full text-left p-3 rounded-full transition font-medium flex items-center gap-3 text-slate-500 hover:bg-slate-50 hover:text-slate-800" id="nav-home">
-                    <i class="fa-solid fa-house w-5"></i> <span class="nav-label">Home</span> <span class="nav-label ml-auto text-[10px] opacity-50">Alt+1</span>
+                <a href="#/home" class="nav-btn w-full text-left p-3 rounded-full transition font-medium flex items-center gap-3 text-slate-500 hover:bg-slate-50 hover:text-slate-800 relative" id="nav-home">
+                    <i class="fa-solid fa-house w-5"></i> 
+                    <div id="nav-home-badge" class="hidden w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white absolute top-3 left-7"></div>
+                    <span class="nav-label">Home</span> <span class="nav-label ml-auto text-[10px] opacity-50">Alt+1</span>
                 </a>
                 <a href="#/catalogue" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-catalogue">
                     <i class="fa-solid fa-book-open w-5"></i> <span class="nav-label">Catalogue</span> <span class="nav-label ml-auto text-[10px] opacity-50">Alt+2</span>
@@ -127,6 +129,10 @@ export const Templates = {
                 <p class="text-slate-500 max-w-lg mb-6">Start now to set your priorities and progress toward your goals with a clear, structured plan.</p>
                 <button onclick="window.openSettings()" class="bg-blue-600 text-white font-medium py-2.5 px-6 rounded-full hover:bg-blue-700 transition inline-block">
                     View Profile
+                </button>
+                <button onclick="window.showNotifications()" class="ml-2 bg-slate-100 text-slate-600 font-medium py-2.5 px-6 rounded-full hover:bg-slate-200 transition inline-block relative">
+                    <div id="btn-noti-badge" class="hidden w-3 h-3 bg-red-500 rounded-full border-2 border-slate-100 absolute top-0 right-0"></div>
+                    <i class="fa-solid fa-bell mr-2"></i> Notifications
                 </button>
             </div>
             <div class="shrink-0">
@@ -269,7 +275,7 @@ export const Templates = {
                 <div class="max-w-2xl mx-auto mb-8 relative">
                     <div class="relative">
                         <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
-                        <input type="text" placeholder="Search catalog" class="w-full bg-slate-100 border-none rounded-full py-4 pl-12 pr-6 text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm transition hover:bg-white hover:shadow-md">
+                        <input type="text" id="catalogue-search-input" oninput="handleCatalogueSearch(this.value)" placeholder="Search catalog (name, date, fabric...)" class="w-full bg-slate-100 border-none rounded-full py-4 pl-12 pr-6 text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm transition hover:bg-white hover:shadow-md">
                         <button class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-2">
                             <i class="fa-solid fa-arrow-right"></i>
                         </button>
@@ -347,31 +353,52 @@ export const Templates = {
                     </div>
                 </div>
             </div>
-            <h1 id="detail-title" class="text-3xl md:text-4xl font-normal text-slate-800 mb-8 text-center tracking-tight">Item Name</h1>
-            <div class="bg-white rounded-[40px] shadow-sm border border-slate-100 p-8 md:p-12">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 align-top">
-                    <div class="rounded-[32px] overflow-hidden bg-slate-50 h-[500px] flex items-center justify-center border border-slate-100 relative group">
-                        <img id="detail-image" src="" class="max-w-full max-h-full object-contain" alt="Catalogue Item">
-                    </div>
-                    <div class="flex flex-col">
-                        <h2 class="text-2xl font-bold text-slate-800 mb-6">Product Details</h2>
-                        <div class="mb-8">
-                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Description</label>
-                            <textarea id="detail-description" disabled class="detail-input w-full h-32 bg-slate-50 border-none rounded-2xl p-4 text-slate-600 focus:ring-2 focus:ring-indigo-500/20 outline-none resize-none transition disabled:bg-transparent disabled:cursor-default disabled:resize-none" placeholder="Add a description..."></textarea>
+            <h1 id="detail-title" class="text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center tracking-tight">Item Name</h1>
+            <div class="max-w-5xl mx-auto bg-white rounded-[32px] shadow-sm border border-slate-100 p-6 md:p-8">
+                <!-- Tab Headers -->
+                <div class="flex border-b border-slate-100 mb-6">
+                    <button onclick="switchDetailTab('details')" id="tab-btn-details" class="px-6 py-3 font-bold text-indigo-600 border-b-2 border-indigo-600 transition">
+                        Details
+                    </button>
+                    <button onclick="switchDetailTab('ledger')" id="tab-btn-ledger" class="px-6 py-3 font-medium text-slate-500 hover:text-slate-800 transition">
+                        Cutting Ledger
+                    </button>
+                </div>
+
+                <!-- Tab: Details -->
+                <div id="tab-content-details">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 align-top">
+                        <!-- Image Section -->
+                        <div class="rounded-2xl overflow-hidden bg-slate-50 h-[400px] flex items-center justify-center border border-slate-100 relative group">
+                            <img id="detail-image" src="" class="max-w-full max-h-full object-contain" alt="Catalogue Item">
                         </div>
-                        <div class="grid grid-cols-1 gap-6 mb-8">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Fabric</label>
-                                <input type="text" id="detail-fabric" disabled class="detail-input w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500/20 outline-none transition disabled:bg-transparent disabled:cursor-default" placeholder="e.g. Cotton 100%">
+                        
+                        <!-- Form Section -->
+                        <div class="flex flex-col">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-xl font-bold text-slate-800">Details</h2>
+                                <div class="w-full max-w-[140px]">
+                                    <input type="date" id="detail-date" disabled aria-label="Date" class="detail-input w-full bg-transparent border-none p-0 text-slate-500 font-medium text-sm text-right outline-none focus:ring-0 disabled:text-slate-500 disabled:opacity-100">
+                                </div>
                             </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Brand</label>
-                                <input type="text" id="detail-brand" disabled class="detail-input w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500/20 outline-none transition disabled:bg-transparent disabled:cursor-default" placeholder="e.g. Levi's">
+                            
+                            <div class="mb-6">
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Description</label>
+                                <textarea id="detail-description" disabled class="detail-input w-full h-24 bg-slate-50 border-none rounded-xl p-3 text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500/20 outline-none resize-none transition disabled:bg-transparent disabled:cursor-default disabled:resize-none" placeholder="Add a description..."></textarea>
                             </div>
-                            <div class="grid grid-cols-2 gap-6">
+
+                            <div class="grid grid-cols-2 gap-4 mb-6">
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Fitting</label>
-                                    <select id="detail-fitting" disabled aria-label="Fitting" class="detail-input w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500/20 outline-none transition appearance-none disabled:bg-transparent disabled:cursor-default">
+                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Fabric</label>
+                                    <input type="text" id="detail-fabric" disabled class="detail-input w-full bg-slate-50 border-none rounded-lg px-3 py-2 text-sm text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500/20 outline-none transition disabled:bg-transparent disabled:cursor-default" placeholder="e.g. Cotton">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Brand</label>
+                                    <input type="text" id="detail-brand" disabled class="detail-input w-full bg-slate-50 border-none rounded-lg px-3 py-2 text-sm text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500/20 outline-none transition disabled:bg-transparent disabled:cursor-default" placeholder="e.g. Levi's">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Fitting</label>
+                                    <select id="detail-fitting" disabled aria-label="Fitting" class="detail-input w-full bg-slate-50 border-none rounded-lg px-3 py-2 text-sm text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500/20 outline-none transition appearance-none disabled:bg-transparent disabled:cursor-default">
                                         <option value="">Select...</option>
                                         <option value="Regular">Regular</option>
                                         <option value="Slim">Slim</option>
@@ -380,21 +407,48 @@ export const Templates = {
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Pattern</label>
-                                    <input type="text" id="detail-pattern" disabled class="detail-input w-full bg-slate-50 border-none rounded-xl px-4 py-3 text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500/20 outline-none transition disabled:bg-transparent disabled:cursor-default" placeholder="e.g. Solid">
+                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Pattern</label>
+                                    <input type="text" id="detail-pattern" disabled class="detail-input w-full bg-slate-50 border-none rounded-lg px-3 py-2 text-sm text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500/20 outline-none transition disabled:bg-transparent disabled:cursor-default" placeholder="e.g. Solid">
                                 </div>
                             </div>
-                        </div>
-                        <div class="mt-auto pt-6 border-t border-slate-100 flex items-center justify-between h-16">
-                            <div class="w-full max-w-[200px]">
-                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Date</label>
-                                <input type="date" id="detail-date" disabled aria-label="Date" class="detail-input w-full bg-transparent border-none p-0 text-slate-700 font-medium outline-none focus:ring-0 disabled:text-slate-700 disabled:opacity-100">
+
+                            <div class="mt-auto flex justify-end gap-3">
+                                <button id="cancel-catalogue-btn" onclick="cancelEditMode()" class="hidden px-6 py-2 bg-slate-100 text-slate-600 rounded-full text-sm font-bold hover:bg-slate-200 transition shadow-sm animate-fade-in-up">
+                                    Cancel
+                                </button>
+                                <button id="save-catalogue-btn" onclick="saveCatalogueDetail()" class="hidden px-6 py-2 bg-indigo-600 text-white rounded-full text-sm font-bold hover:bg-indigo-700 transition shadow-md animate-fade-in-up">
+                                    Save Changes
+                                </button>
                             </div>
-                            <button id="save-catalogue-btn" onclick="saveCatalogueDetail()" class="hidden px-6 py-2 bg-indigo-600 text-white rounded-full text-sm font-bold hover:bg-indigo-700 transition shadow-md animate-fade-in-up">
-                                Save Changes
-                            </button>
                         </div>
                     </div>
+                </div>
+
+                <!-- Tab: Cutting Ledger -->
+                <div id="tab-content-ledger" class="hidden">
+                     <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold text-slate-800">Cutting Output</h2>
+                    </div>
+                     <div class="overflow-x-auto border rounded-xl border-slate-200 mb-4">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-slate-50 text-slate-500 font-semibold uppercase text-xs">
+                                <tr>
+                                    <th class="p-3 w-16 text-center">Sl No</th>
+                                    <th class="p-3 w-24 text-center">Meters</th>
+                                    <th class="p-3 w-16 text-center border-l border-slate-200">30</th>
+                                    <th class="p-3 w-16 text-center">32</th>
+                                    <th class="p-3 w-16 text-center">34</th>
+                                    <th class="p-3 w-16 text-center">36</th>
+                                    <th class="p-3 w-20 text-center font-bold text-slate-700 border-l border-slate-200">Total</th>
+                                    <th class="p-3 w-10"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="catalogue-ledger-body"></tbody>
+                        </table>
+                    </div>
+                    <button onclick="addCatalogueLedgerRow()" class="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg text-sm font-bold hover:bg-indigo-100 transition flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Add Row
+                    </button>
                 </div>
             </div>
         </div>
@@ -467,7 +521,7 @@ export const Templates = {
                     <tbody id="ledger-body"></tbody>
                 </table>
                 <div class="flex gap-3">
-                    <button onclick="addLedgerRow()" class="bg-white border border-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg flex items-center gap-2 hover:bg-slate-50 transition"><i class="fa-solid fa-plus"></i> Add (Alt+N)</button>
+                    <button onclick="addDashboardLedgerRow()" class="bg-white border border-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg flex items-center gap-2 hover:bg-slate-50 transition"><i class="fa-solid fa-plus"></i> Add (Alt+N)</button>
                     <div class="flex-1"></div>
                     <button onclick="saveLedger()" class="bg-slate-800 text-white font-bold py-2 px-6 rounded-lg shadow-lg flex items-center gap-2 hover:bg-slate-700 transition"><i class="fa-solid fa-cloud-arrow-up"></i> Save (Ctrl+S)</button>
                 </div>

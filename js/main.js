@@ -40,7 +40,7 @@ window.handleGlobalKeydown = (e) => {
 
 function handleAddShortcut() {
     const activeTab = document.querySelector('.tab-content.active').id;
-    if (activeTab === 'dashboard') window.addLedgerRow();
+    if (activeTab === 'dashboard') window.addDashboardLedgerRow();
     if (activeTab === 'staff') {
         if (!document.getElementById('staff-ledger-view').classList.contains('hidden')) {
             if (state.currentLedgerEmp?.type === 'pcs') window.addPcsRow();
@@ -135,6 +135,157 @@ window.closeSidebarOnMobile = () => {
     if (window.innerWidth < 768) {
         document.getElementById('sidebar').classList.add('-translate-x-full');
     }
+};
+
+// --- NOTIFICATIONS LOGIC ---
+// --- NOTIFICATIONS LOGIC ---
+window.renderNotifications = () => {
+    const list = document.getElementById('notification-list');
+    if (!list) return;
+
+    if (!state.notifications || state.notifications.length === 0) {
+        list.innerHTML = `<div class="text-center py-8 text-slate-400 italic">No new notifications</div>`;
+        return;
+    }
+
+    list.innerHTML = state.notifications.map(n => {
+        let icon = 'fa-circle-info';
+        let color = 'text-blue-500 bg-blue-50';
+
+        if (n.type === 'alert') { icon = 'fa-triangle-exclamation'; color = 'text-amber-500 bg-amber-50'; }
+        if (n.type === 'success') { icon = 'fa-check'; color = 'text-emerald-500 bg-emerald-50'; }
+        if (n.type === 'action') { icon = 'fa-bell'; color = 'text-indigo-500 bg-indigo-50'; }
+
+        const timeDiff = getTimeDifference(new Date(n.time));
+        const id = n.id || Date.now(); // Fallback
+
+        return `
+        <div class="relative flex gap-4 p-3 rounded-xl hover:bg-slate-50 transition border border-transparent hover:border-slate-100 group cursor-pointer overflow-hidden touch-pan-y" 
+             onclick="handleNotificationClick('${n.link || ''}')"
+             ontouchstart="handleSwipeStart(event, '${id}')"
+             ontouchend="handleSwipeEnd(event, '${id}')"
+             id="noti-${id}">
+             
+            <div class="w-10 h-10 rounded-full ${color} flex items-center justify-center shrink-0">
+                <i class="fa-solid ${icon}"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+                <h4 class="font-bold text-slate-700 text-sm truncate pr-6">${n.title}</h4>
+                <p class="text-xs text-slate-500 leading-relaxed line-clamp-2">${n.msg}</p>
+                <p class="text-[10px] text-slate-400 mt-1 font-medium">${timeDiff}</p>
+            </div>
+            
+            <!-- Hover Delete Button (Desktop) -->
+            <button onclick="deleteNotification(event, '${id}')" class="absolute top-2 right-2 p-2 rounded-full bg-white/80 shadow-sm opacity-0 group-hover:opacity-100 transition duration-200 text-slate-400 hover:text-red-500 hover:bg-slate-100 transform active:scale-95">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+        </div>`;
+    }).join('');
+};
+
+// Swipe Logic Globals
+let touchStartX = 0;
+
+window.handleSwipeStart = (e, id) => {
+    touchStartX = e.changedTouches[0].screenX;
+};
+
+window.handleSwipeEnd = (e, id) => {
+    const touchEndX = e.changedTouches[0].screenX;
+    const diff = touchEndX - touchStartX;
+
+    // Swipe Right or Left (> 50px)
+    if (Math.abs(diff) > 50) {
+        // Animate out
+        const el = document.getElementById(`noti-${id}`);
+        if (el) {
+            el.style.transition = 'transform 0.2s, opacity 0.2s';
+            el.style.transform = `translateX(${diff > 0 ? '100%' : '-100%'})`;
+            el.style.opacity = '0';
+            setTimeout(() => deleteNotification(null, id), 200);
+        }
+    }
+};
+
+window.deleteNotification = (e, id) => {
+    if (e) e.stopPropagation();
+
+    state.notifications = state.notifications.filter(n => n.id !== id);
+    localStorage.setItem('srf_notifications', JSON.stringify(state.notifications));
+    if (window.saveToCloud) window.saveToCloud('notifications', state.notifications);
+
+    if (state.notifications.length === 0) window.updateNotificationBadge();
+
+    // Re-render
+    window.renderNotifications();
+};
+
+window.clearAllNotifications = () => {
+    if (confirm("Delete all notifications?")) {
+        state.notifications = [];
+        localStorage.setItem('srf_notifications', '[]');
+        if (window.saveToCloud) window.saveToCloud('notifications', []);
+
+        window.updateNotificationBadge();
+        window.renderNotifications();
+    }
+};
+
+window.showNotifications = () => {
+    // Mark all as read
+    state.notifications.forEach(n => n.read = true);
+    localStorage.setItem('srf_notifications', JSON.stringify(state.notifications));
+    if (window.saveToCloud) window.saveToCloud('notifications', state.notifications);
+
+    window.updateNotificationBadge();
+
+    document.getElementById('notification-modal').classList.remove('hidden');
+    window.renderNotifications();
+};
+
+window.handleNotificationClick = (linkId) => {
+    if (!linkId) return;
+    // Close modal
+    window.closeNotifications();
+    // Navigate (Custom logic based on link type)
+    // For now assuming it's catalogue ID
+    window.location.hash = '#/catalogue';
+    setTimeout(() => {
+        if (window.openCatalogueDetail) window.openCatalogueDetail(parseInt(linkId));
+        if (window.openCatalogueDetail) window.openCatalogueDetail(Number(linkId)); // Handle both types
+    }, 100);
+};
+
+window.updateNotificationBadge = () => {
+    const hasUnread = state.notifications.some(n => !n.read);
+    const homeBadge = document.getElementById('nav-home-badge');
+    const btnBadge = document.getElementById('btn-noti-badge');
+
+    if (hasUnread) {
+        if (homeBadge) homeBadge.classList.remove('hidden');
+        if (btnBadge) btnBadge.classList.remove('hidden');
+    } else {
+        if (homeBadge) homeBadge.classList.add('hidden');
+        if (btnBadge) btnBadge.classList.add('hidden');
+    }
+};
+
+function getTimeDifference(date) {
+    const now = new Date();
+    const diff = Math.floor((now - date) / 1000); // seconds
+    if (diff < 60) return 'Just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)} mins ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+    return `${Math.floor(diff / 86400)} days ago`;
+}
+
+window.closeNotifications = () => {
+    document.getElementById('notification-modal').classList.add('hidden');
+
+    // Mark all as read when closing logic? 
+    // Or maybe when opening? 
+    // Usually standard is: Open -> List shown -> Mark Read? 
+    // But let's do it on Open.
 };
 
 // --- 4. SETTINGS MODAL LOGIC ---
