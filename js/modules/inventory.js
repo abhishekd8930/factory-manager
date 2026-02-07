@@ -25,13 +25,13 @@ window.addInventoryItem = () => {
     // Add to top of list
     state.inventoryData.unshift(newItem);
     window.saveInventory();
-    
+
     // Reset Form
     document.getElementById('inv-new-name').value = '';
     document.getElementById('inv-new-qty').value = '';
     document.getElementById('inv-new-supplier').value = '';
     document.getElementById('inv-new-name').focus();
-    
+
     window.renderInventory();
 };
 
@@ -49,7 +49,7 @@ window.updateInventoryStock = (id, delta) => {
 };
 
 window.deleteInventoryItem = (id) => {
-    if(confirm("Permanently delete this item from stock?")) {
+    if (confirm("Permanently delete this item from stock?")) {
         state.inventoryData = state.inventoryData.filter(i => i.id !== id);
         window.saveInventory();
         window.renderInventory();
@@ -58,7 +58,7 @@ window.deleteInventoryItem = (id) => {
 
 window.saveInventory = () => {
     localStorage.setItem('srf_inventory', JSON.stringify(state.inventoryData));
-    if (window.saveToCloud) window.saveToCloud('srf_inventory', state.inventoryData);
+    if (window.saveToCloud) window.saveToCloud('inventoryData', state.inventoryData);
 };
 
 // --- 2. RENDER UI ---
@@ -111,7 +111,7 @@ window.renderInventory = () => {
         `;
         listContainer.appendChild(tr);
     });
-    
+
     // Update summary counters if you have them
     updateInventoryStats();
 };
@@ -125,10 +125,10 @@ function getTypeColor(type) {
 function updateInventoryStats() {
     const totalItems = state.inventoryData.length;
     const lowStock = state.inventoryData.filter(i => (i.type === 'Fabric' && i.quantity < 100) || (i.type === 'Trim' && i.quantity < 500)).length;
-    
+
     const statEl = document.getElementById('inv-stat-total');
     const lowEl = document.getElementById('inv-stat-low');
-    
-    if(statEl) statEl.innerText = totalItems;
-    if(lowEl) lowEl.innerText = lowStock;
+
+    if (statEl) statEl.innerText = totalItems;
+    if (lowEl) lowEl.innerText = lowStock;
 }

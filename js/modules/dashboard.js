@@ -80,7 +80,7 @@ window.saveLedger = () => {
 
     if (hasData) {
         localStorage.setItem('srf_production_history', JSON.stringify(state.historyData));
-        if (window.saveToCloud) window.saveToCloud('srf_production_history', state.historyData);
+        if (window.saveToCloud) window.saveToCloud('historyData', state.historyData);
         document.getElementById('ledger-body').innerHTML = '';
         window.addDashboardLedgerRow();
         window.renderCharts();
@@ -134,7 +134,7 @@ window.saveWashingLog = () => {
 
     if (hasData) {
         localStorage.setItem('srf_washing_history', JSON.stringify(state.washingData));
-        if (window.saveToCloud) window.saveToCloud('srf_washing_history', state.washingData);
+        if (window.saveToCloud) window.saveToCloud('washingData', state.washingData);
         document.getElementById('washing-body').innerHTML = '';
         window.addWashingRow();
         window.renderCharts();

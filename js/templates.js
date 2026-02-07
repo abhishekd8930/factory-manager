@@ -344,6 +344,9 @@ export const Templates = {
                         <button onclick="enableEditMode()" class="w-full text-left px-4 py-3 hover:bg-slate-50 text-slate-700 flex items-center gap-3 transition text-sm">
                             <i class="fa-solid fa-pen-to-square"></i> Edit Details
                         </button>
+                        <button onclick="triggerAddPage()" class="w-full text-left px-4 py-3 hover:bg-slate-50 text-slate-700 flex items-center gap-3 transition text-sm">
+                            <i class="fa-solid fa-file-circle-plus"></i> Add Page
+                        </button>
                         <button onclick="renameCatalogueItem()" class="w-full text-left px-4 py-3 hover:bg-slate-50 text-slate-700 flex items-center gap-3 transition text-sm">
                             <i class="fa-solid fa-pen"></i> Rename
                         </button>
@@ -425,6 +428,26 @@ export const Templates = {
                             </div>
                         </div>
                     </div>
+
+                    <!-- Additional Pages Gallery -->
+                    <div id="detail-pages-section" class="mt-8 border-t border-slate-100 pt-6">
+                        <h3 class="font-bold text-slate-800 mb-4">Additional Pages</h3>
+                        
+                        <!-- Front Pages -->
+                        <div class="mb-6">
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Front View Pages (<span id="count-front">0</span>/5)</h4>
+                            <div class="flex gap-4 overflow-x-auto pb-2" id="gallery-front"></div>
+                        </div>
+
+                        <!-- Back Pages -->
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Back View Pages (<span id="count-back">0</span>/5)</h4>
+                            <div class="flex gap-4 overflow-x-auto pb-2" id="gallery-back"></div>
+                        </div>
+                    </div>
+
+                    <!-- Hidden Input for Page Upload -->
+                    <input type="file" id="catalogue-page-upload" class="hidden" accept="image/*" onchange="handlePageUpload(this)">
                 </div>
 
                 <!-- Tab: Cutting Ledger -->

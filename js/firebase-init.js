@@ -2,29 +2,32 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import { getDatabase, ref, set, get, child, onValue } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
-// NEW: Import the Security Tools
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCmWoGK5SDReHxxcQrzbCxMycqEJGUak5U",
-    authDomain: "studio-9111487366-92e93.firebaseapp.com",
-    databaseURL: "https://studio-9111487366-92e93-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "studio-9111487366-92e93",
-    storageBucket: "studio-9111487366-92e93.firebasestorage.app",
-    messagingSenderId: "279210394974",
-    appId: "1:279210394974:web:4318b700875470aecdbbcf"
+    apiKey: "AIzaSyDeAvREXEottX1_jyFV2sCamSHW7DgW6AE",
+    authDomain: "smart-manager-by-abhi.firebaseapp.com",
+    projectId: "smart-manager-by-abhi",
+    storageBucket: "smart-manager-by-abhi.firebasestorage.app",
+    messagingSenderId: "382205577494",
+    appId: "1:382205577494:web:a99580da8b60ba945e6837",
+    measurementId: "G-E9FG4W9LHT",
+    // Updated to Asia-Southeast1 based on Firebase Warning
+    databaseURL: "https://smart-manager-by-abhi-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
 
 // Initialize App
 const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 const db = getDatabase(app);
-const auth = getAuth(app); // NEW: Initialize the Guard
+const auth = getAuth(app);
 
 // Expose Auth functions to window so other files can use them
 window.auth = auth;
-window.db = db; // NEW: Expose Database Instance
-window.dbRef = ref; // NEW: Expose ref
-window.onValue = onValue; // NEW: Expose Listener
+window.db = db;
+window.dbRef = ref;
+window.onValue = onValue;
 window.signInWithEmailAndPassword = signInWithEmailAndPassword;
 window.signOut = signOut;
 window.onAuthStateChanged = onAuthStateChanged;

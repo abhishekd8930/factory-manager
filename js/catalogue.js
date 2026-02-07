@@ -302,6 +302,7 @@ window.openCatalogueDetail = (id) => {
 
     document.getElementById('detail-image').src = item.src;
     document.getElementById('detail-image').onclick = () => openLightbox(item.src);
+    renderAdditionalPages(); // Render multi-page gallery
     document.getElementById('detail-title').innerText = item.name;
     document.getElementById('detail-description').value = item.description || "";
 
@@ -694,3 +695,129 @@ function endDrag() {
     document.removeEventListener('mousemove', drag);
     document.removeEventListener('mouseup', endDrag);
 }
+
+// --- MULTI-PAGE CATALOGUE LOGIC ---
+let activePageType = 'front'; // 'front' or 'back'
+
+window.triggerAddPage = () => {
+    // ask the user if it is the back or front page
+    const choice = prompt("Add Page:\nType 'F' for Front View\nType 'B' for Back View");
+    if (!choice) return;
+
+    const c = choice.toLowerCase().trim();
+    if (c === 'f' || c === 'front') {
+        activePageType = 'front';
+    } else if (c === 'b' || c === 'back') {
+        activePageType = 'back';
+    } else {
+        alert("Invalid selection. Please type 'F' or 'B'.");
+        return;
+    }
+
+    document.getElementById('catalogue-page-upload').click();
+    document.getElementById('catalogue-settings-menu').classList.add('hidden');
+};
+
+window.handlePageUpload = (input) => {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        if (file.size > 5000000) {
+            alert("File too large! Max 5MB.");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const src = e.target.result;
+            addPageToItem(activePageType, src);
+        };
+        reader.readAsDataURL(file);
+    }
+    input.value = ''; // Reset
+};
+
+function addPageToItem(type, src) {
+    catalogueItems = JSON.parse(localStorage.getItem('catalogueItems')) || [];
+    const idx = catalogueItems.findIndex(i => i.id === activeCatalogueId);
+    if (idx === -1) return;
+
+    const item = catalogueItems[idx];
+
+    // Init arrays if missing
+    if (!item.frontPages) item.frontPages = [];
+    if (!item.backPages) item.backPages = [];
+
+    const targetArray = type === 'front' ? item.frontPages : item.backPages;
+
+    if (targetArray.length >= 5) {
+        alert(`Maximum 5 ${type} pages allowed.`);
+        return;
+    }
+
+    targetArray.push(src);
+    catalogueItems[idx] = item;
+
+    localStorage.setItem('catalogueItems', JSON.stringify(catalogueItems));
+    if (window.saveToCloud) window.saveToCloud('catalogueItems', catalogueItems);
+
+    renderAdditionalPages();
+    alert("Page added successfully!");
+}
+
+window.renderAdditionalPages = () => {
+    catalogueItems = JSON.parse(localStorage.getItem('catalogueItems')) || [];
+    const item = catalogueItems.find(i => i.id === activeCatalogueId);
+    const galleryFront = document.getElementById('gallery-front');
+    const galleryBack = document.getElementById('gallery-back');
+
+    if (!item || !galleryFront || !galleryBack) return;
+
+    // Helper to render lists
+    const renderList = (pages, container, type, typeLabel) => {
+        container.innerHTML = '';
+        if (!pages) pages = [];
+
+        // Update Count
+        const countSpan = document.getElementById(`count-${typeLabel}`);
+        if (countSpan) countSpan.innerText = pages.length;
+
+        pages.forEach((src, index) => {
+            const div = document.createElement('div');
+            div.className = "w-24 h-24 flex-shrink-0 relative group rounded-lg overflow-hidden border border-slate-200";
+            div.innerHTML = `
+                <img src="${src}" class="w-full h-full object-cover cursor-pointer" onclick="openLightbox('${src}')">
+                <button onclick="deleteCataloguePage('${typeLabel}', ${index})" class="absolute top-1 right-1 bg-red-500 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-md">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            `;
+            container.appendChild(div);
+        });
+
+        if (pages.length === 0) {
+            container.innerHTML = `<p class="text-xs text-slate-400 italic p-2">No ${typeLabel} pages added.</p>`;
+        }
+    };
+
+    renderList(item.frontPages, galleryFront, 'frontPages', 'front');
+    renderList(item.backPages, galleryBack, 'backPages', 'back');
+};
+
+window.deleteCataloguePage = (type, index) => {
+    if (!confirm("Delete this page?")) return;
+
+    catalogueItems = JSON.parse(localStorage.getItem('catalogueItems')) || [];
+    const idx = catalogueItems.findIndex(i => i.id === activeCatalogueId);
+    if (idx === -1) return;
+
+    const item = catalogueItems[idx];
+    if (type === 'frontPages' || type === 'front') { // Handle both keys
+        if (item.frontPages) item.frontPages.splice(index, 1);
+    } else {
+        if (item.backPages) item.backPages.splice(index, 1);
+    }
+
+    localStorage.setItem('catalogueItems', JSON.stringify(catalogueItems));
+    if (window.saveToCloud) window.saveToCloud('catalogueItems', catalogueItems);
+
+    renderAdditionalPages();
+};

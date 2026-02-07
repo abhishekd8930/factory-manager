@@ -153,54 +153,5 @@ window.renderHistoryPage = () => {
 };
 
 
-// ===============================================
-// 2. FIREBASE DATABASE CONNECTION (NEW ADDITION)
-// ===============================================
-
-document.addEventListener('DOMContentLoaded', () => {
-    // We add a small delay to ensure Firebase (in main.js) has initialized
-    setTimeout(() => {
-        if (window.database) {
-            console.log("History Module: Connecting to Firebase Database...");
-            const db = window.database;
-
-            // --- LISTENER 1: Sync Production Data ---
-            db.ref('historyData').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    // Update the global state
-                    window.state.historyData = data;
-
-                    // Backup to LocalStorage (so it works offline next time)
-                    localStorage.setItem('srf_production_history', JSON.stringify(data));
-
-                    // If the user is currently looking at the History page, Refresh it automatically
-                    if (document.getElementById('history-page-content')) {
-                        window.renderHistoryPage();
-                    }
-                }
-            });
-
-            // --- LISTENER 2: Sync Washing Data ---
-            db.ref('washingData').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    // Update the global state
-                    window.state.washingData = data;
-
-                    // Backup to LocalStorage
-                    localStorage.setItem('srf_washing_history', JSON.stringify(data));
-
-                    // Refresh if viewing history
-                    if (document.getElementById('history-page-content')) {
-                        window.renderHistoryPage();
-                    }
-                }
-            });
-
-            console.log("History Module: Database Connected.");
-        } else {
-            console.warn("History Module: Firebase not detected. Using Local Data.");
-        }
-    }, 2000); // 2 second delay to wait for App Init
-});
+// Firebase sync handled centrally in state.js
+// Listener removed to prevent duplicate/legacy calls
