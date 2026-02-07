@@ -40,81 +40,149 @@ export const Templates = {
     </div>`,
 
     appLayout: () => `
-    <div id="app-view" class="h-screen flex overflow-hidden bg-slate-50">
-        <aside id="sidebar" class="w-64 bg-white border-r border-slate-200 h-full flex flex-col z-[60] transition-transform duration-300 absolute md:relative -translate-x-full md:translate-x-0">
-            <div class="p-4 pl-6 flex items-center gap-3">
-                <div class="text-2xl text-slate-600 cursor-pointer hover:text-blue-600 transition" onclick="toggleDesktopSidebar()">
-                    <i class="fa-solid fa-bars"></i>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span id="sidebar-logo-text" class="text-xl font-bold text-slate-700">SmartManager</span>
+    <div id="app-view" class="h-screen flex flex-col overflow-hidden bg-slate-50">
+        <!-- TOP HEADER -->
+        <header class="bg-white border-b border-slate-200 h-16 shrink-0 flex items-center justify-between px-4 z-[70] relative shadow-sm">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleDesktopSidebar()" class="text-slate-500 hover:text-indigo-600 transition p-2 rounded-full hover:bg-slate-100 focus:outline-none active:scale-95">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+                
+                <!-- Logo Moved to Header -->
+                <div class="flex items-center gap-3 select-none cursor-pointer" onclick="window.location.hash='#/home'">
+                     <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-md shadow-indigo-200 group">
+                        <i class="fa-solid fa-bolt text-lg drop-shadow-sm group-hover:scale-110 transition-transform"></i>
+                    </div>
+                    <span class="text-xl font-bold text-slate-800 tracking-tight">Smart Manager</span>
                 </div>
             </div>
-            <nav class="flex-1 px-4 space-y-2 mt-6 overflow-y-auto">
-                <a href="#/home" class="nav-btn w-full text-left p-3 rounded-full transition font-medium flex items-center gap-3 text-slate-500 hover:bg-slate-50 hover:text-slate-800 relative" id="nav-home">
-                    <i class="fa-solid fa-house w-5"></i> 
-                    <div id="nav-home-badge" class="hidden w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white absolute top-3 left-7"></div>
-                    <span class="nav-label">Home</span> <span class="nav-label ml-auto text-[10px] opacity-50">Alt+1</span>
-                </a>
-                <a href="#/catalogue" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-catalogue">
-                    <i class="fa-solid fa-book-open w-5"></i> <span class="nav-label">Catalogue</span> <span class="nav-label ml-auto text-[10px] opacity-50">Alt+2</span>
-                </a>
-                <a href="#/units" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-units">
-                    <i class="fa-solid fa-sitemap w-5"></i> <span class="nav-label">Managing Units</span> <span class="nav-label ml-auto text-[10px] opacity-50">Alt+3</span>
-                </a>
-                <a href="#/staff" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-staff">
-                    <i class="fa-solid fa-users w-5"></i> <span class="nav-label">Staff</span> <span class="nav-label ml-auto text-[10px] opacity-50">Alt+4</span>
-                </a>
-                <a href="#/history" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-history">
-                    <i class="fa-solid fa-clock-rotate-left w-5"></i> <span class="nav-label">History</span> <span class="nav-label ml-auto text-[10px] opacity-50">Alt+5</span>
-                </a>
-                <a href="#/dashboard" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3" id="nav-dashboard">
-                    <i class="fa-solid fa-chart-pie w-5"></i> <span class="nav-label">Analytics</span> <span class="nav-label ml-auto text-[10px] opacity-50">Alt+6</span>
-                </a>
-            </nav>
-            <div class="p-4 border-t border-slate-100 bg-slate-50/50">
-                <button onclick="openSettings()" class="nav-btn w-full mb-4 text-left p-3 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-md transition font-bold text-sm flex items-center gap-3 group">
-                    <i class="fa-solid fa-gear group-hover:rotate-90 transition duration-500 w-5"></i>
-                    <span class="nav-label flex-1">Settings</span>
-                    <i class="nav-label fa-solid fa-chevron-right text-xs opacity-30"></i>
+
+            <!-- SEARCH BAR (Using flex-1 to fill space properly) -->
+            <div class="hidden md:flex flex-1 max-w-xl mx-8 relative group">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors"></i>
+                <input type="text" placeholder="Search orders, staff, or patterns..." 
+                    class="w-full bg-slate-100 border-none rounded-full py-2.5 pl-11 pr-4 text-sm focus:ring-2 focus:ring-indigo-500/50 focus:bg-white transition placeholder-slate-400 text-slate-700 outline-none shadow-sm">
+            </div>
+
+            <!-- RIGHT ACTIONS -->
+            <div class="flex items-center gap-2 md:gap-4">
+                 <!-- Status pill (hidden small mobile) -->
+                <div class="hidden lg:flex items-center gap-2 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full text-xs font-bold border border-emerald-100 select-none">
+                    <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                    <span>Online</span>
+                </div>
+
+                <div class="h-6 w-px bg-slate-200 mx-1 hidden md:block"></div>
+
+                <button onclick="window.showNotifications()" class="relative p-2.5 text-slate-500 hover:text-indigo-600 hover:bg-slate-100 rounded-full transition group active:scale-95" title="Notifications">
+                    <i class="fa-solid fa-bell text-xl group-hover:animate-swing"></i>
+                    <div id="header-noti-badge" class="hidden w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white absolute top-1.5 right-2"></div>
                 </button>
-                <div class="bg-white rounded-xl p-3 border border-slate-200 shadow-sm flex items-center gap-3 justify-center">
-                    <i id="status-cloud-icon" class="fa-solid fa-cloud text-slate-400 text-lg transition-colors duration-300"></i>
-                    <div class="nav-label flex-1 relative overflow-hidden">
-                        <p class="text-xs text-slate-400 font-semibold uppercase whitespace-nowrap">System Status</p>
-                        <div class="flex items-center gap-2 mt-1">
-                            <div class="w-2 h-2 rounded-full bg-emerald-500 shrink-0" id="status-dot"></div>
-                            <span class="text-xs font-bold text-slate-600 whitespace-nowrap truncate" id="status-text">Local Data Active</span>
+
+                <button onclick="window.openProfile()" class="w-9 h-9 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm border-2 border-white shadow-sm hover:scale-105 active:scale-95 transition" title="Profile">
+                    ${(window.CONFIG && window.CONFIG.OWNER_NAME) ? window.CONFIG.OWNER_NAME[0].toUpperCase() : 'M'}
+                </button>
+            </div>
+        </header>
+
+        <!-- MAIN LAYOUT (Sidebar + Content) -->
+        <div class="flex-1 flex overflow-hidden relative">
+            
+            <!-- SIDEBAR -->
+            <aside id="sidebar" class="w-20 bg-white border-r border-slate-200 h-full flex flex-col z-[60] transition-all duration-300 absolute md:relative -translate-x-full md:translate-x-0">
+                <!-- Branding removed from here -->
+
+                <nav class="flex-1 px-2 space-y-2 mt-6 overflow-y-auto custom-scrollbar">
+                    <a href="#/home" class="nav-btn w-full text-left p-3 rounded-full transition font-medium flex items-center gap-3 text-slate-500 hover:bg-slate-50 hover:text-slate-800 relative group justify-center" id="nav-home">
+                        <i class="fa-solid fa-house w-5 text-center"></i> 
+                        <div id="nav-home-badge" class="hidden w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white absolute top-3 left-7"></div>
+                        <span class="nav-label hidden">Home</span> <span class="nav-label ml-auto text-[10px] opacity-50 hidden">Alt+1</span>
+                    </a>
+                    
+                    <a href="#/catalogue" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3 group justify-center" id="nav-catalogue">
+                        <i class="fa-solid fa-book-open w-5 text-center"></i> 
+                        <span class="nav-label hidden">Catalogue</span> <span class="nav-label ml-auto text-[10px] opacity-50 hidden">Alt+2</span>
+                    </a>
+                    
+                    <a href="#/units" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3 group justify-center" id="nav-units">
+                        <i class="fa-solid fa-sitemap w-5 text-center"></i> 
+                        <span class="nav-label hidden">Managing Units</span> <span class="nav-label ml-auto text-[10px] opacity-50 hidden">Alt+3</span>
+                    </a>
+                    
+                    <a href="#/staff" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3 group justify-center" id="nav-staff">
+                        <i class="fa-solid fa-users w-5 text-center"></i> 
+                        <span class="nav-label hidden">Staff</span> <span class="nav-label ml-auto text-[10px] opacity-50 hidden">Alt+4</span>
+                    </a>
+
+                    <a href="#/history" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3 group justify-center" id="nav-history">
+                        <i class="fa-solid fa-clock-rotate-left w-5 text-center"></i> 
+                        <span class="nav-label hidden">History</span> <span class="nav-label ml-auto text-[10px] opacity-50 hidden">Alt+5</span>
+                    </a>
+                    
+                    <a href="#/dashboard" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3 group justify-center" id="nav-dashboard">
+                        <i class="fa-solid fa-chart-pie w-5 text-center"></i> 
+                        <span class="nav-label hidden">Analytics</span> <span class="nav-label ml-auto text-[10px] opacity-50 hidden">Alt+6</span>
+                    </a>
+
+                    <a href="#/accounts" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3 group justify-center" id="nav-accounts">
+                         <i class="fa-solid fa-file-invoice-dollar w-5 text-center"></i>
+                         <span class="nav-label hidden">Expenses</span>
+                    </a>
+                </nav>
+                
+                <!-- Bottom Status -->
+                <div class="p-3 border-t border-slate-100 bg-slate-50/50">
+                     <button onclick="openSettings()" class="nav-btn w-full mb-3 text-left p-3 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-md transition font-bold text-sm flex items-center gap-3 group justify-center">
+                        <i class="fa-solid fa-gear group-hover:rotate-90 transition duration-500 w-5 text-center"></i>
+                        <span class="nav-label flex-1 text-sm hidden">App Settings</span>
+                    </button>
+
+                    <!-- Restore Cloud Status -->
+                    <div class="bg-white rounded-xl p-3 border border-slate-200 shadow-sm flex items-center gap-3 mb-2 justify-center group hover:border-indigo-200 transition">
+                        <i id="status-cloud-icon" class="fa-solid fa-cloud text-slate-400 text-lg transition-colors duration-300 group-hover:text-indigo-400"></i>
+                        <div class="nav-label flex-1 relative overflow-hidden hidden">
+                            <p class="text-[10px] text-slate-400 font-semibold uppercase whitespace-nowrap tracking-wide">System Status</p>
+                            <div class="flex items-center gap-2 mt-0.5">
+                                <div class="w-2 h-2 rounded-full bg-emerald-500 shrink-0 animate-pulse" id="status-dot"></div>
+                                <span class="text-xs font-bold text-slate-600 whitespace-nowrap truncate" id="status-text">Local Data Active</span>
+                            </div>
                         </div>
                     </div>
+                    
+                    <!-- Version Info -->
+                    <div class="text-[10px] text-slate-400 text-center nav-label font-mono select-none opacity-60">
+                        v5.6 • Build 2026
+                    </div>
                 </div>
-            </div>
-        </aside>
+            </aside>
 
-        <main class="flex-1 h-full overflow-y-auto relative scroll-smooth p-4 pb-24 md:p-8 md:pb-8" onclick="closeSidebarOnMobile()">
-            <div id="router-outlet"></div>
-        </main>
+            <!-- MAIN CONTENT AREA -->
+            <main class="flex-1 h-full overflow-y-auto relative scroll-smooth p-4 pb-24 md:p-8 md:pb-8 custom-scrollbar" onclick="closeSidebarOnMobile()">
+                <div id="router-outlet" class="max-w-7xl mx-auto min-h-full"></div>
+            </main>
+        </div>
 
-        <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around p-2 pb-4 z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-            <a href="#/home" id="mobile-nav-home" class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-400 hover:text-indigo-600 transition">
+        <!-- MOBILE NAV (Bottom - Kept for accessibility on small screens) -->
+        <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around p-2 pb-safe z[80] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+            <a href="#/home" id="mobile-nav-home" class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-400 hover:text-indigo-600 transition active:scale-95">
                 <i class="fa-solid fa-house text-xl mb-1"></i>
                 <span class="text-[10px] font-bold">Home</span>
             </a>
-            <a href="#/dashboard" id="mobile-nav-dashboard" class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-400 hover:text-indigo-600 transition">
-                <i class="fa-solid fa-chart-pie text-xl mb-1"></i>
-                <span class="text-[10px] font-bold">Stats</span>
+            <a href="#/catalogue" id="mobile-nav-catalogue" class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-400 hover:text-indigo-600 transition active:scale-95">
+                <i class="fa-solid fa-book-open text-xl mb-1"></i>
+                <span class="text-[10px] font-bold">Catalogue</span>
             </a>
-            <button onclick="toggleSidebar()" class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition border border-transparent active:scale-95">
+            <button onclick="toggleDesktopSidebar()" class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition border border-transparent active:scale-95">
                 <i class="fa-solid fa-bars text-xl mb-1"></i>
                 <span class="text-[10px] font-bold">Menu</span>
             </button>
-            <a href="#/staff" id="mobile-nav-staff" class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-400 hover:text-indigo-600 transition">
+            <a href="#/dashboard" id="mobile-nav-dashboard" class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-400 hover:text-indigo-600 transition active:scale-95">
+                <i class="fa-solid fa-chart-pie text-xl mb-1"></i>
+                <span class="text-[10px] font-bold">Reports</span>
+            </a>
+            <a href="#/staff" id="mobile-nav-staff" class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-400 hover:text-indigo-600 transition active:scale-95">
                 <i class="fa-solid fa-users text-xl mb-1"></i>
                 <span class="text-[10px] font-bold">Staff</span>
-            </a>
-            <a href="#/attendance" id="mobile-nav-attendance" class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-400 hover:text-indigo-600 transition">
-                <i class="fa-solid fa-calendar-check text-xl mb-1"></i>
-                <span class="text-[10px] font-bold">Attn.</span>
             </a>
         </div>
     </div>`,
@@ -522,31 +590,63 @@ export const Templates = {
                 <p class="text-slate-500 mt-1">Detailed charts and production history.</p>
             </div>
         </div>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-slate-700 flex items-center gap-2">
-                        <i class="fa-solid fa-chart-column text-indigo-500"></i> Annual Production
-                    </h3>
+        <div class="flex justify-between items-center mb-4 relative z-50">
+            <h3 class="text-xl font-bold text-slate-800">Charts</h3>
+             <div class="relative">
+                <button onclick="toggleChartMenu()" class="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-500 transition">
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+                <div id="chart-settings-menu" class="hidden absolute right-0 top-10 w-48 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-20">
+                    <button onclick="changeGlobalChartType('line')" class="w-full text-left px-4 py-3 hover:bg-slate-50 text-slate-700 flex items-center gap-3 transition text-sm">
+                        <i class="fa-solid fa-chart-line text-indigo-500"></i> Line Chart
+                    </button>
+                    <button onclick="changeGlobalChartType('bar')" class="w-full text-left px-4 py-3 hover:bg-slate-50 text-slate-700 flex items-center gap-3 transition text-sm">
+                        <i class="fa-solid fa-chart-simple text-blue-500"></i> Bar Chart
+                    </button>
+                    <button onclick="changeGlobalChartType('pie')" class="w-full text-left px-4 py-3 hover:bg-slate-50 text-slate-700 flex items-center gap-3 transition text-sm">
+                        <i class="fa-solid fa-chart-pie text-emerald-500"></i> Pie Chart
+                    </button>
                 </div>
-                <div class="chart-container h-64"><canvas id="revenueChart"></canvas></div>
-            </div>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-slate-700 flex items-center gap-2">
-                        <i class="fa-solid fa-chart-line text-emerald-500"></i> Weekly Analytics
-                    </h3>
-                </div>
-                <div class="chart-container h-64"><canvas id="weeklyChart"></canvas></div>
             </div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 mb-8">
-            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                <h3 class="font-bold text-slate-700 mb-4">Washing Output (This Month)</h3>
-                <div class="h-64">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- PRODUCTION CHART -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-slate-700 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-indigo-500"></i> Production Trends
+                    </h3>
+                    <div class="bg-slate-100 p-1 rounded-lg flex text-xs font-bold">
+                        <button onclick="updateChartMode('production', 'daily')" id="btn-prod-daily" class="px-3 py-1 rounded-md transition text-slate-500 hover:text-indigo-600">Day</button>
+                        <button onclick="updateChartMode('production', 'weekly')" id="btn-prod-weekly" class="px-3 py-1 rounded-md bg-white text-indigo-600 shadow-sm transition">Week</button>
+                        <button onclick="updateChartMode('production', 'annual')" id="btn-prod-annual" class="px-3 py-1 rounded-md transition text-slate-500 hover:text-indigo-600">Year</button>
+                    </div>
+                </div>
+                <div class="chart-container h-64 relative">
+                    <canvas id="productionChart"></canvas>
+                </div>
+            </div>
+
+            <!-- WASHING CHART -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-slate-700 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-column text-blue-500"></i> Washing Analytics
+                    </h3>
+                    <div class="bg-slate-100 p-1 rounded-lg flex text-xs font-bold">
+                        <button onclick="updateChartMode('washing', 'daily')" id="btn-wash-daily" class="px-3 py-1 rounded-md transition text-slate-500 hover:text-blue-600">Day</button>
+                        <button onclick="updateChartMode('washing', 'weekly')" id="btn-wash-weekly" class="px-3 py-1 rounded-md bg-white text-blue-600 shadow-sm transition">Week</button>
+                        <button onclick="updateChartMode('washing', 'annual')" id="btn-wash-annual" class="px-3 py-1 rounded-md transition text-slate-500 hover:text-blue-600">Year</button>
+                    </div>
+                </div>
+                <div class="chart-container h-64 relative">
                     <canvas id="washingChart"></canvas>
                 </div>
             </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 mb-8">
+            <!-- Salary Pie Chart moved to full width or left alongside -->
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm md:col-span-2">
             <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                 <h3 class="font-bold text-slate-700 mb-4">Salary Distribution</h3>
                 <div class="h-64 flex justify-center">

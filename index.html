@@ -47,8 +47,13 @@
 
     <div id="app-root"></div>
 
-    <div id="notification-modal" class="hidden fixed inset-0 bg-black/40 z-[100] flex items-center justify-center backdrop-blur-sm p-4 fade-in">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-100 flex flex-col max-h-[80vh]">
+    <!-- NOTIFICATION RIGHT-SIDE PANEL -->
+    <div id="notification-modal" class="hidden fixed inset-0 z-[100]">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity opacity-0" id="notification-backdrop" onclick="closeNotifications()"></div>
+        
+        <!-- Panel -->
+        <div class="absolute right-0 top-0 h-full w-full max-w-sm bg-white shadow-2xl transform transition-transform translate-x-full duration-300 ease-in-out flex flex-col" id="notification-panel">
             <div class="bg-slate-50 p-4 border-b border-slate-100 flex justify-between items-center shrink-0">
                 <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
                     <i class="fa-solid fa-bell text-indigo-500"></i> Notifications
@@ -57,12 +62,11 @@
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <div class="p-4 overflow-y-auto flex-1 space-y-3 bg-white" id="notification-list">
+            <div class="p-4 overflow-y-auto flex-1 space-y-3 bg-white custom-scrollbar" id="notification-list">
                 <!-- Items injected here -->
             </div>
             <div class="p-3 bg-slate-50 border-t border-slate-100 flex justify-between items-center shrink-0">
                 <button onclick="clearAllNotifications()" class="text-xs font-bold text-red-500 hover:text-red-700">Clear All</button>
-                <button onclick="closeNotifications()" class="text-xs font-bold text-indigo-600 hover:text-indigo-800">Close</button>
             </div>
         </div>
     </div>
@@ -84,73 +88,127 @@
         </div>
     </div>
 
-    <div id="settings-modal"
-        class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-end md:items-center justify-center p-4 fade-in">
-        <div class="bg-white w-full max-w-sm rounded-3xl shadow-2xl overflow-hidden transform transition-all scale-100">
-            <div class="bg-slate-50 p-6 border-b border-slate-100 flex justify-between items-center">
+    <!-- PROFILE RIGHT-SIDE PANEL -->
+    <div id="profile-panel" class="hidden fixed inset-0 z-[100]">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity opacity-0" id="profile-backdrop" onclick="closeProfile()"></div>
+
+        <!-- Panel -->
+        <div class="absolute right-0 top-0 h-full w-full max-w-sm bg-white shadow-2xl transform transition-transform translate-x-full duration-300 ease-in-out flex flex-col" id="profile-panel-content">
+            <div class="bg-indigo-600 text-white p-6 pb-12 relative shrink-0">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="text-xl font-bold">Profile</h3>
+                        <p class="text-indigo-200 text-xs">Manage your account</p>
+                    </div>
+                    <button onclick="closeProfile()" aria-label="Close Profile"
+                        class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition backdrop-blur-sm">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- PROFILE HEADER (Overlapping) -->
+                <div class="absolute -bottom-10 left-6 flex items-end gap-4">
+                    <div id="profile-avatar" class="w-20 h-20 rounded-2xl bg-white p-1 shadow-lg transform rotate-3">
+                        <div class="w-full h-full bg-slate-100 rounded-xl flex items-center justify-center text-3xl font-bold text-slate-400 border border-slate-200">
+                             <i class="fa-solid fa-user"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-12 px-6 pb-6 flex-1 overflow-y-auto custom-scrollbar space-y-6">
+                <!-- USER INFO -->
                 <div>
-                    <h3 class="text-xl font-bold text-slate-800">App Settings</h3>
-                    <p class="text-xs text-slate-500">Manage your factory data</p>
+                    <h2 id="profile-name" class="text-2xl font-bold text-slate-800 leading-tight">Guest User</h2>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span id="profile-role" class="bg-indigo-50 text-indigo-700 text-xs font-bold px-2 py-0.5 rounded-md border border-indigo-100">
+                             Visitor
+                        </span>
+                        <div class="w-1 h-1 rounded-full bg-slate-300"></div>
+                        <span id="profile-unit" class="text-xs text-slate-500 font-medium">Unknown Unit</span>
+                    </div>
+                </div>
+
+                <!-- DETAILS GRID -->
+                <div class="grid grid-cols-2 gap-3">
+                     <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                         <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1">Employee ID</p>
+                         <p id="profile-id" class="font-mono text-sm font-semibold text-slate-700">--</p>
+                     </div>
+                     <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                         <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1">Email / Phone</p>
+                         <p id="profile-email" class="font-mono text-sm font-semibold text-slate-700 truncate">--</p>
+                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS LEFT-SIDE PANEL -->
+    <div id="settings-modal" class="hidden fixed inset-0 z-[100]">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity opacity-0" id="settings-backdrop" onclick="closeSettings()"></div>
+
+        <!-- Panel -->
+        <div class="absolute left-0 top-0 h-full w-72 bg-white shadow-2xl transform transition-transform -translate-x-full duration-300 ease-in-out flex flex-col" id="settings-panel">
+            <div class="bg-indigo-600 p-4 border-b border-indigo-700 flex justify-between items-center text-white">
+                <div>
+                    <h3 class="font-bold text-lg">Settings</h3>
+                    <p class="text-[10px] text-indigo-200">System Controls</p>
                 </div>
                 <button onclick="closeSettings()" aria-label="Close Settings"
-                    class="w-8 h-8 rounded-full bg-white border border-slate-200 text-slate-400 hover:text-slate-700 flex items-center justify-center transition">
-                    <i class="fa-solid fa-xmark"></i>
+                    class="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition backdrop-blur-md">
+                    <i class="fa-solid fa-angles-left text-xs"></i>
                 </button>
             </div>
-            <div class="p-6 space-y-3">
-                <div class="flex items-center gap-4 p-4 bg-indigo-50 rounded-2xl border border-indigo-100 mb-6">
-                    <div
-                        class="w-12 h-12 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xl font-bold">
-                        <i class="fa-solid fa-user-tie"></i>
-                    </div>
-                    <div>
-                        <p class="font-bold text-indigo-900 text-sm">Owner Account</p>
-                        <p class="text-xs text-indigo-500">Admin Access</p>
-                    </div>
-                </div>
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Data Management</p>
+            <div class="p-4 space-y-2 flex-1 overflow-y-auto custom-scrollbar">
+                
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1 mt-2">Data</p>
                 <button onclick="downloadBackup()"
-                    class="w-full text-left p-4 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-slate-200 transition flex items-center gap-4 group">
+                    class="w-full text-left p-3 rounded-lg border border-slate-100 hover:bg-slate-50 hover:border-slate-200 transition flex items-center gap-3 group">
                     <div
-                        class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition">
+                        class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm group-hover:scale-110 transition">
                         <i class="fa-solid fa-cloud-arrow-down"></i>
                     </div>
                     <div>
-                        <p class="font-bold text-slate-700 text-sm">Backup Data</p>
-                        <p class="text-[10px] text-slate-400">Download JSON file</p>
+                        <p class="font-bold text-slate-700 text-sm">Backup</p>
+                        <p class="text-[9px] text-slate-400">Download Data</p>
                     </div>
                 </button>
 
                 <div class="h-px bg-slate-100 my-2"></div>
 
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Control Panel</p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Admin</p>
                 <button onclick="openControlPanel()"
-                    class="w-full text-left p-4 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-slate-200 transition flex items-center gap-4 group">
+                    class="w-full text-left p-3 rounded-lg border border-slate-100 hover:bg-slate-50 hover:border-slate-200 transition flex items-center gap-3 group">
                     <div
-                        class="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center group-hover:bg-slate-800 group-hover:text-white transition">
+                        class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center text-sm group-hover:bg-slate-800 group-hover:text-white transition">
                         <i class="fa-solid fa-lock"></i>
                     </div>
                     <div>
-                        <p class="font-bold text-slate-700 text-sm">Restricted Access</p>
-                        <p class="text-[10px] text-slate-400">Owner Configuration</p>
+                        <p class="font-bold text-slate-700 text-sm">Control Panel</p>
+                        <p class="text-[9px] text-slate-400">Owner Access</p>
                     </div>
                 </button>
+                
                 <div class="h-px bg-slate-100 my-2"></div>
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Session</p>
-                <button onclick="logout()"
-                    class="w-full text-left p-4 rounded-xl border border-red-50 hover:bg-red-50 hover:border-red-100 transition flex items-center gap-4 group">
-                    <div
-                        class="w-10 h-10 rounded-full bg-red-100 text-red-500 flex items-center justify-center group-hover:scale-110 transition">
-                        <i class="fa-solid fa-power-off"></i>
-                    </div>
-                    <div>
-                        <p class="font-bold text-red-600 text-sm">Sign Out</p>
-                        <p class="text-[10px] text-red-300">End current session</p>
-                    </div>
-                </button>
+                
+                <div class="mt-auto pt-4">
+                    <button onclick="logout()"
+                        class="w-full text-left p-3 rounded-lg border border-red-50 bg-red-50/50 hover:bg-red-50 hover:border-red-100 transition flex items-center gap-3 group">
+                        <div
+                            class="w-8 h-8 rounded-lg bg-red-100 text-red-500 flex items-center justify-center text-sm group-hover:scale-110 transition">
+                            <i class="fa-solid fa-power-off"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-red-600 text-sm">Sign Out</p>
+                        </div>
+                    </button>
+                </div>
             </div>
-            <div class="bg-slate-50 p-3 text-center border-t border-slate-100">
-                <p class="text-[10px] text-slate-300 font-mono">v5.5 Build 2025</p>
+            <div class="bg-slate-50 p-2 text-center border-t border-slate-100 shrink-0">
+                <p class="text-[9px] text-slate-300 font-mono">Build 2026</p>
             </div>
         </div>
     </div>

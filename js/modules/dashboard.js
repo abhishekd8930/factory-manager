@@ -188,101 +188,271 @@ window.renderCharts = () => {
     }
 
     // --- DATA PREPARATION ---
-    const monthlyProd = new Array(12).fill(0);
-    const weeklyProd = new Array(4).fill(0);
-    const weeklyWash = new Array(4).fill(0);
+    // --- STATE & CONFIG ---
+    if (!state.chartModes) state.chartModes = { production: 'weekly', washing: 'weekly' };
 
+    // --- HELPER: Update Mode & Re-render ---
+    window.updateChartMode = (type, mode) => {
+        state.chartModes[type] = mode;
+
+        // Update Button Styles
+        ['daily', 'weekly', 'annual'].forEach(m => {
+            const btn = document.getElementById(`btn-${type === 'production' ? 'prod' : 'wash'}-${m}`);
+            if (btn) {
+                if (m === mode) {
+                    btn.className = "px-3 py-1 rounded-md bg-white shadow-sm transition " + (type === 'production' ? 'text-indigo-600' : 'text-blue-600');
+                } else {
+                    btn.className = "px-3 py-1 rounded-md transition text-slate-500 " + (type === 'production' ? 'hover:text-indigo-600' : 'hover:text-blue-600');
+                }
+            }
+        });
+
+        window.renderCharts();
+    };
+
+
+    // --- HELPER: Toggle Menu ---
+    window.toggleChartMenu = () => {
+        const menu = document.getElementById('chart-settings-menu');
+        if (menu) menu.classList.toggle('hidden');
+    };
+
+    // --- HELPER: Change Global Chart Type ---
+    window.changeGlobalChartType = (type) => {
+        state.chartTypePreference = type;
+
+        if (type === 'pie') {
+            // Auto-switch to annual view for both charts
+            state.chartModes.production = 'annual';
+            state.chartModes.washing = 'annual';
+
+            // Helper to update buttons visual state
+            const updateButtons = (chartType) => {
+                ['daily', 'weekly', 'annual'].forEach(m => {
+                    const btn = document.getElementById(`btn-${chartType === 'production' ? 'prod' : 'wash'}-${m}`);
+                    if (btn) {
+                        if (m === 'annual') {
+                            btn.className = "px-3 py-1 rounded-md bg-white shadow-sm transition " + (chartType === 'production' ? 'text-indigo-600' : 'text-blue-600');
+                        } else {
+                            btn.className = "px-3 py-1 rounded-md transition text-slate-500 " + (chartType === 'production' ? 'hover:text-indigo-600' : 'hover:text-blue-600');
+                        }
+                    }
+                });
+            };
+
+            updateButtons('production');
+            updateButtons('washing');
+        }
+
+        window.toggleChartMenu();
+        window.renderCharts();
+    };
+
+    // --- DATA PREPARATION ---
     const now = new Date();
-    const currentMonthIndex = now.getMonth();
+    const currentMonth_Index = now.getMonth();
     const currentYear = now.getFullYear();
-    const fiscalYearStart = (currentMonthIndex >= 3) ? currentYear : currentYear - 1;
+    const daysInMonth = new Date(currentYear, currentMonth_Index + 1, 0).getDate();
 
-    // Production Data
+    // Arrays for different views
+    const prodDataVals = {
+        daily: new Array(daysInMonth).fill(0),
+        weekly: new Array(4).fill(0),
+        annual: new Array(12).fill(0)
+    };
+    const washDataVals = {
+        daily: new Array(daysInMonth).fill(0),
+        weekly: new Array(4).fill(0),
+        annual: new Array(12).fill(0)
+    };
+
+    const fiscalYearStart = (currentMonth_Index >= 3) ? currentYear : currentYear - 1;
+
+    // --- PROCESS PRODUCTION DATA ---
     state.historyData.forEach(d => {
         if (d.type && d.type !== 'production') return;
         const dt = new Date(d.fullDate);
         const m = dt.getMonth();
         const y = dt.getFullYear();
-        const dataFiscalYear = (m >= 3) ? y : y - 1;
+        const day = dt.getDate();
+        const total = Number(d.total || 0);
 
+        // 1. Annual (Fiscal Year)
+        const dataFiscalYear = (m >= 3) ? y : y - 1;
         if (dataFiscalYear === fiscalYearStart) {
-            monthlyProd[(m + 9) % 12] += Number(d.total || 0);
+            prodDataVals.annual[(m + 9) % 12] += total;
         }
-        if (y === currentYear && m === currentMonthIndex) {
-            const day = dt.getDate();
+
+        // 2. Weekly & Daily (Current Month Only)
+        if (y === currentYear && m === currentMonth_Index) {
+            // Weekly
             let weekIdx = Math.floor((day - 1) / 7);
             if (weekIdx > 3) weekIdx = 3;
-            if (weekIdx >= 0) weeklyProd[weekIdx] += Number(d.total || 0);
+            prodDataVals.weekly[weekIdx] += total;
+
+            // Daily
+            prodDataVals.daily[day - 1] += total;
         }
     });
 
-    // Washing Data (Processing for THIS MONTH only)
+    // --- PROCESS WASHING DATA ---
     if (state.washingData && Array.isArray(state.washingData)) {
         state.washingData.forEach(d => {
             if (!d.fullDate) return;
             const dt = new Date(d.fullDate);
             const m = dt.getMonth();
             const y = dt.getFullYear();
+            const day = dt.getDate();
+            const total = Number(d.total || 0);
 
-            if (y === currentYear && m === currentMonthIndex) {
-                const day = dt.getDate();
+            // 1. Annual
+            const dataFiscalYear = (m >= 3) ? y : y - 1;
+            if (dataFiscalYear === fiscalYearStart) {
+                washDataVals.annual[(m + 9) % 12] += total;
+            }
+
+            // 2. Weekly & Daily
+            if (y === currentYear && m === currentMonth_Index) {
                 let weekIdx = Math.floor((day - 1) / 7);
                 if (weekIdx > 3) weekIdx = 3;
-                if (weekIdx >= 0) weeklyWash[weekIdx] += Number(d.total || 0);
+                washDataVals.weekly[weekIdx] += total;
+                washDataVals.daily[day - 1] += total;
             }
         });
     }
 
-    // --- CHART 1: PRODUCTION (ANNUAL) ---
-    const ctx1 = document.getElementById('revenueChart');
-    if (window.chart1) window.chart1.destroy();
+    // --- DETERMINE CHART TYPE BASED ON CONSTRAINTS ---
+    const getChartType = (mode) => {
+        const pref = state.chartTypePreference || 'line'; // Default to line
+
+        // Constraint 1: Daily reports cannot be Bar (force Line)
+        if (mode === 'daily' && pref === 'bar') return 'line';
+
+        // Constraint 2: Pie chart only for Annual (force Line for others)
+        if (pref === 'pie' && mode !== 'annual') return 'line';
+
+        return pref;
+    };
+
+    // --- RENDER CHART 1: PRODUCTION ---
+    const ctx1 = document.getElementById('productionChart');
+    if (window.prodChartInstance) window.prodChartInstance.destroy();
     if (ctx1) {
-        window.chart1 = new Chart(ctx1, {
-            type: 'bar',
-            data: {
-                labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
-                datasets: [{ label: `Production`, data: monthlyProd, backgroundColor: '#6366f1', borderRadius: 4 }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true } }, scales: { x: { grid: { display: false } }, y: { border: { display: false } } } }
-        });
-    }
+        let labels, data;
+        const mode = state.chartModes.production;
+        const chartType = getChartType(mode);
 
-    // --- CHART 2: PRODUCTION (WEEKLY) ---
-    const ctx2 = document.getElementById('weeklyChart');
-    if (window.chart2) window.chart2.destroy();
-    if (ctx2) {
-        window.chart2 = new Chart(ctx2, {
-            type: 'line',
-            data: {
-                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                datasets: [{ label: 'This Month', data: weeklyProd, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', tension: 0.4, fill: true, pointBackgroundColor: '#fff', pointBorderColor: '#10b981', pointBorderWidth: 2 }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { border: { display: false }, beginAtZero: true } } }
-        });
-    }
+        if (mode === 'daily') {
+            labels = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+            data = prodDataVals.daily;
+        } else if (mode === 'weekly') {
+            labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4+'];
+            data = prodDataVals.weekly;
+        } else {
+            labels = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
+            data = prodDataVals.annual;
+        }
 
-    // --- CHART 3: WASHING (MONTHLY/WEEKLY) ---
-    // Change: Thinner Bars (barPercentage)
-    const ctx3 = document.getElementById('washingChart');
-    if (window.chart3) window.chart3.destroy();
-    if (ctx3) {
-        window.chart3 = new Chart(ctx3, {
-            type: 'bar',
+        window.prodChartInstance = new Chart(ctx1, {
+            type: chartType,
             data: {
-                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                labels: labels,
                 datasets: [{
-                    label: `Washed Pcs`,
-                    data: weeklyWash,
-                    backgroundColor: '#3b82f6',
+                    label: 'Production',
+                    data: data,
+                    backgroundColor: chartType === 'pie' ? [
+                        '#ef4444', // Red
+                        '#3b82f6', // Blue
+                        '#eab308', // Yellow
+                        '#22c55e', // Green
+                        '#a855f7', // Purple
+                        '#f97316', // Orange
+                        '#ec4899', // Pink
+                        '#06b6d4', // Cyan
+                        '#84cc16', // Lime
+                        '#6366f1', // Indigo
+                        '#f43f5e', // Rose
+                        '#14b8a6'  // Teal
+                    ] : (chartType === 'bar' ? '#6366f1' : 'rgba(99, 102, 241, 0.1)'),
+                    borderColor: '#6366f1',
+                    borderWidth: 2,
                     borderRadius: 4,
-                    barPercentage: 0.5 // Thinner bars
+                    tension: 0.3,
+                    fill: chartType === 'line',
+                    pointBackgroundColor: '#fff'
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { x: { grid: { display: false } }, y: { border: { display: false }, beginAtZero: true } }
+                plugins: { legend: { display: chartType === 'pie' } },
+                scales: {
+                    x: { grid: { display: false }, display: chartType !== 'pie' },
+                    y: { border: { display: false }, beginAtZero: true, display: chartType !== 'pie' }
+                }
+            }
+        });
+    }
+
+    // --- RENDER CHART 2: WASHING ---
+    const ctx2 = document.getElementById('washingChart');
+    if (window.washChartInstance) window.washChartInstance.destroy();
+    if (ctx2) {
+        let labels, data;
+        const mode = state.chartModes.washing;
+        const chartType = getChartType(mode);
+
+        if (mode === 'daily') {
+            labels = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+            data = washDataVals.daily;
+        } else if (mode === 'weekly') {
+            labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4+'];
+            data = washDataVals.weekly;
+        } else {
+            labels = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
+            data = washDataVals.annual;
+        }
+
+        window.washChartInstance = new Chart(ctx2, {
+            type: chartType,
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Washing',
+                    data: data,
+                    backgroundColor: chartType === 'pie' ? [
+                        '#ef4444', // Red
+                        '#3b82f6', // Blue
+                        '#eab308', // Yellow
+                        '#22c55e', // Green
+                        '#a855f7', // Purple
+                        '#f97316', // Orange
+                        '#ec4899', // Pink
+                        '#06b6d4', // Cyan
+                        '#84cc16', // Lime
+                        '#6366f1', // Indigo
+                        '#f43f5e', // Rose
+                        '#14b8a6'  // Teal
+                    ] : '#3b82f6',
+                    borderRadius: 4,
+                    barPercentage: mode === 'daily' ? 0.8 : 0.6,
+                    // Line chart props if fallback
+                    borderColor: '#3b82f6',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: chartType === 'line',
+                    pointBackgroundColor: '#fff'
+
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: chartType === 'pie' } },
+                scales: {
+                    x: { grid: { display: false }, display: chartType !== 'pie' },
+                    y: { border: { display: false }, beginAtZero: true, display: chartType !== 'pie' }
+                }
             }
         });
     }
@@ -292,7 +462,7 @@ window.renderCharts = () => {
     const ctx4 = document.getElementById('salaryPieChart');
     if (window.chart4) window.chart4.destroy();
     if (ctx4) {
-        const m = currentMonthIndex + 1;
+        const m = currentMonth_Index + 1;
         const y = currentYear;
         const daysInMonth = new Date(y, m, 0).getDate();
 

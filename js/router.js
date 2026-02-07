@@ -89,7 +89,11 @@ function updateActiveNav(hash) {
         btn.classList.remove('text-blue-700', 'bg-blue-50');
         btn.classList.add('text-slate-400');
 
-        if (btn.getAttribute('href') === '#' + hash) {
+        // Check if button ID matches the hash
+        const btnId = btn.id; // e.g., mobile-nav-catalogue
+        const targetId = 'mobile-nav-' + hash.replace('/', ''); // e.g., mobile-nav-catalogue
+
+        if (btnId === targetId) {
             btn.classList.remove('text-slate-400'); // Remove default
             btn.classList.add('text-blue-700', 'bg-blue-50');
         }
