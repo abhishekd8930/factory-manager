@@ -363,6 +363,9 @@ export const Templates = {
                     <button onclick="switchDetailTab('ledger')" id="tab-btn-ledger" class="px-6 py-3 font-medium text-slate-500 hover:text-slate-800 transition">
                         Cutting Ledger
                     </button>
+                    <button onclick="switchDetailTab('3d')" id="tab-btn-3d" class="px-6 py-3 font-medium text-slate-500 hover:text-slate-800 transition flex items-center gap-2">
+                        <i class="fa-solid fa-cube"></i> 3D Pattern
+                    </button>
                 </div>
 
                 <!-- Tab: Details -->
@@ -449,6 +452,41 @@ export const Templates = {
                     <button onclick="addCatalogueLedgerRow()" class="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg text-sm font-bold hover:bg-indigo-100 transition flex items-center gap-2">
                         <i class="fa-solid fa-plus"></i> Add Row
                     </button>
+                </div>
+
+                <!-- Tab: 3D Pattern View -->
+                <div id="tab-content-3d" class="hidden">
+                    <div class="flex flex-col md:flex-row gap-6 h-[500px]">
+                        <!-- Controls -->
+                        <div class="w-full md:w-56 bg-slate-50 rounded-xl p-6 border border-slate-100 flex flex-col gap-4">
+                            <h3 class="font-bold text-slate-700 mb-2">Pattern Options</h3>
+                            
+                            <label class="flex items-center gap-3 p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:border-indigo-300 transition">
+                                <input type="checkbox" id="chk-3d-flap" onchange="update3DScene()" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
+                                <span class="text-sm font-medium text-slate-700">Box Flap</span>
+                            </label>
+
+                            <label class="flex items-center gap-3 p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:border-indigo-300 transition">
+                                <input type="checkbox" id="chk-3d-box" onchange="update3DScene()" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
+                                <span class="text-sm font-medium text-slate-700">Box Style</span>
+                            </label>
+
+                            <div class="mt-auto">
+                                <p class="text-xs text-slate-400">
+                                    <i class="fa-solid fa-mouse me-1"></i> left click to rotate<br>
+                                    <i class="fa-solid fa-computer-mouse me-1"></i> scroll to zoom
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Canvas -->
+                        <div class="flex-1 bg-slate-900 rounded-xl overflow-hidden relative shadow-inner" id="pattern-canvas-container">
+                            <div id="pattern-canvas" class="w-full h-full"></div>
+                            <div class="absolute bottom-4 right-4 bg-black/50 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm pointer-events-none">
+                                Three.js Viewer
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

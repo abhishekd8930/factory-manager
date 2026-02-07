@@ -1,5 +1,20 @@
 // --- CATALOGUE LOGIC ---
 
+// 3D VIEWER (Dynamic Import)
+window.init3DViewer = null;
+window.render3DPattern = null;
+
+(async () => {
+    try {
+        const module = await import('./modules/pattern-3d.js');
+        window.init3DViewer = module.init3DViewer;
+        window.render3DPattern = module.render3DPattern;
+        console.log("3D Module loaded successfully");
+    } catch (e) {
+        console.warn("3D Viewer failed to load (Offline or Error):", e);
+    }
+})();
+
 // --- CONFIGURATION ---
 const FIXED_FILTERS = {
     fabric: ["Dobby", "Lycra", "Lenin", "Twill"],
@@ -329,12 +344,24 @@ window.switchDetailTab = (tabName) => {
         ? "px-6 py-3 font-bold text-indigo-600 border-b-2 border-indigo-600 transition"
         : "px-6 py-3 font-medium text-slate-500 hover:text-slate-800 transition";
 
+    document.getElementById('tab-btn-3d').className = tabName === '3d'
+        ? "px-6 py-3 font-bold text-indigo-600 border-b-2 border-indigo-600 transition flex items-center gap-2"
+        : "px-6 py-3 font-medium text-slate-500 hover:text-slate-800 transition flex items-center gap-2";
+
     // Content
     document.getElementById('tab-content-details').className = tabName === 'details' ? '' : 'hidden';
     document.getElementById('tab-content-ledger').className = tabName === 'ledger' ? '' : 'hidden';
+    document.getElementById('tab-content-3d').className = tabName === '3d' ? '' : 'hidden';
 
     if (tabName === 'ledger') {
         renderLedgerTable();
+    }
+
+    if (tabName === '3d') {
+        setTimeout(() => {
+            if (window.init3DViewer) window.init3DViewer();
+            if (window.render3DPattern) window.render3DPattern("32"); // Default to 32 for now, or fetch from item
+        }, 100);
     }
 };
 
