@@ -343,7 +343,7 @@ export const Templates = {
                 <div class="max-w-2xl mx-auto mb-8 relative">
                     <div class="relative">
                         <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
-                        <input type="text" id="catalogue-search-input" oninput="handleCatalogueSearch(this.value)" placeholder="Search catalog (name, date, fabric...)" class="w-full bg-slate-100 border-none rounded-full py-4 pl-12 pr-6 text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500/50 shadow-sm transition hover:bg-white hover:shadow-md">
+                        <input type="text" id="catalogue-search-input" oninput="handleCatalogueSearch(this.value)" placeholder="Search catalog (name, date, fabric...)" class="w-full !bg-white border-2 border-transparent focus:border-indigo-500/20 rounded-full py-4 pl-12 pr-6 text-slate-700 outline-none focus:!ring-4 focus:!ring-indigo-500/10 shadow-sm transition hover:shadow-md text-lg placeholder:text-slate-400">
                         <button class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-2">
                             <i class="fa-solid fa-arrow-right"></i>
                         </button>

@@ -3,7 +3,7 @@ console.log("Staff Ledger Module Loaded");
 // --- MAIN LEDGER ROUTER & RENDER ---
 
 window.openLedger = (empId, restoreSession = false) => {
-    alert(`DEBUG: openLedger called for ${empId}`); // Uncomment if needed
+    // alert(`DEBUG: openLedger called for ${empId}`); // Uncomment if needed
     const emp = state.staffData.find(e => e.id === empId);
     if (!emp) {
         alert("DEBUG ERROR: Employee not found in database!");
@@ -379,10 +379,10 @@ window.renderPcsLedgerTable = () => {
                 <td class="p-3 border-r border-slate-100 text-slate-600 font-medium text-center">
                     <span class="inline-block font-bold text-slate-800">${index + 1}</span>
                 </td>
-                <td class="p-2 border-r border-slate-100"><input type="text" name="pcs-item-${index}" class="pcs-item text-slate-700" data-index="${index}" value="${row.item || ''}" placeholder="Item" onchange="updatePcsRow(this)"></td>
-                <td class="p-2 border-r border-slate-100"><input type="text" name="pcs-style-${index}" class="pcs-style text-slate-700" data-index="${index}" value="${row.style || ''}" placeholder="Style" onchange="updatePcsRow(this)"></td>
-                <td class="p-2 border-r border-slate-100"><input type="text" name="pcs-fabric-${index}" class="pcs-fabric text-slate-700" data-index="${index}" value="${row.fabric || ''}" placeholder="Fabric" onchange="updatePcsRow(this)"></td>
-                <td class="p-2 border-r border-slate-100"><input type="number" name="pcs-qty-${index}" class="text-center pcs-qty text-slate-700" data-index="${index}" value="${row.quantity || ''}" placeholder="0" oninput="updatePcsRow(this)"></td>
+                <td class="p-2 border-r border-slate-100"><input type="text" name="pcs-item-${index}" class="pcs-item text-slate-700" data-index="${index}" value="${row.item || ''}" placeholder="Item" onchange="updatePcsRow(this)" onkeydown="handlePcsEnter(event, this)"></td>
+                <td class="p-2 border-r border-slate-100"><input type="text" name="pcs-style-${index}" class="pcs-style text-slate-700" data-index="${index}" value="${row.style || ''}" placeholder="Style" onchange="updatePcsRow(this)" onkeydown="handlePcsEnter(event, this)"></td>
+                <td class="p-2 border-r border-slate-100"><input type="text" name="pcs-fabric-${index}" class="pcs-fabric text-slate-700" data-index="${index}" value="${row.fabric || ''}" placeholder="Fabric" onchange="updatePcsRow(this)" onkeydown="handlePcsEnter(event, this)"></td>
+                <td class="p-2 border-r border-slate-100"><input type="number" name="pcs-qty-${index}" class="text-center pcs-qty text-slate-700" data-index="${index}" value="${row.quantity || ''}" placeholder="0" oninput="updatePcsRow(this)" onkeydown="handlePcsEnter(event, this)"></td>
                 <td class="p-2 border-r border-slate-100"><input type="number" name="pcs-rate-${index}" step="0.1" class="text-center pcs-rate text-slate-700" data-index="${index}" value="${row.rate || ''}" placeholder="0" oninput="updatePcsRow(this)" onkeydown="handlePcsEnter(event, this)"></td>
                 <td class="p-2 text-right"><span class="font-bold text-emerald-600 pcs-total">${row.total || 0}</span></td>
                 <td class="p-2 text-center">
@@ -401,14 +401,14 @@ window.renderPcsLedgerTable = () => {
 // --- EVENTS ---
 
 window.handleBlur = (e, input, day) => {
-    updateRowCalculations(day);
+    updateRowCalculations(input);
     if (window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
 };
 
 window.handleTimeKey = (e, input, type) => {
-    if (['d', 'D'].includes(e.key)) { e.preventDefault(); input.value = type === 'in' ? '09:30 AM' : '07:00 PM'; updateRowCalculations(input.dataset.day); return; }
-    if (['a', 'A'].includes(e.key)) { e.preventDefault(); input.value = input.value.toUpperCase().replace('PM', 'AM'); if (!input.value.includes('AM')) input.value += ' AM'; updateRowCalculations(input.dataset.day); return; }
-    if (['p', 'P'].includes(e.key)) { e.preventDefault(); input.value = input.value.toUpperCase().replace('AM', 'PM'); if (!input.value.includes('PM')) input.value += ' PM'; updateRowCalculations(input.dataset.day); return; }
+    if (['d', 'D'].includes(e.key)) { e.preventDefault(); input.value = type === 'in' ? '09:30 AM' : '07:00 PM'; updateRowCalculations(input); return; }
+    if (['a', 'A'].includes(e.key)) { e.preventDefault(); input.value = input.value.toUpperCase().replace('PM', 'AM'); if (!input.value.includes('AM')) input.value += ' AM'; updateRowCalculations(input); return; }
+    if (['p', 'P'].includes(e.key)) { e.preventDefault(); input.value = input.value.toUpperCase().replace('AM', 'PM'); if (!input.value.includes('PM')) input.value += ' PM'; updateRowCalculations(input); return; }
 
     if (e.key === 'Enter') {
         e.preventDefault();
@@ -417,13 +417,15 @@ window.handleTimeKey = (e, input, type) => {
             if (p) input.value = p.formatted;
         }
         if (!input.value) input.value = type === 'in' ? '09:30 AM' : '07:00 PM';
-        updateRowCalculations(input.dataset.day);
+        updateRowCalculations(input);
 
         if (window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
 
         if (type === 'in') input.closest('tr').querySelector('.time-out').focus();
         else {
-            const allInputs = Array.from(document.querySelectorAll('input:not([type="hidden"]):not([disabled])'));
+            // Scoped Search: Avoid jumping to readonly status inputs
+            const tbody = document.getElementById('ledger-table-body');
+            const allInputs = Array.from(tbody.querySelectorAll('input:not([type="hidden"]):not([disabled]):not([readonly])'));
             const index = allInputs.indexOf(input);
             if (index > -1 && index < allInputs.length - 1) allInputs[index + 1].focus();
         }
@@ -449,8 +451,11 @@ window.handleStatusKey = (e, input) => {
     }
 };
 
-window.updateRowCalculations = (day) => {
-    const row = document.querySelector(`input[data-day="${day}"]`).closest('tr');
+window.updateRowCalculations = (input) => {
+    if (!input) return;
+    const row = input.closest('tr');
+    const day = input.dataset.day;
+    if (!row || !day) return;
     const inVal = row.querySelector('.time-in').value;
     const outVal = row.querySelector('.time-out').value;
 
@@ -525,12 +530,20 @@ window.handlePcsEnter = (e, input) => {
     if (e.key === 'Enter') {
         const index = parseInt(input.dataset.index);
         const lId = getLedgerId();
-        if (index === state.staffLedgers[lId].pcsEntries.length - 1) {
+        const rows = state.staffLedgers[lId].pcsEntries;
+        const isLastRow = index === rows.length - 1;
+        const isLastField = input.classList.contains('pcs-rate');
+
+        if (isLastRow && isLastField) {
             addPcsRow();
         } else {
-            const allInputs = Array.from(document.querySelectorAll('input:not([type="hidden"]):not([disabled])'));
+            // Navigation: Find the next input in the row, or the first input of the next row
+            const tbody = document.getElementById('ledger-table-body');
+            const allInputs = Array.from(tbody.querySelectorAll('input:not([type="hidden"]):not([disabled])'));
             const idx = allInputs.indexOf(input);
-            if (idx > -1 && idx < allInputs.length - 1) allInputs[idx + 1].focus();
+            if (idx > -1 && idx < allInputs.length - 1) {
+                allInputs[idx + 1].focus();
+            }
         }
     }
 };
