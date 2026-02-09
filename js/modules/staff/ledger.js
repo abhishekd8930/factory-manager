@@ -3,8 +3,12 @@ console.log("Staff Ledger Module Loaded");
 // --- MAIN LEDGER ROUTER & RENDER ---
 
 window.openLedger = (empId, restoreSession = false) => {
+    alert(`DEBUG: openLedger called for ${empId}`); // Uncomment if needed
     const emp = state.staffData.find(e => e.id === empId);
-    if (!emp) return;
+    if (!emp) {
+        alert("DEBUG ERROR: Employee not found in database!");
+        return;
+    }
 
     // --- RESTRICTION: UNIT REQUIRED ---
     if (!emp.unit) {
@@ -23,6 +27,13 @@ window.openLedger = (empId, restoreSession = false) => {
         if (savedDate) state.currentLedgerDate = new Date(savedDate);
         else state.currentLedgerDate = new Date();
     } else {
+        state.currentLedgerDate = new Date();
+        localStorage.setItem('srf_last_ledger_date', state.currentLedgerDate.toISOString());
+    }
+
+    if (isNaN(state.currentLedgerDate.getTime())) {
+        console.error("Invalid Date Detected in openLedger");
+        alert("System Error: Invalid Date. Resetting to Today.");
         state.currentLedgerDate = new Date();
         localStorage.setItem('srf_last_ledger_date', state.currentLedgerDate.toISOString());
     }
@@ -94,213 +105,297 @@ window.changeLedgerEmployee = (delta) => {
 };
 
 window.renderLedgerTable = () => {
-    const emp = state.currentLedgerEmp;
-    if (!emp) return;
+    console.log("renderLedgerTable called");
+    try {
+        const emp = state.currentLedgerEmp;
+        console.log("Current Ledger Emp:", emp);
 
-    const tableEl = document.getElementById('staff-table');
-    if (tableEl) {
-        tableEl.className = "ledger-table";
-        if (tableEl.parentElement) tableEl.parentElement.className = "ledger-scroll-container";
+        if (!emp) {
+            console.error("No currentLedgerEmp found inside renderLedgerTable");
+            return;
+        }
+
+        const tableEl = document.getElementById('staff-table');
+        console.log("Table Element found:", !!tableEl);
+
+        if (tableEl) {
+            tableEl.className = "ledger-table";
+            if (tableEl.parentElement) tableEl.parentElement.className = "ledger-scroll-container";
+        }
+
+        console.log("Dispatching render based on type:", emp.type);
+        if (emp.type === 'timings') renderTimeLedgerTable();
+        else renderPcsLedgerTable();
+    } catch (err) {
+        console.error("CRITICAL ERROR in renderLedgerTable:", err);
+        alert("Error showing ledger: " + err.message);
     }
-
-    if (emp.type === 'timings') renderTimeLedgerTable();
-    else renderPcsLedgerTable();
 };
 
 // --- VIEW A: TIME-BASED LEDGER ---
 
 window.renderTimeLedgerTable = () => {
-    const date = state.currentLedgerDate;
-    const lId = getLedgerId();
+    // alert("DEBUG: renderTimeLedgerTable START"); 
+    console.log("renderTimeLedgerTable started");
+    try {
+        const date = state.currentLedgerDate;
+        const lId = getLedgerId();
+        console.log("Ledger ID:", lId);
 
-    if (!state.staffLedgers[lId]) state.staffLedgers[lId] = { days: {}, advance: '' };
-    if (!state.staffLedgers[lId].days) state.staffLedgers[lId].days = {};
-
-    const pcsBtn = document.getElementById('pcs-add-row-container');
-    const salaryBtn = document.getElementById('salary-calc-btn-container');
-    const salaryDiv = document.getElementById('financial-salary-container');
-
-    if (pcsBtn) pcsBtn.classList.add('hidden');
-    if (salaryDiv) salaryDiv.style.display = 'block';
-
-    // Ensure button says "Calculate Pay" for Time staff
-    if (salaryBtn) {
-        salaryBtn.classList.remove('hidden');
-        salaryBtn.querySelector('button').innerHTML = `<i class="fa-solid fa-calculator"></i> Calculate Pay`;
-    }
-
-    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    document.getElementById('ledger-month-label').innerText = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
-
-    document.getElementById('ledger-table-head').innerHTML = `
-        <tr>
-            <th class="p-3 w-[100px] text-left text-xs font-bold text-slate-500 uppercase">Date</th>
-            <th class="p-3 w-[140px] text-left text-xs font-bold text-slate-500 uppercase">Clock In</th>
-            <th class="p-3 w-[140px] text-left text-xs font-bold text-slate-500 uppercase">Clock Out</th>
-            <th class="p-3 w-[120px] text-center text-xs font-bold text-slate-500 uppercase">Work Hrs</th>
-            <th class="p-3 w-[100px] text-center text-xs font-bold text-slate-500 uppercase">OT Hrs</th>
-            <th class="p-3 w-[120px] text-center text-xs font-bold text-slate-500 uppercase">Total</th>
-        </tr>`;
-
-    document.getElementById('ledger-hints').innerHTML = `<i class="fa-solid fa-keyboard mr-1"></i> Shortcuts: <strong>D</strong>(Default) • <strong>A/P</strong>(AM/PM) • <strong>L/N/H</strong>(Status)`;
-    document.getElementById('salary-label').innerText = 'Basic Salary';
-    const salInput = document.getElementById('ledger-salary');
-    salInput.readOnly = false;
-    salInput.value = state.staffLedgers[lId].salary || '';
-    document.getElementById('ledger-advance').value = state.staffLedgers[lId].advance || '';
-
-    const tbody = document.getElementById('ledger-table-body');
-    tbody.innerHTML = '';
-    const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-
-    for (let i = 1; i <= daysInMonth; i++) {
-        const dayData = state.staffLedgers[lId].days[i] || { in: '', out: '', ot: '', hours: '', status: '' };
-        const dayDate = new Date(date.getFullYear(), date.getMonth(), i);
-        const dayName = dayDate.toLocaleDateString('en-US', { weekday: 'short' });
-
-        const isWeekend = dayName === 'Sun';
-        const isHoliday = dayData.status === 'HOLIDAY';
-
-        let workingDisplay = '-';
-        if (dayData.status && ['LEAVE', 'NPL', 'HOLIDAY', 'PAID_LEAVE'].includes(dayData.status)) {
-            if (dayData.status === 'HOLIDAY') workingDisplay = 'Holiday';
-            else if (dayData.status === 'PAID_LEAVE') workingDisplay = 'Paid Leave';
-            else workingDisplay = dayData.status;
-        } else if (isWeekend) {
-            workingDisplay = 'Sunday';
-        } else if (dayData.hours) {
-            const calcW = Number(dayData.hours) - Number(dayData.ot || 0);
-            workingDisplay = calcW >= 8 ? '1' : calcW.toFixed(1) + ' hrs';
-        } else {
-            workingDisplay = 'Please fill';
+        if (!lId) {
+            console.error("Invalid Ledger ID");
+            alert(`DEBUG ERROR: Ledger ID is null.\nEmp: ${state.currentLedgerEmp ? 'OK' : 'MISSING'}\nDate: ${state.currentLedgerDate}`);
+            return;
         }
 
-        let otDisplay = '-';
-        if ((isWeekend || isHoliday) && dayData.hours) { otDisplay = dayData.hours + ' hrs'; }
-        else if (dayData.ot && dayData.ot > 0) { otDisplay = dayData.ot + ' hrs'; }
-        else if (['LEAVE', 'NPL'].includes(dayData.status)) { otDisplay = '0'; }
+        if (!state.staffLedgers[lId]) state.staffLedgers[lId] = { days: {}, advance: '' };
+        if (!state.staffLedgers[lId].days) state.staffLedgers[lId].days = {};
 
-        const isLocked = ['LEAVE', 'NPL', 'PAID_LEAVE'].includes(dayData.status) && !isHoliday;
-        const statusClass = workingDisplay === 'Please fill' ? 'text-red-400 italic text-xs' : 'font-bold text-slate-700';
+        const pcsBtn = document.getElementById('pcs-add-row-container');
+        const salaryBtn = document.getElementById('salary-calc-btn-container');
+        const salaryDiv = document.getElementById('financial-salary-container');
 
-        const tr = document.createElement('tr');
-        tr.className = isWeekend ? "bg-slate-50 border-b border-slate-100" : "hover:bg-indigo-50/20 border-b border-slate-100";
+        if (pcsBtn) pcsBtn.classList.add('hidden');
+        if (salaryDiv) salaryDiv.style.display = 'block';
 
-        tr.innerHTML = `
-            <td class="p-3 border-r border-slate-100 text-slate-600 font-medium">
-                <span class="inline-block w-6 font-bold ${isWeekend ? 'text-red-500' : 'text-slate-800'}">${i}</span>
-                <span class="text-xs uppercase text-slate-400 ml-2">${dayName}</span>
-            </td>
-            <td class="p-2 border-r border-slate-100">
-                <input type="text" class="text-center time-in text-slate-700" 
-                    data-day="${i}" value="${isLocked ? '-' : (dayData.in || '')}" 
-                    placeholder="${isLocked ? '-' : '09:30 AM'}" 
-                    ${isLocked ? 'disabled' : ''} 
-                    oninput="quickSave(this)" 
-                    onkeydown="handleTimeKey(event, this, 'in')" 
-                    onblur="handleBlur(event, this, '${i}')">
-            </td>
-            <td class="p-2 border-r border-slate-100">
-                <input type="text" class="text-center time-out text-slate-700" 
-                    data-day="${i}" value="${isLocked ? '-' : (dayData.out || '')}" 
-                    placeholder="${isLocked ? '-' : '07:00 PM'}" 
-                    ${isLocked ? 'disabled' : ''} 
-                    oninput="quickSave(this)" 
-                    onkeydown="handleTimeKey(event, this, 'out')" 
-                    onblur="handleBlur(event, this, '${i}')">
-            </td>
-            <td class="p-2 border-r border-slate-100 relative">
-                <input type="text" class="text-center status-input ${statusClass}" 
-                    data-day="${i}" value="${workingDisplay}" title="L, N, H, Del" readonly 
-                    onkeydown="handleStatusKey(event, this)">
-            </td>
-            <td class="p-2 border-r border-slate-100 text-center">
-                <span class="font-bold text-indigo-600 ot-cell">${otDisplay}</span>
-            </td>
-            <td class="p-2 text-center">
-                <span class="font-bold text-slate-800 total-hrs-cell">${isLocked ? '-' : (dayData.hours ? dayData.hours + ' hrs' : '-')}</span>
-            </td>
-        `;
-        tbody.appendChild(tr);
+        // Ensure button says "Calculate Pay" for Time staff
+        if (salaryBtn) {
+            salaryBtn.classList.remove('hidden');
+            salaryBtn.querySelector('button').innerHTML = `<i class="fa-solid fa-calculator"></i> Calculate Pay`;
+        }
+
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        const monthLabel = document.getElementById('ledger-month-label');
+        if (!monthLabel) {
+            alert("DEBUG ERROR: 'ledger-month-label' element NOT FOUND!");
+            return;
+        }
+        monthLabel.innerText = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+
+        const thead = document.getElementById('ledger-table-head');
+        if (thead) {
+            thead.innerHTML = `
+            <tr>
+                <th class="p-3 w-[100px] text-left text-xs font-bold text-slate-500 uppercase">Date</th>
+                <th class="p-3 w-[140px] text-left text-xs font-bold text-slate-500 uppercase">Clock In</th>
+                <th class="p-3 w-[140px] text-left text-xs font-bold text-slate-500 uppercase">Clock Out</th>
+                <th class="p-3 w-[120px] text-center text-xs font-bold text-slate-500 uppercase">Work Hrs</th>
+                <th class="p-3 w-[100px] text-center text-xs font-bold text-slate-500 uppercase">OT Hrs</th>
+                <th class="p-3 w-[120px] text-center text-xs font-bold text-slate-500 uppercase">Total</th>
+            </tr>`;
+        } else {
+            console.error("ledger-table-head not found!");
+        }
+
+        document.getElementById('ledger-hints').innerHTML = `<i class="fa-solid fa-keyboard mr-1"></i> Shortcuts: <strong>D</strong>(Default) • <strong>A/P</strong>(AM/PM) • <strong>L/N/H</strong>(Status)`;
+        document.getElementById('salary-label').innerText = 'Basic Salary';
+        const salInput = document.getElementById('ledger-salary');
+        if (salInput) {
+            salInput.readOnly = false;
+            salInput.value = state.staffLedgers[lId].salary || '';
+        }
+
+        const advInput = document.getElementById('ledger-advance');
+        if (advInput) advInput.value = state.staffLedgers[lId].advance || '';
+
+        const tbody = document.getElementById('ledger-table-body');
+        if (!tbody) {
+            console.error("ledger-table-body NOT FOUND");
+            return;
+        }
+        tbody.innerHTML = '';
+        const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+        console.log("Days in Month:", daysInMonth);
+
+        for (let i = 1; i <= daysInMonth; i++) {
+            const dayData = state.staffLedgers[lId].days[i] || { in: '', out: '', ot: '', hours: '', status: '' };
+            const dayDate = new Date(date.getFullYear(), date.getMonth(), i);
+            const dayName = dayDate.toLocaleDateString('en-US', { weekday: 'short' });
+
+            const isWeekend = dayName === 'Sun';
+            const isHoliday = dayData.status === 'HOLIDAY';
+
+            let workingDisplay = '-';
+            if (dayData.status && ['LEAVE', 'NPL', 'HOLIDAY', 'PAID_LEAVE'].includes(dayData.status)) {
+                if (dayData.status === 'HOLIDAY') workingDisplay = 'Holiday';
+                else if (dayData.status === 'PAID_LEAVE') workingDisplay = 'Paid Leave';
+                else workingDisplay = dayData.status;
+            } else if (isWeekend) {
+                workingDisplay = 'Sunday';
+            } else if (dayData.hours) {
+                const calcW = Number(dayData.hours) - Number(dayData.ot || 0);
+                workingDisplay = calcW >= 8 ? '1' : calcW.toFixed(1) + ' hrs';
+            } else {
+                workingDisplay = 'Please fill';
+            }
+
+            let otDisplay = '-';
+            if ((isWeekend || isHoliday) && dayData.hours) { otDisplay = dayData.hours + ' hrs'; }
+            else if (dayData.ot && dayData.ot > 0) { otDisplay = dayData.ot + ' hrs'; }
+            else if (['LEAVE', 'NPL'].includes(dayData.status)) { otDisplay = '0'; }
+
+            const isLocked = ['LEAVE', 'NPL', 'PAID_LEAVE'].includes(dayData.status) && !isHoliday;
+            const statusClass = workingDisplay === 'Please fill' ? 'text-red-400 italic text-xs' : 'font-bold text-slate-700';
+
+            const tr = document.createElement('tr');
+            tr.className = isWeekend ? "bg-slate-50 border-b border-slate-100" : "hover:bg-indigo-50/20 border-b border-slate-100";
+
+            tr.innerHTML = `
+                <td class="p-3 border-r border-slate-100 text-slate-600 font-medium">
+                    <span class="inline-block w-6 font-bold ${isWeekend ? 'text-red-500' : 'text-slate-800'}">${i}</span>
+                    <span class="text-xs uppercase text-slate-400 ml-2">${dayName}</span>
+                </td>
+                <td class="p-2 border-r border-slate-100">
+                    <input type="text" class="text-center time-in text-slate-700" 
+                        name="in-${i}"
+                        data-day="${i}" value="${isLocked ? '-' : (dayData.in || '')}" 
+                        placeholder="${isLocked ? '-' : '09:30 AM'}" 
+                        ${isLocked ? 'disabled' : ''} 
+                        oninput="quickSave(this)" 
+                        onkeydown="handleTimeKey(event, this, 'in')" 
+                        onblur="handleBlur(event, this, '${i}')">
+                </td>
+                <td class="p-2 border-r border-slate-100">
+                    <input type="text" class="text-center time-out text-slate-700" 
+                        name="out-${i}"
+                        data-day="${i}" value="${isLocked ? '-' : (dayData.out || '')}" 
+                        placeholder="${isLocked ? '-' : '07:00 PM'}" 
+                        ${isLocked ? 'disabled' : ''} 
+                        oninput="quickSave(this)" 
+                        onkeydown="handleTimeKey(event, this, 'out')" 
+                        onblur="handleBlur(event, this, '${i}')">
+                </td>
+                <td class="p-2 border-r border-slate-100 relative">
+                    <input type="text" class="text-center status-input ${statusClass}" 
+                        data-day="${i}" value="${workingDisplay}" title="L, N, H, Del" readonly 
+                        onkeydown="handleStatusKey(event, this)">
+                </td>
+                <td class="p-2 border-r border-slate-100 text-center">
+                    <span class="font-bold text-indigo-600 ot-cell">${otDisplay}</span>
+                </td>
+                <td class="p-2 text-center">
+                    <span class="font-bold text-slate-800 total-hrs-cell">${isLocked ? '-' : (dayData.hours ? dayData.hours + ' hrs' : '-')}</span>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        }
+        console.log("renderTimeLedgerTable completed successfully");
+    } catch (err) {
+        console.error("CRITICAL ERROR in renderTimeLedgerTable:", err);
+        alert("Error rendering time ledger: " + err.message);
     }
 };
 
 // --- VIEW B: PIECE-WORK LEDGER (DYNAMIC ROWS) ---
 
 window.renderPcsLedgerTable = () => {
-    const date = state.currentLedgerDate;
-    const lId = getLedgerId();
+    console.log("renderPcsLedgerTable started");
+    try {
+        const date = state.currentLedgerDate;
+        const lId = getLedgerId();
+        console.log("Ledger ID:", lId);
 
-    if (!state.staffLedgers[lId]) state.staffLedgers[lId] = { days: {}, advance: '', pcsEntries: [] };
-    if (!state.staffLedgers[lId].pcsEntries) state.staffLedgers[lId].pcsEntries = [];
+        if (!lId) {
+            console.error("Invalid Ledger ID");
+            alert(`DEBUG ERROR (PCS): Ledger ID is null.\nEmp: ${state.currentLedgerEmp ? 'OK' : 'MISSING'}\nDate: ${state.currentLedgerDate}`);
+            return;
+        }
 
-    // --- FIX: START WITH 1 ROW IF EMPTY ---
-    if (state.staffLedgers[lId].pcsEntries.length === 0) {
-        state.staffLedgers[lId].pcsEntries.push({ item: '', style: '', fabric: '', quantity: '', rate: '', total: 0 });
+        if (!state.staffLedgers[lId]) state.staffLedgers[lId] = { days: {}, advance: '', pcsEntries: [] };
+        if (!state.staffLedgers[lId].pcsEntries) state.staffLedgers[lId].pcsEntries = [];
+
+        // --- FIX: START WITH 1 ROW IF EMPTY ---
+        if (state.staffLedgers[lId].pcsEntries.length === 0) {
+            state.staffLedgers[lId].pcsEntries.push({ item: '', style: '', fabric: '', quantity: '', rate: '', total: 0 });
+        }
+
+        // Toggle Buttons
+        const pcsBtn = document.getElementById('pcs-add-row-container');
+        const salaryBtn = document.getElementById('salary-calc-btn-container');
+
+        if (pcsBtn) pcsBtn.classList.remove('hidden');
+
+        // SHOW the button, but change text to "View Bill"
+        if (salaryBtn) {
+            salaryBtn.classList.remove('hidden');
+            salaryBtn.querySelector('button').innerHTML = `<i class="fa-solid fa-file-invoice"></i> View Bill`;
+        }
+
+        document.getElementById('ledger-hints').innerHTML = `<i class="fa-solid fa-calculator mr-1"></i> Enter on last cell adds row`;
+
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        const monthLabel = document.getElementById('ledger-month-label');
+        if (!monthLabel) {
+            alert("DEBUG ERROR (PCS): 'ledger-month-label' element NOT FOUND!");
+            return;
+        }
+        monthLabel.innerText = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+
+        // FIXED WIDTH COLUMNS
+        const thead = document.getElementById('ledger-table-head');
+        if (thead) {
+            thead.innerHTML = `
+            <tr>
+                <th class="p-3 w-[60px] text-center text-xs font-bold text-slate-500 uppercase">No.</th>
+                <th class="p-3 w-[150px] text-left text-xs font-bold text-slate-500 uppercase">Item</th>
+                <th class="p-3 w-[120px] text-left text-xs font-bold text-slate-500 uppercase">Style</th>
+                <th class="p-3 w-[120px] text-left text-xs font-bold text-slate-500 uppercase">Fabric</th>
+                <th class="p-3 w-[100px] text-center text-xs font-bold text-slate-500 uppercase">Qty</th>
+                <th class="p-3 w-[100px] text-center text-xs font-bold text-slate-500 uppercase">Rate</th>
+                <th class="p-3 w-[120px] text-right text-xs font-bold text-slate-500 uppercase">Total</th>
+                <th class="p-3 w-[50px]"></th>
+            </tr>`;
+        }
+
+        const lData = state.staffLedgers[lId];
+        let totalEarnings = 0;
+        if (lData.pcsEntries) {
+            lData.pcsEntries.forEach(row => totalEarnings += Number(row.total || 0));
+        }
+
+        document.getElementById('salary-label').innerText = 'Total Earnings';
+        const salInput = document.getElementById('ledger-salary');
+        if (salInput) {
+            salInput.value = totalEarnings;
+            salInput.readOnly = true;
+        }
+
+        const advInput = document.getElementById('ledger-advance');
+        if (advInput) advInput.value = lData.advance || '';
+
+        const tbody = document.getElementById('ledger-table-body');
+        if (!tbody) {
+            console.error("ledger-table-body NOT FOUND");
+            return;
+        }
+        tbody.innerHTML = '';
+
+        lData.pcsEntries.forEach((row, index) => {
+            const tr = document.createElement('tr');
+            tr.className = "hover:bg-emerald-50/20 border-b border-slate-100";
+            tr.innerHTML = `
+                <td class="p-3 border-r border-slate-100 text-slate-600 font-medium text-center">
+                    <span class="inline-block font-bold text-slate-800">${index + 1}</span>
+                </td>
+                <td class="p-2 border-r border-slate-100"><input type="text" name="pcs-item-${index}" class="pcs-item text-slate-700" data-index="${index}" value="${row.item || ''}" placeholder="Item" onchange="updatePcsRow(this)"></td>
+                <td class="p-2 border-r border-slate-100"><input type="text" name="pcs-style-${index}" class="pcs-style text-slate-700" data-index="${index}" value="${row.style || ''}" placeholder="Style" onchange="updatePcsRow(this)"></td>
+                <td class="p-2 border-r border-slate-100"><input type="text" name="pcs-fabric-${index}" class="pcs-fabric text-slate-700" data-index="${index}" value="${row.fabric || ''}" placeholder="Fabric" onchange="updatePcsRow(this)"></td>
+                <td class="p-2 border-r border-slate-100"><input type="number" name="pcs-qty-${index}" class="text-center pcs-qty text-slate-700" data-index="${index}" value="${row.quantity || ''}" placeholder="0" oninput="updatePcsRow(this)"></td>
+                <td class="p-2 border-r border-slate-100"><input type="number" name="pcs-rate-${index}" step="0.1" class="text-center pcs-rate text-slate-700" data-index="${index}" value="${row.rate || ''}" placeholder="0" oninput="updatePcsRow(this)" onkeydown="handlePcsEnter(event, this)"></td>
+                <td class="p-2 text-right"><span class="font-bold text-emerald-600 pcs-total">${row.total || 0}</span></td>
+                <td class="p-2 text-center">
+                    <button onclick="deletePcsRow(${index})" class="text-slate-300 hover:text-red-500 transition"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+        console.log("renderPcsLedgerTable completed successfully");
+    } catch (err) {
+        console.error("CRITICAL ERROR in renderPcsLedgerTable:", err);
+        alert("Error rendering piece work ledger: " + err.message);
     }
-
-    // Toggle Buttons
-    const pcsBtn = document.getElementById('pcs-add-row-container');
-    const salaryBtn = document.getElementById('salary-calc-btn-container');
-
-    if (pcsBtn) pcsBtn.classList.remove('hidden');
-
-    // SHOW the button, but change text to "View Bill"
-    if (salaryBtn) {
-        salaryBtn.classList.remove('hidden');
-        salaryBtn.querySelector('button').innerHTML = `<i class="fa-solid fa-file-invoice"></i> View Bill`;
-    }
-
-    document.getElementById('ledger-hints').innerHTML = `<i class="fa-solid fa-calculator mr-1"></i> Enter on last cell adds row`;
-
-    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    document.getElementById('ledger-month-label').innerText = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
-
-    // FIXED WIDTH COLUMNS
-    document.getElementById('ledger-table-head').innerHTML = `
-        <tr>
-            <th class="p-3 w-[60px] text-center text-xs font-bold text-slate-500 uppercase">No.</th>
-            <th class="p-3 w-[150px] text-left text-xs font-bold text-slate-500 uppercase">Item</th>
-            <th class="p-3 w-[120px] text-left text-xs font-bold text-slate-500 uppercase">Style</th>
-            <th class="p-3 w-[120px] text-left text-xs font-bold text-slate-500 uppercase">Fabric</th>
-            <th class="p-3 w-[100px] text-center text-xs font-bold text-slate-500 uppercase">Qty</th>
-            <th class="p-3 w-[100px] text-center text-xs font-bold text-slate-500 uppercase">Rate</th>
-            <th class="p-3 w-[120px] text-right text-xs font-bold text-slate-500 uppercase">Total</th>
-            <th class="p-3 w-[50px]"></th>
-        </tr>`;
-
-    const lData = state.staffLedgers[lId];
-    let totalEarnings = 0;
-    lData.pcsEntries.forEach(row => totalEarnings += Number(row.total || 0));
-
-    document.getElementById('salary-label').innerText = 'Total Earnings';
-    const salInput = document.getElementById('ledger-salary');
-    salInput.value = totalEarnings;
-    salInput.readOnly = true;
-    document.getElementById('ledger-advance').value = lData.advance || '';
-
-    const tbody = document.getElementById('ledger-table-body');
-    tbody.innerHTML = '';
-
-    lData.pcsEntries.forEach((row, index) => {
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-emerald-50/20 border-b border-slate-100";
-        tr.innerHTML = `
-            <td class="p-3 border-r border-slate-100 text-slate-600 font-medium text-center">
-                <span class="inline-block font-bold text-slate-800">${index + 1}</span>
-            </td>
-            <td class="p-2 border-r border-slate-100"><input type="text" class="pcs-item text-slate-700" data-index="${index}" value="${row.item || ''}" placeholder="Item" onchange="updatePcsRow(this)"></td>
-            <td class="p-2 border-r border-slate-100"><input type="text" class="pcs-style text-slate-700" data-index="${index}" value="${row.style || ''}" placeholder="Style" onchange="updatePcsRow(this)"></td>
-            <td class="p-2 border-r border-slate-100"><input type="text" class="pcs-fabric text-slate-700" data-index="${index}" value="${row.fabric || ''}" placeholder="Fabric" onchange="updatePcsRow(this)"></td>
-            <td class="p-2 border-r border-slate-100"><input type="number" class="text-center pcs-qty text-slate-700" data-index="${index}" value="${row.quantity || ''}" placeholder="0" oninput="updatePcsRow(this)"></td>
-            <td class="p-2 border-r border-slate-100"><input type="number" step="0.1" class="text-center pcs-rate text-slate-700" data-index="${index}" value="${row.rate || ''}" placeholder="0" oninput="updatePcsRow(this)" onkeydown="handlePcsEnter(event, this)"></td>
-            <td class="p-2 text-right"><span class="font-bold text-emerald-600 pcs-total">${row.total || 0}</span></td>
-            <td class="p-2 text-center">
-                 <button onclick="deletePcsRow(${index})" class="text-slate-300 hover:text-red-500 transition"><i class="fa-solid fa-trash"></i></button>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
 };
 
 // --- EVENTS ---

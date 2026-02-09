@@ -355,7 +355,7 @@ window.switchDetailTab = (tabName) => {
     document.getElementById('tab-content-3d').className = tabName === '3d' ? '' : 'hidden';
 
     if (tabName === 'ledger') {
-        renderLedgerTable();
+        renderCatalogueLedgerTable();
     }
 
     if (tabName === '3d') {
@@ -366,7 +366,7 @@ window.switchDetailTab = (tabName) => {
     }
 };
 
-window.renderLedgerTable = () => {
+window.renderCatalogueLedgerTable = () => {
     catalogueItems = JSON.parse(localStorage.getItem('catalogueItems')) || [];
     const item = catalogueItems.find(i => i.id === activeCatalogueId);
     if (!item) return;
@@ -444,7 +444,7 @@ window.addCatalogueLedgerRow = () => {
 
     localStorage.setItem('catalogueItems', JSON.stringify(catalogueItems));
     if (window.saveToCloud) window.saveToCloud('catalogueItems', catalogueItems);
-    renderLedgerTable();
+    renderCatalogueLedgerTable();
 
     // Focus new row
     setTimeout(() => {
@@ -501,7 +501,7 @@ window.deleteLedgerRow = (rowIndex) => {
     catalogueItems[idx].ledger.splice(rowIndex, 1);
     localStorage.setItem('catalogueItems', JSON.stringify(catalogueItems));
     if (window.saveToCloud) window.saveToCloud('catalogueItems', catalogueItems);
-    renderLedgerTable();
+    renderCatalogueLedgerTable();
 };
 
 // --- SETTINGS & EDITING ---
