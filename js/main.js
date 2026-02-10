@@ -253,8 +253,8 @@ function getTimeDifference(date) {
 }
 
 window.showNotifications = () => {
-    // 1. Close Settings if open (Exclusive Toggle)
-    window.closeSettings();
+    // 1. Close others (Profile)
+    window.closeProfile();
 
     // 2. Prepare Notification Panel
     const wrapper = document.getElementById('notification-modal');
@@ -307,7 +307,6 @@ window.handleNotificationClick = (linkId) => {
 window.openProfile = () => {
     // 1. Close others
     window.closeNotifications();
-    window.closeSettings();
 
     // 2. Prepare Panel
     const wrapper = document.getElementById('profile-panel');
@@ -387,136 +386,7 @@ window.closeProfile = () => {
     }, 300);
 };
 
-// SETTINGS PANEL
-window.openSettings = () => {
-    // 1. Close others
-    window.closeNotifications();
-    window.closeProfile();
 
-    // 2. Prepare Settings Panel
-    const wrapper = document.getElementById('settings-modal');
-    const panel = document.getElementById('settings-panel');
-    const backdrop = document.getElementById('settings-backdrop');
-
-    // 3. Show & Animate
-    wrapper.classList.remove('hidden');
-    setTimeout(() => {
-        if (backdrop) backdrop.classList.remove('opacity-0');
-        if (panel) panel.classList.remove('-translate-x-full');
-    }, 10);
-};
-
-window.closeSettings = () => {
-    const wrapper = document.getElementById('settings-modal');
-    const panel = document.getElementById('settings-panel');
-    const backdrop = document.getElementById('settings-backdrop');
-
-    // 1. Start Exit Animation
-    if (panel) panel.classList.add('-translate-x-full');
-    if (backdrop) backdrop.classList.add('opacity-0');
-
-    // 2. Hide after transition
-    setTimeout(() => {
-        if (wrapper) wrapper.classList.add('hidden');
-
-        // Reset Edit Mode (Logic from before)
-        const inputs = ['conf-owner', 'conf-ot', 'conf-npl', 'conf-bonus'];
-        inputs.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-                el.disabled = true;
-                el.classList.remove('border-indigo-500', 'bg-indigo-50');
-                el.classList.add('border-slate-200');
-            }
-        });
-        const saveBtn = document.getElementById('btn-config-save');
-        if (saveBtn) saveBtn.classList.add('hidden');
-        const editBtn = document.getElementById('btn-config-edit');
-        if (editBtn) editBtn.innerText = 'EDIT';
-
-    }, 300);
-};
-
-window.toggleConfigEdit = () => {
-    const inputs = ['conf-owner', 'conf-ot', 'conf-npl', 'conf-bonus'];
-    const btn = document.getElementById('btn-config-edit');
-    const saveBtn = document.getElementById('btn-config-save');
-    const isEditing = btn.innerText === 'CANCEL';
-
-    if (isEditing) {
-        // Cancel Editing
-        btn.innerText = 'EDIT';
-        saveBtn.classList.add('hidden');
-        inputs.forEach(id => {
-            const el = document.getElementById(id);
-            el.disabled = true;
-            el.classList.remove('border-indigo-500', 'bg-indigo-50');
-        });
-        window.openSettings(); // Reload values
-    } else {
-        // Start Editing
-        btn.innerText = 'CANCEL';
-        saveBtn.classList.remove('hidden');
-        inputs.forEach(id => {
-            const el = document.getElementById(id);
-            el.disabled = false;
-            el.classList.add('border-indigo-500', 'bg-indigo-50');
-        });
-    }
-};
-
-window.saveConfig = () => {
-    const newConfig = { ...window.CONFIG };
-
-    newConfig.OWNER_NAME = document.getElementById('conf-owner').value;
-    newConfig.RATES.OT_PER_HOUR = Number(document.getElementById('conf-ot').value);
-    newConfig.RATES.NPL_FINE = Number(document.getElementById('conf-npl').value);
-    newConfig.RATES.ATTENDANCE_BONUS = Number(document.getElementById('conf-bonus').value);
-
-    // Save to State & LocalStorage
-    state.config = newConfig;
-    localStorage.setItem('srf_config', JSON.stringify(newConfig));
-
-    // Update UI immediately
-    if (window.updateGreeting) window.updateGreeting();
-
-    alert("Settings Saved!");
-    window.closeSettings();
-};
-
-window.factoryReset = () => {
-    const code = prompt("⚠ WARNING: This will wipe ALL data to start fresh.\nType 'RESET' to confirm:");
-
-    if (code === 'RESET') {
-        // Clear all App Data keys
-        localStorage.removeItem('srf_staff_list');
-        localStorage.removeItem('srf_staff_ledgers');
-        localStorage.removeItem('srf_production_history');
-        localStorage.removeItem('srf_washing_history');
-        localStorage.removeItem('srf_accounts');
-        localStorage.removeItem('srf_owner_todos');
-        localStorage.removeItem('srf_config'); // Clear custom config too
-
-        // Optional: If using Firebase, wipe that too (be careful!)
-        if (window.saveToCloud) {
-            window.saveToCloud('staffData', []);
-            window.saveToCloud('staffLedgers', {});
-            // ... wipe other paths
-        }
-
-        alert("System Cleaned! Ready for fresh use.");
-        window.location.reload();
-    }
-};
-
-const settingsModal = document.getElementById('settings-modal');
-if (settingsModal) {
-    settingsModal.addEventListener('click', (e) => {
-        if (e.target.id === 'settings-modal') {
-            window.closeSettings();
-        }
-    });
-}
 
 // --- 5. INITIALIZATION ---
 

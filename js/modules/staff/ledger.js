@@ -412,18 +412,40 @@ window.handleTimeKey = (e, input, type) => {
 
     if (e.key === 'Enter') {
         e.preventDefault();
+        // Auto-format only if user typed something (e.g. "930" -> "09:30 AM")
         if (input.value && !input.value.includes(':')) {
             const p = window.parseTime12h(input.value, type);
             if (p) input.value = p.formatted;
         }
-        if (!input.value) input.value = type === 'in' ? '09:30 AM' : '07:00 PM';
+
+        // REMOVED: Auto-fill default time on empty Enter checks
+        // if (!input.value) input.value = type === 'in' ? '09:30 AM' : '07:00 PM';
+
         updateRowCalculations(input);
 
         if (window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
 
-        if (type === 'in') input.closest('tr').querySelector('.time-out').focus();
-        else {
-            // Scoped Search: Avoid jumping to readonly status inputs
+        if (type === 'in') {
+            input.closest('tr').querySelector('.time-out').focus();
+        } else {
+            // From Time Out -> Go to Status (instead of next row's time in directly)
+            // The previous logic skipped status. Let's make it go to status because
+            // user might want to mark 'H' or 'L' via keyboard.
+            // Wait, previous logic was:
+            // if (index > -1 && index < allInputs.length - 1) allInputs[index + 1].focus();
+            // This implicitly goes to status if status is not readonly.
+            // But status IS readonly in the HTML: <input ... readonly ...>
+            // So querySelectorAll('input:not(...:not([readonly])') EXCLUDES it.
+
+            // LET'S CHANGE THIS: We want to go to the next row's Time In directly? 
+            // OR should we allow stopping at Status?
+            // The user just said "enter key functions are working well".
+            // My plan said "Enter should only navigate".
+            // If I look at the status column, it has `readonly`.
+            // So standard tab/enter logic skips it.
+            // If I want to skip status and go to next row, the existing logic does that 
+            // because `allInputs` excludes readonly.
+
             const tbody = document.getElementById('ledger-table-body');
             const allInputs = Array.from(tbody.querySelectorAll('input:not([type="hidden"]):not([disabled]):not([readonly])'));
             const index = allInputs.indexOf(input);
@@ -435,6 +457,20 @@ window.handleTimeKey = (e, input, type) => {
 window.handleStatusKey = (e, input) => {
     const day = input.dataset.day;
     const key = e.key.toUpperCase();
+
+    // Navigation fix: Enable Enter to go to next row
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const currentIndex = parseInt(day);
+        // Try to find the next day's Time In input
+        const nextDay = currentIndex + 1;
+        const nextInput = document.querySelector(`.time-in[data-day="${nextDay}"]`);
+        if (nextInput) {
+            nextInput.focus();
+        }
+        return;
+    }
+
     if (['L', 'N', 'H', 'BACKSPACE', 'DELETE'].includes(key)) {
         e.preventDefault();
         let status = '';

@@ -132,10 +132,10 @@ export const Templates = {
                 
                 <!-- Bottom Status -->
                 <div class="p-3 border-t border-slate-100 bg-slate-50/50">
-                     <button onclick="openSettings()" class="nav-btn w-full mb-3 text-left p-3 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-md transition font-bold text-sm flex items-center gap-3 group justify-center">
+                     <a href="#/settings" class="nav-btn w-full mb-3 text-left p-3 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-md transition font-bold text-sm flex items-center gap-3 group justify-center">
                         <i class="fa-solid fa-gear group-hover:rotate-90 transition duration-500 w-5 text-center"></i>
                         <span class="nav-label flex-1 text-sm hidden">App Settings</span>
-                    </button>
+                    </a>
 
                     <!-- Restore Cloud Status -->
                     <div class="bg-white rounded-xl p-3 border border-slate-200 shadow-sm flex items-center gap-3 mb-2 justify-center group hover:border-indigo-200 transition">
@@ -195,7 +195,7 @@ export const Templates = {
                     <span id="greet-msg">Hello,</span> <span id="greet-name" class="font-bold">Manager</span>
                 </h1>
                 <p class="text-slate-500 max-w-lg mb-6">Start now to set your priorities and progress toward your goals with a clear, structured plan.</p>
-                <button onclick="window.openSettings()" class="bg-blue-600 text-white font-medium py-2.5 px-6 rounded-full hover:bg-blue-700 transition inline-block">
+                <button onclick="window.openProfile()" class="bg-blue-600 text-white font-medium py-2.5 px-6 rounded-full hover:bg-blue-700 transition inline-block">
                     View Profile
                 </button>
                 <button onclick="window.showNotifications()" class="ml-2 bg-slate-100 text-slate-600 font-medium py-2.5 px-6 rounded-full hover:bg-slate-200 transition inline-block relative">
@@ -1106,4 +1106,189 @@ export const Templates = {
             </div>
         </div>
     </div>`,
+
+
+    settings: () => `
+    <div id="settings" class="fade-in max-w-4xl mx-auto">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-slate-800">System Settings</h2>
+            <p class="text-slate-500 mt-1">Manage application configuration and data.</p>
+        </div>
+
+        <!-- Section 1: Data Management -->
+        <!-- Section 1: Data Management -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-4 transition-all duration-300">
+            <button onclick="toggleSettingsSection('sec-data')" class="w-full p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 hover:bg-slate-50 transition text-left group">
+                <h3 class="font-bold text-slate-700 flex items-center gap-2">
+                    <i class="fa-solid fa-database text-indigo-500 w-6 text-center"></i> Data Management
+                </h3>
+                <i id="icon-sec-data" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
+            </button>
+            
+            <div id="sec-data" class="hidden border-t border-slate-100 bg-white">
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <button onclick="downloadBackup()" class="flex items-center gap-4 p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition group text-left">
+                        <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl group-hover:scale-110 transition">
+                            <i class="fa-solid fa-cloud-arrow-down"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-700">Backup Data</h4>
+                            <p class="text-xs text-slate-500">Download a full JSON copy</p>
+                        </div>
+                    </button>
+
+                    <button onclick="factoryReset()" class="flex items-center gap-4 p-4 rounded-xl border border-red-100 bg-red-50/10 hover:bg-red-50 transition group text-left">
+                        <div class="w-12 h-12 rounded-full bg-red-100 text-red-500 flex items-center justify-center text-xl group-hover:scale-110 transition">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-red-600">Factory Reset</h4>
+                            <p class="text-xs text-red-400">Wipe all data & start fresh</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Configuration -->
+        <!-- Section 2: Configuration -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-4 transition-all duration-300">
+            <button onclick="toggleSettingsSection('sec-config')" class="w-full p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 hover:bg-slate-50 transition text-left group">
+                <h3 class="font-bold text-slate-700 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-indigo-500 w-6 text-center"></i> System Configuration
+                </h3>
+                <i id="icon-sec-config" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
+            </button>
+
+            <div id="sec-config" class="hidden border-t border-slate-100 bg-white"> 
+                <div class="p-6 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
+                    <p class="text-xs text-slate-500">Secure Area: Authentication required to edit.</p>
+                    <div class="flex gap-2">
+                        <button id="btn-edit-settings" onclick="initiateEdit()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-indigo-700 transition shadow-lg flex items-center gap-2">
+                            <i class="fa-solid fa-lock"></i> Edit
+                        </button>
+                        <button id="btn-save-settings" onclick="saveSettingsConfig()" class="hidden bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-700 transition shadow-lg">
+                            <i class="fa-solid fa-check"></i> Save Changes
+                        </button>
+                        <button id="btn-cancel-edit" onclick="cancelEditMode()" class="hidden bg-white text-slate-500 border border-slate-200 px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-50 transition">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6 space-y-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Owner Name</label>
+                        <input type="text" id="set-owner" disabled class="w-full md:w-1/2 p-3 border border-slate-200 rounded-lg bg-slate-50 text-slate-500 font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-colors">
+                        <p class="text-[10px] text-slate-400 mt-1">Displayed on dashboard and reports.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">OT Rate (₹/hr)</label>
+                            <input type="number" id="set-ot" disabled class="w-full p-3 border border-slate-200 rounded-lg bg-slate-50 text-slate-500 font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">NPL Fine (₹)</label>
+                            <input type="number" id="set-npl" disabled class="w-full p-3 border border-slate-200 rounded-lg bg-slate-50 text-slate-500 font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Attendance Bonus (₹)</label>
+                            <input type="number" id="set-bonus" disabled class="w-full p-3 border border-slate-200 rounded-lg bg-slate-50 text-slate-500 font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-colors">
+                        </div>
+                    </div>
+
+                    <!-- CPIN Section (Visible only in Edit Mode) -->
+                    <div id="cpin-section" class="hidden pt-6 border-t border-slate-100">
+                        <div class="flex justify-between items-center mb-4">
+                             <h4 class="font-bold text-slate-700 flex items-center gap-2">
+                                <i class="fa-solid fa-key text-indigo-500"></i> CPIN Setup
+                            </h4>
+                            <div class="flex items-center">
+                                <label class="neu-toggle-wrapper cursor-pointer">
+                                    <input type="checkbox" id="cpin-toggle" class="neu-toggle-input" onchange="toggleCPIN(this.checked)">
+                                    <span class="neu-slider"></span>
+                                </label>
+                                <span class="ml-3 text-sm font-medium text-slate-700" id="cpin-status-text">Disabled</span>
+                            </div>
+                        </div>
+                        
+                        <div id="cpin-forms-container" class="hidden">
+                            <!-- Form: Set New PIN -->
+                            <div id="form-set-cpin" class="hidden space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                <p class="text-xs text-slate-500 font-bold uppercase">Set New PIN</p>
+                                <div class="flex gap-4">
+                                     <input type="password" id="new-cpin" placeholder="Enter PIN" maxlength="6" class="w-full p-2 border border-slate-200 rounded-lg text-center font-bold tracking-widest outline-none focus:ring-2 focus:ring-indigo-500">
+                                     <input type="password" id="confirm-cpin" placeholder="Confirm PIN" maxlength="6" class="w-full p-2 border border-slate-200 rounded-lg text-center font-bold tracking-widest outline-none focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                                <button onclick="saveNewCPIN()" class="w-full bg-indigo-600 text-white py-2 rounded-lg text-sm font-bold hover:bg-indigo-700 transition">Save PIN</button>
+                            </div>
+
+                            <!-- Form: Reset PIN -->
+                            <div id="form-reset-cpin" class="hidden space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                                <p class="text-xs text-slate-500 font-bold uppercase">Reset PIN</p>
+                                <input type="password" id="old-cpin" placeholder="Current PIN" maxlength="6" class="w-full p-2 border border-slate-200 rounded-lg text-center font-bold tracking-widest outline-none focus:ring-2 focus:ring-indigo-500">
+                                <div class="flex gap-4">
+                                     <input type="password" id="reset-new-cpin" placeholder="New PIN" maxlength="6" class="w-full p-2 border border-slate-200 rounded-lg text-center font-bold tracking-widest outline-none focus:ring-2 focus:ring-indigo-500">
+                                     <input type="password" id="reset-confirm-cpin" placeholder="Confirm" maxlength="6" class="w-full p-2 border border-slate-200 rounded-lg text-center font-bold tracking-widest outline-none focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                                <button onclick="resetCPIN()" class="w-full bg-slate-800 text-white py-2 rounded-lg text-sm font-bold hover:bg-slate-700 transition">Update PIN</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Account -->
+
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-20 transition-all duration-300">
+            <button onclick="toggleSettingsSection('sec-account')" class="w-full p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 hover:bg-slate-50 transition text-left group">
+                <h3 class="font-bold text-slate-700 flex items-center gap-2">
+                    <i class="fa-solid fa-user-shield text-indigo-500 w-6 text-center"></i> Account Actions
+                </h3>
+                <i id="icon-sec-account" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
+            </button>
+            
+            <div id="sec-account" class="hidden border-t border-slate-100 bg-white">
+                <div class="p-6">
+                     <button onclick="logout()" class="w-full md:w-auto px-6 py-3 rounded-xl border border-red-200 text-red-600 font-bold hover:bg-red-50 transition flex items-center justify-center gap-3">
+                        <i class="fa-solid fa-power-off"></i> Sign Out
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Modal for Secure Edit -->
+    <div id="password-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] flex items-center justify-center p-4 fade-in">
+        <div class="bg-white w-full max-w-xs rounded-2xl shadow-2xl overflow-hidden p-6 text-center relative">
+            <button onclick="closePasswordModal()" aria-label="Close" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-lg"></i></button>
+
+            <div class="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-4 text-xl">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800 mb-1">Security Check</h3>
+            <p class="text-xs text-slate-500 mb-6">Enter your login password to unlock settings.</p>
+
+            <form onsubmit="event.preventDefault(); verifyPasswordForEdit()">
+                <div class="mb-4">
+                    <div class="relative">
+                        <input type="password" id="secure-edit-pass" 
+                            class="w-full text-center text-lg font-bold py-2 border-b-2 border-slate-200 focus:border-indigo-600 outline-none bg-transparent transition-colors pr-10"
+                            placeholder="Password">
+                        <button type="button" onclick="toggleSecurePasswordVisibility()" class="absolute right-0 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition p-2">
+                            <i class="fa-solid fa-eye" id="secure-pass-icon"></i>
+                        </button>
+                    </div>
+                    <p id="secure-edit-error" class="text-[10px] text-red-500 mt-2 font-bold hidden"></p>
+                </div>
+
+                <button type="submit" id="btn-verify-pass"
+                    class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-indigo-700 transition">
+                    Verify & Unlock
+                </button>
+            </form>
+        </div>
+    </div>
+    </div>`
 };

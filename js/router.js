@@ -11,7 +11,8 @@ const ROUTES = {
     '/history': { template: 'history', init: 'renderHistoryPage' },
     '/accounts': { template: 'accounts', init: 'renderAccounts' },
     '/inventory': { template: 'inventory', init: 'renderInventory' },
-    '/units': { template: 'units', init: 'renderUnitsView' }
+    '/units': { template: 'units', init: 'renderUnitsView' },
+    '/settings': { template: 'settings', init: 'renderSettings' }
 };
 
 export const Router = {
