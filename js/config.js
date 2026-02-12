@@ -21,6 +21,13 @@ const DEFAULT_CONFIG = {
         NPL_FINE: 500,
 
         // Optional: Monthly attendance bonus (currently unused, but ready for future)
-        ATTENDANCE_BONUS: 600
-    }
+        ATTENDANCE_BONUS: 600,
+
+        // Default Timings for auto-fill
+        DEFAULT_IN_TIME: "09:30 AM",
+        DEFAULT_OUT_TIME: "07:00 PM"
+    },
+
+    // Garment Name (displayed in header/sidebar)
+    GARMENT_NAME: ""
 };

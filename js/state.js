@@ -25,6 +25,12 @@ const state = {
     // DYNAMIC CONFIG
     config: JSON.parse(localStorage.getItem('srf_config')) || DEFAULT_CONFIG,
 
+    // SECURITY (Synced)
+    systemSecurity: JSON.parse(localStorage.getItem('srf_security')) || { cpin: null, enabled: false },
+
+    // DELETED ITEMS (Recycle Bin - 30 day retention)
+    deletedItems: JSON.parse(localStorage.getItem('srf_deleted_items')) || [],
+
     // NOTIFICATIONS (Persistent)
     notifications: JSON.parse(localStorage.getItem('srf_notifications')) || []
 };
@@ -82,7 +88,7 @@ window.setupRealTimeSync = () => {
                 // Determine Clean Data
                 let cleanData;
                 if (isObject) {
-                    cleanData = val;
+                    cleanData = val || {};
                 } else {
                     cleanData = Array.isArray(val) ? val : Object.values(val);
                 }
@@ -106,9 +112,13 @@ window.setupRealTimeSync = () => {
     syncNode('ownerTodos', 'ownerTodos', 'srf_owner_todos');
     syncNode('notifications', 'notifications', 'srf_notifications');
     syncNode('inventoryData', 'inventoryData', 'srf_inventory');
-    syncNode('catalogueItems', 'catalogueItems', 'catalogueItems'); // NEW
+    syncNode('catalogueItems', 'catalogueItems', 'catalogueItems');
 
-    // 2. Sync Ledgers (Object Mode)
+    // 2. Sync Objects
+    syncNode('systemSecurity', 'systemSecurity', 'srf_security', true);
+    syncNode('deletedItems', 'deletedItems', 'srf_deleted_items');
+
+    // 3. Sync Ledgers (Object Mode)
     syncNode('staffLedgers', 'staffLedgers', 'srf_staff_ledgers', true);
 };
 
@@ -119,6 +129,12 @@ function refreshUI(key) {
     if (key === 'accountsData' && window.renderAccounts) window.renderAccounts();
     if (key === 'ownerTodos' && window.renderHome) window.renderHome(); // Home has Todos
     if (key === 'notifications' && window.renderNotifications) window.renderNotifications();
+    if (key === 'systemSecurity' && window.renderCPINState) window.renderCPINState();
+    if (key === 'deletedItems' && window.renderBin) {
+        // Re-render bin if currently viewing it
+        const binView = document.getElementById('bin-view');
+        if (binView) window.renderBin();
+    }
 
     // Catalogue & Ledgers
     if (key === 'catalogueItems' && window.renderCatalogue) window.renderCatalogue();
@@ -145,3 +161,21 @@ if (window.isFirebaseReady) {
 } else {
     document.addEventListener('firebase-ready', startSync);
 }
+
+// --- AUTO-CLEANUP EXPIRED ITEMS ---
+window.cleanupExpiredItems = () => {
+    const now = Date.now();
+    const before = state.deletedItems.length;
+
+    state.deletedItems = state.deletedItems.filter(item => item.expiresAt > now);
+
+    const removed = before - state.deletedItems.length;
+    if (removed > 0) {
+        console.log(`[Bin Cleanup] Removed ${removed} expired items`);
+        localStorage.setItem('srf_deleted_items', JSON.stringify(state.deletedItems));
+        if (window.saveToCloud) window.saveToCloud('deletedItems', state.deletedItems);
+    }
+};
+
+// Run cleanup on load
+window.cleanupExpiredItems();

@@ -247,8 +247,43 @@ window.deleteTodoItem = (id) => {
 
 function saveTodos() {
     localStorage.setItem(TODO_STORAGE_KEY, JSON.stringify(window.state.ownerTodos));
-    if (window.saveToCloud) window.saveToCloud('ownerTodos', window.state.ownerTodos);
+
+    // 1. Render immediately to reflect changes
     window.renderTodoList();
+
+    // 2. UI Feedback: Saving... (After render, as render resets the header)
+    const scoreBox = document.getElementById('todo-score-box');
+    if (scoreBox) {
+        scoreBox.innerHTML = `<i class="fa-solid fa-cloud-arrow-up animate-bounce mr-1"></i> Saving...`;
+        scoreBox.classList.remove('bg-indigo-600');
+        scoreBox.classList.add('bg-indigo-400');
+    }
+
+    if (window.saveToCloud) {
+        window.saveToCloud('ownerTodos', window.state.ownerTodos)
+            .then(() => {
+                const sb = document.getElementById('todo-score-box');
+                if (sb) {
+                    sb.innerHTML = `<i class="fa-solid fa-cloud-check mr-1"></i> Saved`;
+                    sb.classList.remove('bg-indigo-400');
+                    sb.classList.add('bg-emerald-500');
+
+                    setTimeout(() => {
+                        // Restore original score state
+                        window.renderTodoList();
+                    }, 2000);
+                }
+            })
+            .catch((err) => {
+                console.error("Todo Sync Failed", err);
+                const sb = document.getElementById('todo-score-box');
+                if (sb) {
+                    sb.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> Offline`;
+                    sb.classList.remove('bg-indigo-400');
+                    sb.classList.add('bg-amber-500');
+                }
+            });
+    }
 }
 
 // IMPORTANT: Attached to 'window'
@@ -363,12 +398,32 @@ window.openHolidayMenu = (dateStr) => {
 
     document.getElementById('holiday-modal-date').innerText = dateReadable;
     const modal = document.getElementById('holiday-menu-modal');
+    const dialog = modal.querySelector('.bg-white');
     const btnContainer = document.getElementById('holiday-action-buttons');
     const form = document.getElementById('holiday-grant-form');
 
-    modal.classList.remove('hidden');
     btnContainer.classList.remove('hidden');
     form.classList.add('hidden');
+
+    // Show modal with animation
+    modal.classList.remove('hidden');
+    dialog.style.opacity = '0';
+    dialog.style.transform = 'scale(0.95) translateY(10px)';
+    requestAnimationFrame(() => {
+        dialog.style.transition = 'opacity 0.2s ease-out, transform 0.2s ease-out';
+        dialog.style.opacity = '1';
+        dialog.style.transform = 'scale(1) translateY(0)';
+    });
+
+    // Handle keyboard on mobile: scroll modal into view when keyboard opens
+    if (window.visualViewport) {
+        window._holidayViewportHandler = () => {
+            if (dialog) {
+                dialog.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        };
+        window.visualViewport.addEventListener('resize', window._holidayViewportHandler);
+    }
 
     let existingHoliday = null;
     const d = dateObj.getDate();
@@ -425,7 +480,31 @@ window.openHolidayMenu = (dateStr) => {
 };
 
 window.closeHolidayMenu = () => {
-    document.getElementById('holiday-menu-modal').classList.add('hidden');
+    const modal = document.getElementById('holiday-menu-modal');
+    const dialog = modal.querySelector('.bg-white');
+
+    // Clean up keyboard handler
+    if (window.visualViewport && window._holidayViewportHandler) {
+        window.visualViewport.removeEventListener('resize', window._holidayViewportHandler);
+        window._holidayViewportHandler = null;
+    }
+
+    // Animate out
+    if (dialog) {
+        dialog.style.transition = 'opacity 0.15s ease-in, transform 0.15s ease-in';
+        dialog.style.opacity = '0';
+        dialog.style.transform = 'scale(0.95) translateY(10px)';
+    }
+
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        if (dialog) {
+            dialog.style.transition = '';
+            dialog.style.opacity = '';
+            dialog.style.transform = '';
+        }
+    }, 150);
+
     window.state.selectedCalendarDate = null;
 };
 
@@ -450,27 +529,37 @@ window.saveHolidayAnnouncement = () => {
     const m = selDate.getMonth() + 1;
     const y = selDate.getFullYear();
 
-    let count = 0;
-    state.staffData.forEach(emp => {
-        const lId = `${emp.id}_${y}_${m}`;
-        if (!state.staffLedgers[lId]) state.staffLedgers[lId] = { days: {} };
-        if (!state.staffLedgers[lId].days[d]) state.staffLedgers[lId].days[d] = {};
+    // Safety Check: Ensure staffLedgers structure exists
+    if (!state.staffLedgers) state.staffLedgers = {};
 
-        state.staffLedgers[lId].days[d].status = statusType;
-        state.staffLedgers[lId].days[d].holidayTitle = title;
-        state.staffLedgers[lId].days[d].in = '';
-        state.staffLedgers[lId].days[d].out = '';
-        state.staffLedgers[lId].days[d].hours = '';
-        state.staffLedgers[lId].days[d].ot = '';
-        count++;
-    });
+    let count = 0;
+    if (state.staffData) {
+        state.staffData.forEach(emp => {
+            const lId = `${emp.id}_${y}_${m}`;
+            if (!state.staffLedgers[lId]) state.staffLedgers[lId] = { days: {} };
+            if (!state.staffLedgers[lId].days) state.staffLedgers[lId].days = {}; // Extra safety
+            if (!state.staffLedgers[lId].days[d]) state.staffLedgers[lId].days[d] = {};
+
+            // Update Status
+            state.staffLedgers[lId].days[d].status = statusType;
+            state.staffLedgers[lId].days[d].holidayTitle = title;
+
+            // Clear attendance data for holiday
+            state.staffLedgers[lId].days[d].in = '';
+            state.staffLedgers[lId].days[d].out = '';
+            state.staffLedgers[lId].days[d].hours = '';
+            state.staffLedgers[lId].days[d].ot = '';
+            count++;
+        });
+    }
 
     localStorage.setItem('srf_staff_ledgers', JSON.stringify(state.staffLedgers));
     if (window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
 
     closeHolidayMenu();
     window.renderHomeCalendar();
-    if (document.getElementById('attendance').classList.contains('active')) {
+    const attendanceEl = document.getElementById('attendance');
+    if (attendanceEl && attendanceEl.classList.contains('active')) {
         window.renderAttendanceView();
     }
 };
@@ -484,27 +573,31 @@ window.deleteHolidayAnnouncement = () => {
     const m = selDate.getMonth() + 1;
     const y = selDate.getFullYear();
 
-    state.staffData.forEach(emp => {
-        const lId = `${emp.id}_${y}_${m}`;
-        if (state.staffLedgers[lId] && state.staffLedgers[lId].days[d]) {
-            const dayData = state.staffLedgers[lId].days[d];
-            if (['HOLIDAY', 'NPL', 'PAID_LEAVE'].includes(dayData.status)) {
-                dayData.status = '';
-                dayData.holidayTitle = '';
-                // Optional: clear times just in case
-                dayData.in = '';
-                dayData.out = '';
-                dayData.hours = '';
+    if (state.staffData && state.staffLedgers) {
+        state.staffData.forEach(emp => {
+            const lId = `${emp.id}_${y}_${m}`;
+            // Safe traversal
+            if (state.staffLedgers[lId] && state.staffLedgers[lId].days && state.staffLedgers[lId].days[d]) {
+                const dayData = state.staffLedgers[lId].days[d];
+                if (['HOLIDAY', 'NPL', 'PAID_LEAVE'].includes(dayData.status)) {
+                    dayData.status = '';
+                    dayData.holidayTitle = '';
+                    // Optional: clear times just in case
+                    dayData.in = '';
+                    dayData.out = '';
+                    dayData.hours = '';
+                }
             }
-        }
-    });
+        });
+    }
 
     localStorage.setItem('srf_staff_ledgers', JSON.stringify(state.staffLedgers));
     if (window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
 
     closeHolidayMenu();
     window.renderHomeCalendar();
-    if (document.getElementById('attendance').classList.contains('active')) {
+    const attendanceEl = document.getElementById('attendance');
+    if (attendanceEl && attendanceEl.classList.contains('active')) {
         window.renderAttendanceView();
         if (window.renderAttendanceBook) window.renderAttendanceBook();
     }

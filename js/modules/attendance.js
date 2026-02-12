@@ -28,7 +28,7 @@ window.toggleBookCell = (empId, day) => {
 };
 
 // --- FULL MONTH TOGGLE (DOUBLE CLICK NAME) ---
-// (Skips Sundays and Holidays)
+// Toggles between Present and Absent (skips Sundays and Holidays)
 window.toggleFullMonth = (empId) => {
     if (!isBookEditMode) return;
 
@@ -41,34 +41,21 @@ window.toggleFullMonth = (empId) => {
 
     if (!state.staffLedgers[lId]) state.staffLedgers[lId] = { days: {} };
 
-    // Determine target action based on Day 1
+    // Check if currently "present" based on Day 1
     const day1Data = state.staffLedgers[lId].days[1] || {};
-    let currentStatus = day1Data.status || '';
-    if (!currentStatus && day1Data.hours) currentStatus = 'PRESENT';
+    const isCurrentlyPresent = day1Data.status === 'PRESENT' || !!day1Data.hours;
 
-    let targetAction = '';
-    if (!currentStatus) targetAction = 'SET_PRESENT';
-    else if (currentStatus === 'PRESENT') targetAction = 'SET_NPL';
-    else if (currentStatus === 'NPL') targetAction = 'SET_LEAVE';
-    else targetAction = 'CLEAR';
-
-    if (!confirm(`Mark entire month as '${targetAction.replace('SET_', '')}' for this employee?\n(Sundays & Holidays will be skipped)`)) return;
+    // Toggle: if present → clear (absent), if absent → set present
+    const targetAction = isCurrentlyPresent ? 'CLEAR' : 'SET_PRESENT';
 
     // Apply to all days EXCEPT Sundays and Existing Holidays
     for (let i = 1; i <= daysInMonth; i++) {
-
-        // 1. Check for Sunday
         const dateObj = new Date(year, month - 1, i);
         const isSunday = dateObj.getDay() === 0;
-
-        // 2. Check for Existing Holiday
         const dayData = state.staffLedgers[lId].days[i] || {};
         const isHoliday = dayData.status === 'HOLIDAY';
 
-        // SKIP if Sunday or Holiday
-        if (isSunday || isHoliday) {
-            continue;
-        }
+        if (isSunday || isHoliday) continue;
 
         _applyStatusToDay(empId, i, targetAction);
     }
@@ -237,6 +224,7 @@ window.renderAttendanceBook = () => {
 window.renderAttendanceView = () => {
     const dateInput = document.getElementById('attendance-date');
     const tbody = document.getElementById('attendance-body');
+    const mobileBody = document.getElementById('attendance-body-mobile');
     const emptyState = document.getElementById('attendance-empty-state');
 
     if (!dateInput || !tbody || !emptyState) return;
@@ -247,6 +235,14 @@ window.renderAttendanceView = () => {
     }
 
     tbody.innerHTML = '';
+    if (mobileBody) mobileBody.innerHTML = '';
+
+    // Show correct table for screen size
+    const desktopTable = document.getElementById('att-desktop-table');
+    const mobileTable = document.getElementById('att-mobile-table');
+    const isMobile = window.innerWidth < 768;
+    if (desktopTable) desktopTable.style.display = isMobile ? 'none' : 'block';
+    if (mobileTable) mobileTable.style.display = isMobile ? 'block' : 'none';
 
     if (!state.staffData) return;
 
@@ -281,6 +277,19 @@ window.renderAttendanceView = () => {
                 </td>
             </tr>`;
 
+        // Mobile section header
+        if (mobileBody) {
+            mobileBody.innerHTML += `
+            <tr class="bg-slate-100">
+                <td colspan="4" class="px-3 py-2">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-slate-500 text-[10px] uppercase tracking-wider">Time Based</span>
+                        <button onclick="setDefaultsForTimeStaff()" class="bg-indigo-100 text-indigo-700 text-[10px] font-bold px-2 py-0.5 rounded border border-indigo-200"><i class="fa-solid fa-clock-rotate-left mr-1"></i>Auto-Fill</button>
+                    </div>
+                </td>
+            </tr>`;
+        }
+
         timingStaff.forEach(emp => {
             const lId = `${emp.id}_${year}_${month}`;
             const ledger = state.staffLedgers[lId] || { days: {} };
@@ -311,6 +320,31 @@ window.renderAttendanceView = () => {
                     <td class="p-4 text-center"><input type="text" class="${disabledClass} border border-slate-200 rounded px-2 py-1 w-24 text-center text-sm outline-none focus:border-indigo-500" placeholder="07:00 PM" value="${outVal}" onchange="updateDailyTime('${emp.id}', 'out', this.value)" ${isDisabled ? 'disabled' : ''}></td>
                     <td class="p-4 text-center font-bold text-indigo-600"><span data-emp-hours="${emp.id}">${hrs}</span></td>
                 </tr>`;
+
+            // Mobile row
+            if (mobileBody) {
+                const statusLetterMap = { '': 'A', 'LEAVE': 'L', 'NPL': 'N', 'HOLIDAY': 'H', 'PAID_LEAVE': 'PL' };
+                const statusColorMap = { '': 'bg-emerald-100 text-emerald-700', 'LEAVE': 'bg-orange-100 text-orange-600', 'NPL': 'bg-red-100 text-red-600', 'HOLIDAY': 'bg-purple-100 text-purple-600', 'PAID_LEAVE': 'bg-blue-100 text-blue-600' };
+                const sLetter = statusLetterMap[status] || 'A';
+                const sColor = statusColorMap[status] || statusColorMap[''];
+
+                mobileBody.innerHTML += `
+                <tr class="border-b border-slate-50">
+                    <td class="px-3 py-2">
+                        <div class="font-bold text-slate-700 text-xs truncate max-w-[100px]">${emp.name}</div>
+                        <div class="text-[9px] text-slate-400">${emp.role || 'Staff'}</div>
+                    </td>
+                    <td class="px-2 py-2 text-center">
+                        <button onclick="cycleAttStatus('${emp.id}','timings')" class="w-7 h-7 rounded-md ${sColor} font-black text-[10px] transition active:scale-90" title="Tap to change">${sLetter}</button>
+                    </td>
+                    <td class="px-1 py-2 text-center">
+                        <input type="text" class="${isDisabled ? 'bg-slate-100 text-slate-300' : 'bg-slate-50 text-slate-700'} border border-slate-200 rounded w-[60px] px-1 py-1 text-[10px] text-center outline-none focus:border-indigo-400" placeholder="9:30A" value="${inVal}" onchange="updateDailyTime('${emp.id}','in',this.value)" ${isDisabled ? 'disabled' : ''}>
+                    </td>
+                    <td class="px-1 py-2 text-center">
+                        <input type="text" class="${isDisabled ? 'bg-slate-100 text-slate-300' : 'bg-slate-50 text-slate-700'} border border-slate-200 rounded w-[60px] px-1 py-1 text-[10px] text-center outline-none focus:border-indigo-400" placeholder="7:00P" value="${outVal}" onchange="updateDailyTime('${emp.id}','out',this.value)" ${isDisabled ? 'disabled' : ''}>
+                    </td>
+                </tr>`;
+            }
         });
     }
 
@@ -327,6 +361,19 @@ window.renderAttendanceView = () => {
                     </div>
                 </td>
             </tr>`;
+
+        // Mobile section header for pcs
+        if (mobileBody) {
+            mobileBody.innerHTML += `
+            <tr class="bg-slate-100">
+                <td colspan="4" class="px-3 py-2">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-emerald-600 text-[10px] uppercase tracking-wider">Piece Work</span>
+                        <button onclick="markAllPcsPresent()" class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-200"><i class="fa-solid fa-check-double mr-1"></i>All Present</button>
+                    </div>
+                </td>
+            </tr>`;
+        }
 
         pcsStaff.forEach(emp => {
             const lId = `${emp.id}_${year}_${month}`;
@@ -352,6 +399,27 @@ window.renderAttendanceView = () => {
                     <td class="p-4 text-center text-slate-300">-</td>
                     <td class="p-4 text-center text-slate-300">-</td>
                 </tr>`;
+
+            // Mobile row for pcs
+            if (mobileBody) {
+                const pcsLetterMap = { '': '-', 'PRESENT': 'P', 'LEAVE': 'L', 'NPL': 'N', 'HOLIDAY': 'H' };
+                const pcsColorMap = { '': 'bg-slate-100 text-slate-400', 'PRESENT': 'bg-emerald-100 text-emerald-700', 'LEAVE': 'bg-orange-100 text-orange-600', 'NPL': 'bg-red-100 text-red-600', 'HOLIDAY': 'bg-purple-100 text-purple-600' };
+                const pLetter = pcsLetterMap[status] || '-';
+                const pColor = pcsColorMap[status] || pcsColorMap[''];
+
+                mobileBody.innerHTML += `
+                <tr class="border-b border-slate-50">
+                    <td class="px-3 py-2">
+                        <div class="font-bold text-slate-700 text-xs truncate max-w-[100px]">${emp.name}</div>
+                        <div class="text-[9px] text-slate-400">${emp.role || 'Staff'}</div>
+                    </td>
+                    <td class="px-2 py-2 text-center">
+                        <button onclick="cycleAttStatus('${emp.id}','pcs')" class="w-7 h-7 rounded-md ${pColor} font-black text-[10px] transition active:scale-90" title="Tap to change">${pLetter}</button>
+                    </td>
+                    <td class="px-1 py-2 text-center text-slate-300">-</td>
+                    <td class="px-1 py-2 text-center text-slate-300">-</td>
+                </tr>`;
+            }
         });
     }
 };
@@ -359,36 +427,71 @@ window.renderAttendanceView = () => {
 window.setDefaultsForTimeStaff = () => {
     const dateInput = document.getElementById('attendance-date');
     if (!dateInput || !dateInput.value) return alert("Please select a date first.");
+
     const selDate = new Date(dateInput.value);
-    const day = selDate.getDate();
-    const month = selDate.getMonth() + 1;
-    const year = selDate.getFullYear();
+    const targetDay = selDate.getDate();
+    const targetMonth = selDate.getMonth() + 1;
+    const targetYear = selDate.getFullYear();
+
     const timingStaff = state.staffData.filter(e => e.type !== 'pcs');
     let updateCount = 0;
+
     timingStaff.forEach(emp => {
-        const lId = `${emp.id}_${year}_${month}`;
+        const lId = `${emp.id}_${targetYear}_${targetMonth}`;
         if (!state.staffLedgers[lId]) state.staffLedgers[lId] = { days: {} };
-        const currentDayData = state.staffLedgers[lId].days[day] || {};
+
+        // Skip if already filled
+        const currentDayData = state.staffLedgers[lId].days[targetDay] || {};
         if (currentDayData.in || currentDayData.out) return;
-        let foundIn = null;
-        let foundOut = null;
-        for (let i = day - 1; i >= 2; i--) {
-            const dCurrent = state.staffLedgers[lId].days[i];
-            const dPrev = state.staffLedgers[lId].days[i - 1];
-            const isValid = (d) => d && d.in && d.out && !['ABSENT', 'LEAVE', 'NPL', 'HOLIDAY'].includes(d.status);
-            if (isValid(dCurrent) && isValid(dPrev)) {
-                if (dCurrent.in.trim() === dPrev.in.trim() && dCurrent.out.trim() === dPrev.out.trim()) {
-                    foundIn = dCurrent.in; foundOut = dCurrent.out; break;
+
+        // --- SMART ANALYSIS (60 Days Lookback) ---
+        const historyCounts = {};
+        let maxCount = 0;
+        let bestPattern = null;
+
+        // Iterate back 60 days
+        for (let i = 1; i <= 60; i++) {
+            const d = new Date(selDate);
+            d.setDate(selDate.getDate() - i); // Go back i days
+
+            const checkDay = d.getDate();
+            const checkMonth = d.getMonth() + 1;
+            const checkYear = d.getFullYear();
+            const checkLId = `${emp.id}_${checkYear}_${checkMonth}`;
+
+            const ledger = state.staffLedgers[checkLId];
+            if (ledger && ledger.days && ledger.days[checkDay]) {
+                const dayData = ledger.days[checkDay];
+                // Check if valid timing exists
+                if (dayData.in && dayData.out && !['ABSENT', 'LEAVE', 'NPL', 'HOLIDAY'].includes(dayData.status)) {
+                    const pattern = `${dayData.in.trim()}|${dayData.out.trim()}`;
+
+                    if (!historyCounts[pattern]) historyCounts[pattern] = 0;
+                    historyCounts[pattern]++;
+
+                    if (historyCounts[pattern] > maxCount) {
+                        maxCount = historyCounts[pattern];
+                        bestPattern = pattern;
+                    }
                 }
             }
         }
-        if (foundIn && foundOut) {
-            currentDayData.in = foundIn; currentDayData.out = foundOut; currentDayData.status = '';
+
+        // --- DECISION ---
+        // Use pattern if it appeared at least twice (checking "2-days minimum" rule)
+        if (bestPattern && maxCount >= 2) {
+            const [foundIn, foundOut] = bestPattern.split('|');
+
+            currentDayData.in = foundIn;
+            currentDayData.out = foundOut;
+            currentDayData.status = '';
+
+            // Calculate Hours
             if (typeof parseTime12h === 'function') {
                 const startObj = parseTime12h(foundIn, 'in');
                 const endObj = parseTime12h(foundOut, 'out');
                 if (startObj && endObj) {
-                    const totalMins = (endObj.mins - startObj.mins) - 30;
+                    const totalMins = (endObj.mins - startObj.mins) - 30; // 30 mins break
                     const totalHrs = totalMins / 60;
                     let otHrs = 0;
                     if (totalHrs > 8) otHrs = totalHrs - 8;
@@ -396,12 +499,20 @@ window.setDefaultsForTimeStaff = () => {
                     currentDayData.ot = otHrs > 0 ? otHrs.toFixed(1) : '';
                 }
             }
-            state.staffLedgers[lId].days[day] = currentDayData;
+
+            state.staffLedgers[lId].days[targetDay] = currentDayData;
             updateCount++;
         }
     });
-    if (updateCount > 0) { localStorage.setItem('srf_staff_ledgers', JSON.stringify(state.staffLedgers)); window.renderAttendanceView(); console.log(`Auto-filled ${updateCount} staff.`); }
-    else { alert("No stable 2-day patterns found to copy."); }
+
+    if (updateCount > 0) {
+        localStorage.setItem('srf_staff_ledgers', JSON.stringify(state.staffLedgers));
+        if (window.saveToCloud) window.saveToCloud('srf_staff_ledgers', state.staffLedgers); // Auto-sync
+        window.renderAttendanceView();
+        console.log(`Smart Auto-filled ${updateCount} staff based on 60-day history.`);
+    } else {
+        alert("No consistent timing patterns found in the last 60 days.");
+    }
 };
 
 window.markAllPcsPresent = () => {
@@ -442,6 +553,34 @@ window.updateDailyStatus = (empId, status) => {
         if (window.saveToCloud) window.saveToCloud('srf_staff_ledgers', state.staffLedgers);
         window.renderAttendanceView();
     } catch (e) { console.error(e); }
+};
+
+// Mobile: tap to cycle status
+window.cycleAttStatus = (empId, type) => {
+    const dateInput = document.getElementById('attendance-date');
+    if (!dateInput || !dateInput.value) return;
+    const selDate = new Date(dateInput.value);
+    const day = selDate.getDate();
+    const month = selDate.getMonth() + 1;
+    const year = selDate.getFullYear();
+    const lId = `${empId}_${year}_${month}`;
+
+    if (!state.staffLedgers[lId]) state.staffLedgers[lId] = { days: {} };
+    if (!state.staffLedgers[lId].days) state.staffLedgers[lId].days = {};
+    const currentDayData = state.staffLedgers[lId].days[day] || {};
+    const current = currentDayData.status || '';
+
+    let cycle;
+    if (type === 'timings') {
+        cycle = ['', 'LEAVE', 'NPL', 'HOLIDAY'];
+    } else {
+        cycle = ['', 'PRESENT', 'LEAVE', 'NPL', 'HOLIDAY'];
+    }
+
+    const idx = cycle.indexOf(current);
+    const next = cycle[(idx + 1) % cycle.length];
+
+    updateDailyStatus(empId, next);
 };
 
 window.updateDailyTime = (empId, type, val) => {

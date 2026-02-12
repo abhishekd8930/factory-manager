@@ -250,7 +250,7 @@ window.renderTimeLedgerTable = () => {
                     <input type="text" class="text-center time-in text-slate-700" 
                         name="in-${i}"
                         data-day="${i}" value="${isLocked ? '-' : (dayData.in || '')}" 
-                        placeholder="${isLocked ? '-' : '09:30 AM'}" 
+                        placeholder="${isLocked ? '-' : (state.config.RATES.DEFAULT_IN_TIME || '09:30 AM')}" 
                         ${isLocked ? 'disabled' : ''} 
                         oninput="quickSave(this)" 
                         onkeydown="handleTimeKey(event, this, 'in')" 
@@ -260,7 +260,7 @@ window.renderTimeLedgerTable = () => {
                     <input type="text" class="text-center time-out text-slate-700" 
                         name="out-${i}"
                         data-day="${i}" value="${isLocked ? '-' : (dayData.out || '')}" 
-                        placeholder="${isLocked ? '-' : '07:00 PM'}" 
+                        placeholder="${isLocked ? '-' : (state.config.RATES.DEFAULT_OUT_TIME || '07:00 PM')}" 
                         ${isLocked ? 'disabled' : ''} 
                         oninput="quickSave(this)" 
                         onkeydown="handleTimeKey(event, this, 'out')" 
@@ -406,50 +406,52 @@ window.handleBlur = (e, input, day) => {
 };
 
 window.handleTimeKey = (e, input, type) => {
-    if (['d', 'D'].includes(e.key)) { e.preventDefault(); input.value = type === 'in' ? '09:30 AM' : '07:00 PM'; updateRowCalculations(input); return; }
+    // Defaults from Config (or Fallback)
+    const defIn = state.config.RATES.DEFAULT_IN_TIME || '09:30 AM';
+    const defOut = state.config.RATES.DEFAULT_OUT_TIME || '07:00 PM';
+
+    if (['d', 'D'].includes(e.key)) { e.preventDefault(); input.value = type === 'in' ? defIn : defOut; updateRowCalculations(input); return; }
     if (['a', 'A'].includes(e.key)) { e.preventDefault(); input.value = input.value.toUpperCase().replace('PM', 'AM'); if (!input.value.includes('AM')) input.value += ' AM'; updateRowCalculations(input); return; }
     if (['p', 'P'].includes(e.key)) { e.preventDefault(); input.value = input.value.toUpperCase().replace('AM', 'PM'); if (!input.value.includes('PM')) input.value += ' PM'; updateRowCalculations(input); return; }
 
     if (e.key === 'Enter') {
         e.preventDefault();
-        // Auto-format only if user typed something (e.g. "930" -> "09:30 AM")
-        if (input.value && !input.value.includes(':')) {
+
+        // Check if Sunday
+        const day = parseInt(input.dataset.day);
+        const date = new Date(state.currentLedgerDate.getFullYear(), state.currentLedgerDate.getMonth(), day);
+        const isSunday = date.getDay() === 0;
+
+        // 1. Auto-fill Default Time if Empty (SKIP IF SUNDAY)
+        if (!input.value.trim() && !isSunday) {
+            input.value = type === 'in' ? defIn : defOut;
+        }
+        // 2. Auto-format short input (e.g. "930" -> "09:30 AM")
+        else if (!input.value.includes(':') && input.value.trim()) {
             const p = window.parseTime12h(input.value, type);
             if (p) input.value = p.formatted;
         }
-
-        // REMOVED: Auto-fill default time on empty Enter checks
-        // if (!input.value) input.value = type === 'in' ? '09:30 AM' : '07:00 PM';
 
         updateRowCalculations(input);
 
         if (window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
 
+        // 3. Specific Navigation Logic
+        const currentDay = parseInt(input.dataset.day);
+
         if (type === 'in') {
-            input.closest('tr').querySelector('.time-out').focus();
+            // Go to OUT cell of SAME day
+            const outInput = document.querySelector(`.time-out[data-day="${currentDay}"]`);
+            if (outInput) outInput.focus();
         } else {
-            // From Time Out -> Go to Status (instead of next row's time in directly)
-            // The previous logic skipped status. Let's make it go to status because
-            // user might want to mark 'H' or 'L' via keyboard.
-            // Wait, previous logic was:
-            // if (index > -1 && index < allInputs.length - 1) allInputs[index + 1].focus();
-            // This implicitly goes to status if status is not readonly.
-            // But status IS readonly in the HTML: <input ... readonly ...>
-            // So querySelectorAll('input:not(...:not([readonly])') EXCLUDES it.
-
-            // LET'S CHANGE THIS: We want to go to the next row's Time In directly? 
-            // OR should we allow stopping at Status?
-            // The user just said "enter key functions are working well".
-            // My plan said "Enter should only navigate".
-            // If I look at the status column, it has `readonly`.
-            // So standard tab/enter logic skips it.
-            // If I want to skip status and go to next row, the existing logic does that 
-            // because `allInputs` excludes readonly.
-
-            const tbody = document.getElementById('ledger-table-body');
-            const allInputs = Array.from(tbody.querySelectorAll('input:not([type="hidden"]):not([disabled]):not([readonly])'));
-            const index = allInputs.indexOf(input);
-            if (index > -1 && index < allInputs.length - 1) allInputs[index + 1].focus();
+            // Go to IN cell of NEXT day
+            const nextDay = currentDay + 1;
+            const nextInput = document.querySelector(`.time-in[data-day="${nextDay}"]`);
+            if (nextInput) {
+                nextInput.focus();
+                // Ensure it's visible, but don't jump around too much
+                nextInput.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
         }
     }
 };

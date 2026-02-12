@@ -89,7 +89,24 @@ window.switchTab = (id) => {
 // --- 3. SIDEBAR LOGIC ---
 
 window.toggleSidebar = () => {
-    document.getElementById('sidebar').classList.toggle('-translate-x-full');
+    const sidebar = document.getElementById('sidebar');
+    const isHidden = sidebar.classList.contains('-translate-x-full');
+
+    if (isHidden) {
+        // Show sidebar - expand to full width on mobile
+        sidebar.classList.remove('-translate-x-full');
+        sidebar.classList.remove('w-20');
+        sidebar.classList.add('w-64');
+        sidebar.querySelectorAll('.nav-label').forEach(el => el.classList.remove('hidden'));
+        sidebar.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('justify-center'));
+    } else {
+        // Hide sidebar
+        sidebar.classList.add('-translate-x-full');
+        sidebar.classList.remove('w-64');
+        sidebar.classList.add('w-20');
+        sidebar.querySelectorAll('.nav-label').forEach(el => el.classList.add('hidden'));
+        sidebar.querySelectorAll('.nav-btn').forEach(btn => btn.classList.add('justify-center'));
+    }
 };
 
 window.toggleDesktopSidebar = () => {
@@ -155,8 +172,7 @@ window.renderNotifications = () => {
         return `
         <div class="relative flex gap-4 p-3 rounded-xl hover:bg-slate-50 transition border border-transparent hover:border-slate-100 group cursor-pointer overflow-hidden touch-pan-y" 
              onclick="handleNotificationClick('${n.link || ''}')"
-             ontouchstart="handleSwipeStart(event, '${id}')"
-             ontouchend="handleSwipeEnd(event, '${id}')"
+             data-noti-id="${id}"
              id="noti-${id}">
              
             <div class="w-10 h-10 rounded-full ${color} flex items-center justify-center shrink-0">
@@ -174,6 +190,13 @@ window.renderNotifications = () => {
             </button>
         </div>`;
     }).join('');
+
+    // Attach passive touch event listeners for swipe-to-dismiss
+    list.querySelectorAll('[data-noti-id]').forEach(el => {
+        const id = el.dataset.notiId;
+        el.addEventListener('touchstart', (e) => handleSwipeStart(e, id), { passive: true });
+        el.addEventListener('touchend', (e) => handleSwipeEnd(e, id), { passive: true });
+    });
 };
 
 // Swipe Logic Globals
@@ -304,6 +327,99 @@ window.handleNotificationClick = (linkId) => {
 // --- 4. PROFILE & SETTINGS PANEL LOGIC ---
 
 // PROFILE PANEL
+// --- 4. PROFILE & SETTINGS PANEL LOGIC ---
+
+// ID Card Transformation Logic
+const idCardLogic = {
+    init: () => {
+        const $wrap = document.querySelector(".card-wrapper");
+        const $card = document.querySelector("#card");
+        const $cardInner = document.querySelector(".card-inner");
+
+        if (!$wrap || !$card || !$cardInner) return;
+
+        // Helper: Clamp value
+        const clamp = (value, min = 0, max = 100) => {
+            return Math.min(Math.max(value, min), max);
+        };
+
+        // Helper: Round to decimal places
+        const round = (value, precision = 3) => parseFloat(value.toFixed(precision));
+
+        // 1. Tilt Update Function
+        const cardUpdate = (e) => {
+            if (e.pointerType === "touch") return;
+
+            const bounds = $card.getBoundingClientRect();
+
+            const relativeX = e.clientX - bounds.left;
+            const relativeY = e.clientY - bounds.top;
+
+            const w = bounds.width;
+            const h = bounds.height;
+            const px = clamp((relativeX / w) * 100, 0, 100);
+            const py = clamp((relativeY / h) * 100, 0, 100);
+
+            const centerX = px - 50;
+            const centerY = py - 50;
+
+            // Tilt intensity
+            const rotateX = -(centerY / 8);
+            const rotateY = (centerX / 8);
+
+            $card.style.setProperty("--pointer-x", `${px}%`);
+            $card.style.setProperty("--pointer-y", `${py}%`);
+            $card.style.setProperty("--rotate-x", `${round(rotateY)}deg`);
+            $card.style.setProperty("--rotate-y", `${round(rotateX)}deg`);
+            $card.style.setProperty("--card-opacity", "1");
+        };
+
+        // 2. Reset Function
+        const cardReset = () => {
+            $card.style.setProperty("--card-opacity", "0");
+            $card.style.setProperty("--rotate-x", "0deg");
+            $card.style.setProperty("--rotate-y", "0deg");
+            $card.style.setProperty("--pointer-x", "50%");
+            $card.style.setProperty("--pointer-y", "50%");
+        };
+
+        // 3. Flip Logic
+        // Remove existing listener to avoid duplicates if re-initialized
+        $wrap.removeEventListener("dblclick", idCardLogic.flipHandler);
+        idCardLogic.flipHandler = () => $cardInner.classList.toggle("is-flipped");
+        $wrap.addEventListener("dblclick", idCardLogic.flipHandler);
+
+        // Event Listeners for Tilt
+        $wrap.removeEventListener("pointermove", idCardLogic.moveHandler);
+        $wrap.removeEventListener("pointerleave", idCardLogic.leaveHandler);
+
+        idCardLogic.moveHandler = cardUpdate;
+        idCardLogic.leaveHandler = cardReset;
+
+        $wrap.addEventListener("pointermove", cardUpdate);
+        $wrap.addEventListener("pointerleave", cardReset);
+
+        // Intro Animation
+        setTimeout(() => {
+            $card.style.transition = "transform 0.8s ease";
+            $card.style.setProperty("--rotate-x", "10deg");
+            $card.style.setProperty("--rotate-y", "10deg");
+            $card.style.setProperty("--card-opacity", "0.5");
+
+            setTimeout(() => {
+                $card.style.transition = "";
+                cardReset();
+            }, 800);
+        }, 300);
+    },
+
+    // Stored references for cleanup if needed
+    flipHandler: null,
+    moveHandler: null,
+    leaveHandler: null
+};
+
+// PROFILE PANEL
 window.openProfile = () => {
     // 1. Close others
     window.closeNotifications();
@@ -321,7 +437,8 @@ window.openProfile = () => {
         role: "Administrator",
         unit: "Head Office",
         id: "OWNER-001",
-        email: "admin@factory.com"
+        email: "admin@factory.com",
+        valid: "DEC 2030"
     };
 
     // Try to find matching staff record
@@ -332,7 +449,7 @@ window.openProfile = () => {
             user.initials = staffMatch.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
             user.role = staffMatch.role;
             user.unit = staffMatch.unit;
-            user.id = staffMatch.id;
+            user.id = staffMatch.id || "SRF-001";
             user.email = staffMatch.phone || "No Phone";
         }
     }
@@ -342,27 +459,27 @@ window.openProfile = () => {
         user.email = window.auth.currentUser.email;
     }
 
-    // Update DOM
+    // Update DOM for ID Card
     const els = {
-        avatar: document.getElementById('profile-avatar'),
-        name: document.getElementById('profile-name'),
-        role: document.getElementById('profile-role'),
-        unit: document.getElementById('profile-unit'),
-        id: document.getElementById('profile-id'),
-        email: document.getElementById('profile-email')
+        name: document.getElementById('card-user-name'),
+        role: document.getElementById('card-user-role'),
+        unit: document.getElementById('card-user-unit'),
+        id: document.getElementById('card-user-id'),
+        qrText: document.getElementById('card-qr-text'),
+        qrImg: document.getElementById('card-qr-img'),
+        avatarImg: document.getElementById('card-avatar-img')
     };
 
     if (els.name) els.name.innerText = user.name;
     if (els.role) els.role.innerText = user.role;
     if (els.unit) els.unit.innerText = user.unit;
     if (els.id) els.id.innerText = user.id;
-    if (els.email) els.email.innerText = user.email;
-    if (els.avatar) {
-        els.avatar.innerHTML = `
-            <div class="w-full h-full bg-slate-100 rounded-xl flex items-center justify-center text-3xl font-bold text-slate-500 border border-slate-200">
-                ${user.initials}
-            </div>
-        `;
+    if (els.qrText) els.qrText.innerText = `SRF-${user.id}`;
+
+    // Generate QR Code
+    if (els.qrImg) {
+        const qrData = `SRF-AUTH-${user.id}-${user.name.replace(/\s+/g, '-')}`;
+        els.qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrData}`;
     }
 
     // 4. Show & Animate
@@ -370,6 +487,9 @@ window.openProfile = () => {
     setTimeout(() => {
         if (backdrop) backdrop.classList.remove('opacity-0');
         if (panel) panel.classList.remove('translate-x-full');
+
+        // Initialize ID Card Logic after panel is visible
+        idCardLogic.init();
     }, 10);
 };
 
@@ -489,4 +609,30 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.checkLogin) {
         window.checkLogin();
     }
+
+    // 2. Initialize Garment Label
+    if (window.updateGarmentLabel) window.updateGarmentLabel();
 });
+
+// --- GARMENT LABEL LOGIC ---
+window.updateGarmentLabel = () => {
+    const name = state.config.GARMENT_NAME || "";
+    const headerEl = document.getElementById('header-garment-name');
+    const sidebarEl = document.getElementById('sidebar-garment-name');
+
+    if (name && name.trim() !== "") {
+        // Show
+        if (headerEl) {
+            headerEl.innerText = name;
+            headerEl.classList.remove('hidden');
+        }
+        if (sidebarEl) {
+            sidebarEl.querySelector('span').innerText = name;
+            sidebarEl.classList.remove('hidden');
+        }
+    } else {
+        // Hide
+        if (headerEl) headerEl.classList.add('hidden');
+        if (sidebarEl) sidebarEl.classList.add('hidden');
+    }
+};

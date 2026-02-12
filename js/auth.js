@@ -36,6 +36,32 @@ window.handleLogin = (e) => {
         });
 };
 
+// --- 1b. GOOGLE SIGN-IN ---
+window.signInWithGoogle = () => {
+    const provider = new window.GoogleAuthProvider();
+    const btn = document.getElementById('btn-google-login');
+    if (btn) {
+        btn.innerText = "Signing in...";
+        btn.disabled = true;
+    }
+
+    window.signInWithPopup(window.auth, provider)
+        .then((result) => {
+            console.log("Google Sign-In Success:", result.user.email);
+            // onAuthStateChanged handles redirect
+        })
+        .catch((error) => {
+            console.error("Google Sign-In Failed:", error.code, error.message);
+            if (btn) {
+                btn.innerText = "Sign in with Google";
+                btn.disabled = false;
+            }
+            if (error.code !== 'auth/popup-closed-by-user') {
+                alert("Google Sign-In failed: " + error.message);
+            }
+        });
+};
+
 // --- 2. LOGOUT LOGIC ---
 window.logout = () => {
     if (confirm("Are you sure you want to sign out?")) {
@@ -76,30 +102,107 @@ function initAppView() {
     console.log("App View Initialized via Router");
 }
 
-// --- 5. BACKUP DATA UTILITY ---
-window.downloadBackup = () => {
-    // Collect all data from State
-    const backupData = {
-        meta: { app: "FactoryManager", version: "6.0 (Secure)", exportDate: new Date().toISOString() },
-        data: {
-            staff: state.staffData,
-            ledgers: state.staffLedgers,
-            history: state.historyData,
-            washing: state.washingData,
-            accounts: state.accountsData,
-            todos: state.ownerTodos
+// --- 5. CLOUD BACKUP & RESTORE ---
+window.cloudBackup = async () => {
+    const btn = document.getElementById('btn-cloud-backup');
+    const originalHTML = btn ? btn.innerHTML : '';
+
+    try {
+        if (btn) {
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Backing up...';
+            btn.disabled = true;
         }
-    };
-    const dataStr = JSON.stringify(backupData, null, 2);
-    const blob = new Blob([dataStr], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `SRF_Backup_${state.today}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+
+        const snapshot = {
+            meta: {
+                app: "FactoryManager",
+                version: "6.0 (Cloud)",
+                backupDate: new Date().toISOString(),
+                device: navigator.userAgent.substring(0, 50)
+            },
+            data: {
+                staff: state.staffData,
+                ledgers: state.staffLedgers,
+                history: state.historyData,
+                washing: state.washingData,
+                accounts: state.accountsData,
+                todos: state.ownerTodos,
+                config: state.config,
+                notifications: state.notifications,
+                inventory: state.inventoryData || [],
+                deletedItems: state.deletedItems || []
+            }
+        };
+
+        await window.saveToCloud('backups/latest', snapshot);
+
+        // Update last backup timestamp display
+        const tsEl = document.getElementById('last-backup-time');
+        if (tsEl) tsEl.innerText = "Just now";
+
+        if (btn) {
+            btn.innerHTML = '<i class="fa-solid fa-check text-emerald-500"></i> Backup Saved!';
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }, 2000);
+        }
+
+    } catch (err) {
+        console.error("Cloud Backup Error:", err);
+        alert("Cloud Backup failed: " + err.message);
+        if (btn) {
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+        }
+    }
+};
+
+window.cloudRestore = async () => {
+    const btn = document.getElementById('btn-cloud-restore');
+    const originalHTML = btn ? btn.innerHTML : '';
+
+    try {
+        if (btn) {
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
+            btn.disabled = true;
+        }
+
+        const snapshot = await window.loadFromCloud('backups/latest');
+
+        if (!snapshot || !snapshot.meta || snapshot.meta.app !== "FactoryManager") {
+            alert("No valid cloud backup found. Please create a backup first.");
+            if (btn) { btn.innerHTML = originalHTML; btn.disabled = false; }
+            return;
+        }
+
+        const backupDate = new Date(snapshot.meta.backupDate).toLocaleString();
+        if (!confirm(`Restore backup from:\n${backupDate}\n\n⚠ THIS WILL OVERWRITE ALL CURRENT DATA.\n\nAre you sure?`)) {
+            if (btn) { btn.innerHTML = originalHTML; btn.disabled = false; }
+            return;
+        }
+
+        // Restore to localStorage
+        const d = snapshot.data;
+        if (d.staff) localStorage.setItem('srf_staff_list', JSON.stringify(d.staff));
+        if (d.ledgers) localStorage.setItem('srf_staff_ledgers', JSON.stringify(d.ledgers));
+        if (d.history) localStorage.setItem('srf_production_history', JSON.stringify(d.history));
+        if (d.washing) localStorage.setItem('srf_washing_history', JSON.stringify(d.washing));
+        if (d.accounts) localStorage.setItem('srf_accounts', JSON.stringify(d.accounts));
+        if (d.todos) localStorage.setItem('srf_owner_todos', JSON.stringify(d.todos));
+        if (d.config) localStorage.setItem('srf_config', JSON.stringify(d.config));
+        if (d.notifications) localStorage.setItem('srf_notifications', JSON.stringify(d.notifications));
+        if (d.inventory) localStorage.setItem('srf_inventory', JSON.stringify(d.inventory));
+        if (d.deletedItems) localStorage.setItem('srf_deleted_items', JSON.stringify(d.deletedItems));
+
+        alert("Restore Successful! The application will now reload.");
+        window.location.reload();
+
+    } catch (err) {
+        console.error("Cloud Restore Error:", err);
+        alert("Cloud Restore failed: " + err.message);
+        if (btn) { btn.innerHTML = originalHTML; btn.disabled = false; }
+    }
 };
 
 // Password Toggle Helper

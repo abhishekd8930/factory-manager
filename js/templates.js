@@ -33,6 +33,15 @@ export const Templates = {
                     <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                 </button>
             </form>
+            <div class="flex items-center gap-3 my-5">
+                <div class="flex-1 h-px bg-white/10"></div>
+                <span class="text-white/30 text-xs font-bold uppercase tracking-wider">or</span>
+                <div class="flex-1 h-px bg-white/10"></div>
+            </div>
+            <button id="btn-google-login" onclick="signInWithGoogle()" class="w-full bg-white hover:bg-gray-50 text-gray-700 font-bold py-3.5 rounded-xl shadow-lg transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3">
+                <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#34A853" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#FBBC05" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                <span>Sign in with Google</span>
+            </button>
             <div class="text-center mt-8 space-y-2">
                 <p class="text-indigo-200/40 text-[10px] uppercase tracking-widest">gifted by abhishek • Protected</p>
             </div>
@@ -53,7 +62,10 @@ export const Templates = {
                      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-md shadow-indigo-200 group">
                         <i class="fa-solid fa-bolt text-lg drop-shadow-sm group-hover:scale-110 transition-transform"></i>
                     </div>
-                    <span class="text-xl font-bold text-slate-800 tracking-tight">Smart Manager</span>
+                    <div class="flex flex-col">
+                        <span class="text-xl font-bold text-slate-800 tracking-tight leading-none">Smart Manager</span>
+                        <span id="header-garment-name" class="text-[10px] font-bold text-indigo-500 uppercase tracking-widest hidden"></span>
+                    </div>
                 </div>
             </div>
 
@@ -128,8 +140,14 @@ export const Templates = {
                          <i class="fa-solid fa-file-invoice-dollar w-5 text-center"></i>
                          <span class="nav-label hidden">Expenses</span>
                     </a>
+                    
+
                 </nav>
                 
+                <div id="sidebar-garment-name" class="px-1 py-3 text-center border-t border-slate-100 hidden">
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block truncate"></span>
+                </div>
+
                 <!-- Bottom Status -->
                 <div class="p-3 border-t border-slate-100 bg-slate-50/50">
                      <a href="#/settings" class="nav-btn w-full mb-3 text-left p-3 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-md transition font-bold text-sm flex items-center gap-3 group justify-center">
@@ -172,7 +190,7 @@ export const Templates = {
                 <i class="fa-solid fa-book-open text-xl mb-1"></i>
                 <span class="text-[10px] font-bold">Catalogue</span>
             </a>
-            <button onclick="toggleDesktopSidebar()" class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition border border-transparent active:scale-95">
+            <button onclick="toggleSidebar()" class="nav-btn-mobile flex flex-col items-center justify-center w-16 p-1 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition border border-transparent active:scale-95">
                 <i class="fa-solid fa-bars text-xl mb-1"></i>
                 <span class="text-[10px] font-bold">Menu</span>
             </button>
@@ -306,12 +324,12 @@ export const Templates = {
                 <div class="grid grid-cols-7 gap-1 text-center" id="home-calendar-grid"></div>
             </div>
         </div>
-        <div id="holiday-menu-modal" class="hidden fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-            <div class="bg-white p-8 rounded-[32px] shadow-2xl w-full max-w-sm border border-slate-100 relative animate-fade-in-up flex flex-col items-center">
+        <div id="holiday-menu-modal" class="hidden fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-[100] flex items-center justify-center p-4" onclick="if(event.target===this) closeHolidayMenu()">
+            <div class="bg-white p-6 rounded-[32px] shadow-2xl w-full max-w-sm border border-slate-100 relative flex flex-col items-center max-h-[90vh] overflow-y-auto">
                 <h4 class="text-2xl font-bold text-slate-800 mb-1" id="holiday-modal-date"></h4>
                 <p class="text-slate-400 text-sm mb-6 font-medium uppercase tracking-wider">Owner Actions</p>
                 <div id="holiday-action-buttons" class="w-full space-y-3"></div>
-                <div id="holiday-grant-form" class="hidden w-full p-4 bg-indigo-50 rounded-xl border border-indigo-100 mt-4 animate-fade-in-up">
+                <div id="holiday-grant-form" class="hidden w-full p-4 bg-indigo-50 rounded-xl border border-indigo-100 mt-4">
                     <label class="block text-xs font-bold text-indigo-600 uppercase mb-1">Title</label>
                     <input type="text" id="holiday-title-input" class="w-full p-2 border rounded-lg bg-white text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="e.g. Dasara">
                     <label class="block text-xs font-bold text-indigo-600 uppercase mb-1">Type</label>
@@ -424,17 +442,18 @@ export const Templates = {
                     </div>
                 </div>
             </div>
+            <input type="file" id="catalogue-page-upload" class="hidden" accept="image/*" onchange="handlePageUpload(this)">
             <h1 id="detail-title" class="text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center tracking-tight">Item Name</h1>
             <div class="max-w-5xl mx-auto bg-white rounded-[32px] shadow-sm border border-slate-100 p-6 md:p-8">
                 <!-- Tab Headers -->
                 <div class="flex border-b border-slate-100 mb-6">
-                    <button onclick="switchDetailTab('details')" id="tab-btn-details" class="px-6 py-3 font-bold text-indigo-600 border-b-2 border-indigo-600 transition">
+                    <button onclick="switchDetailTab('details')" id="tab-btn-details" class="flex-1 px-6 py-3 font-bold text-indigo-600 border-b-2 border-indigo-600 transition">
                         Details
                     </button>
-                    <button onclick="switchDetailTab('ledger')" id="tab-btn-ledger" class="px-6 py-3 font-medium text-slate-500 hover:text-slate-800 transition">
+                    <button onclick="switchDetailTab('ledger')" id="tab-btn-ledger" class="flex-1 px-6 py-3 font-medium text-slate-500 hover:text-slate-800 transition">
                         Cutting Ledger
                     </button>
-                    <button onclick="switchDetailTab('3d')" id="tab-btn-3d" class="px-6 py-3 font-medium text-slate-500 hover:text-slate-800 transition flex items-center gap-2">
+                    <button onclick="switchDetailTab('3d')" id="tab-btn-3d" class="flex-1 px-6 py-3 font-medium text-slate-500 hover:text-slate-800 transition flex items-center justify-center gap-2">
                         <i class="fa-solid fa-cube"></i> 3D Pattern
                     </button>
                 </div>
@@ -743,45 +762,52 @@ export const Templates = {
                     </button>
                 </div>
             </div>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div class="bg-slate-100 p-6 rounded-2xl border border-slate-200/60 flex flex-col h-full">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2">
-                            <i class="fa-solid fa-user-clock text-indigo-500"></i> Time Based Staff
-                        </h3>
-                        <div class="flex gap-2">
-                            <button onclick="toggleSort('timings')" class="bg-white w-8 h-8 rounded-lg border border-slate-200 text-slate-500 hover:text-indigo-600 shadow-sm transition flex items-center justify-center" title="Sort">
-                                <i class="fa-solid fa-arrow-down-a-z" id="sort-icon-timings"></i>
-                            </button>
-                            <button onclick="toggleSearch('timings')" class="bg-white w-8 h-8 rounded-lg border border-slate-200 text-slate-500 hover:text-indigo-600 shadow-sm transition flex items-center justify-center" title="Search">
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                            </button>
-                        </div>
+            <div class="bg-slate-100 p-6 rounded-2xl border border-slate-200/60">
+                <!-- Tab Bar: Sliding Pill + Sort/Search on same row -->
+                <div class="flex items-center justify-between mb-4">
+                    <!-- Sliding Pill Tabs -->
+                    <div class="relative bg-slate-200/80 rounded-full p-0.5 flex" style="min-width: 260px;">
+                        <div id="staff-tab-slider" class="absolute top-0.5 left-0.5 h-[calc(100%-4px)] w-[calc(50%-2px)] bg-white rounded-full shadow-md transition-all duration-300 ease-out"></div>
+                        <button id="staff-tab-timings" onclick="switchStaffType('timings')" class="relative z-10 flex-1 px-5 py-2 rounded-full text-sm font-bold transition-colors duration-200 text-slate-800">
+                            <i class="fa-solid fa-user-clock mr-1.5"></i>Time Based
+                        </button>
+                        <button id="staff-tab-pcs" onclick="switchStaffType('pcs')" class="relative z-10 flex-1 px-5 py-2 rounded-full text-sm font-bold transition-colors duration-200 text-slate-400">
+                            <i class="fa-solid fa-layer-group mr-1.5"></i>Piece Work
+                        </button>
                     </div>
-                    <div id="search-box-timings" class="hidden mb-4">
-                        <input type="text" oninput="handleStaffSearch('timings', this.value)" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:border-indigo-500 outline-none" placeholder="Search by name...">
-                    </div>
-                    <div class="grid grid-cols-1 gap-4 overflow-y-auto max-h-[500px]" id="staff-grid-timings">
+                    <!-- Count + Sort/Search -->
+                    <div class="flex items-center gap-2">
+                        <span id="staff-type-count" class="text-xs text-slate-400 font-medium mr-1"></span>
+                        <button onclick="toggleSort(state.activeStaffType || 'timings')" class="bg-white w-8 h-8 rounded-lg border border-slate-200 text-slate-500 hover:text-indigo-600 shadow-sm transition flex items-center justify-center" title="Sort">
+                            <i class="fa-solid fa-arrow-down-a-z" id="sort-icon-timings"></i>
+                            <i class="fa-solid fa-arrow-down-a-z hidden" id="sort-icon-pcs"></i>
+                        </button>
+                        <button onclick="toggleSearch(state.activeStaffType || 'timings')" class="bg-white w-8 h-8 rounded-lg border border-slate-200 text-slate-500 hover:text-indigo-600 shadow-sm transition flex items-center justify-center" title="Search">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="bg-slate-100 p-6 rounded-2xl border border-slate-200/60 flex flex-col h-full">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-bold text-slate-700 flex items-center gap-2">
-                            <i class="fa-solid fa-user-tag text-emerald-500"></i> Piece Work Staff
-                        </h3>
-                        <div class="flex gap-2">
-                            <button onclick="toggleSort('pcs')" class="bg-white w-8 h-8 rounded-lg border border-slate-200 text-slate-500 hover:text-emerald-600 shadow-sm transition flex items-center justify-center" title="Sort">
-                                <i class="fa-solid fa-arrow-down-a-z" id="sort-icon-pcs"></i>
-                            </button>
-                            <button onclick="toggleSearch('pcs')" class="bg-white w-8 h-8 rounded-lg border border-slate-200 text-slate-500 hover:text-emerald-600 shadow-sm transition flex items-center justify-center" title="Search">
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div id="search-box-pcs" class="hidden mb-4">
-                        <input type="text" oninput="handleStaffSearch('pcs', this.value)" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:border-emerald-500 outline-none" placeholder="Search by name...">
-                    </div>
-                    <div class="grid grid-cols-1 gap-4 overflow-y-auto max-h-[500px]" id="staff-grid-pcs"></div>
+                <div id="search-box-timings" class="hidden mb-3">
+                    <input type="text" oninput="handleStaffSearch('timings', this.value)" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:border-indigo-500 outline-none" placeholder="Search by name or role...">
+                </div>
+                <div id="search-box-pcs" class="hidden mb-3">
+                    <input type="text" oninput="handleStaffSearch('pcs', this.value)" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:border-emerald-500 outline-none" placeholder="Search by name or role...">
+                </div>
+                <!-- Staff Table -->
+                <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-slate-50 text-[10px] uppercase text-slate-400 border-b border-slate-100">
+                            <tr>
+                                <th class="p-3">#</th>
+                                <th class="p-3">Name</th>
+                                <th class="p-3 hidden sm:table-cell">ID</th>
+                                <th class="p-3 text-center">Ledger</th>
+                                <th class="p-3 text-center w-10"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="staff-table-body" class="divide-y divide-slate-50">
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -853,19 +879,36 @@ export const Templates = {
                 </div>
             </div>
         </div>
-        <div id="att-daily-view" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <table class="w-full text-sm text-left border-collapse">
-                <thead class="bg-slate-50 text-slate-600 font-bold uppercase text-xs">
-                    <tr>
-                        <th class="p-4 border-b border-slate-200">Employee</th>
-                        <th class="p-4 border-b border-slate-200 w-48">Status / Action</th>
-                        <th class="p-4 border-b border-slate-200 w-32 text-center">Clock In</th>
-                        <th class="p-4 border-b border-slate-200 w-32 text-center">Clock Out</th>
-                        <th class="p-4 border-b border-slate-200 w-24 text-center">Hours</th>
-                    </tr>
-                </thead>
-                <tbody id="attendance-body" class="divide-y divide-slate-100"></tbody>
-            </table>
+        <div id="att-daily-view">
+            <!-- Desktop Table (visible on md+) -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden" style="display:none" id="att-desktop-table">
+                <table class="w-full text-sm text-left border-collapse">
+                    <thead class="bg-slate-50 text-slate-600 font-bold uppercase text-xs">
+                        <tr>
+                            <th class="p-4 border-b border-slate-200">Employee</th>
+                            <th class="p-4 border-b border-slate-200 w-48">Status / Action</th>
+                            <th class="p-4 border-b border-slate-200 w-32 text-center">Clock In</th>
+                            <th class="p-4 border-b border-slate-200 w-32 text-center">Clock Out</th>
+                            <th class="p-4 border-b border-slate-200 w-24 text-center">Hours</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendance-body" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+            <!-- Mobile Table (visible on <md) -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden" style="display:none" id="att-mobile-table">
+                <table class="w-full text-xs text-left border-collapse">
+                    <thead class="bg-slate-50 text-slate-500 font-bold uppercase text-[10px]">
+                        <tr>
+                            <th class="px-3 py-2 border-b border-slate-200">Name</th>
+                            <th class="px-2 py-2 border-b border-slate-200 text-center w-10">St</th>
+                            <th class="px-2 py-2 border-b border-slate-200 text-center">In</th>
+                            <th class="px-2 py-2 border-b border-slate-200 text-center">Out</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendance-body-mobile" class="divide-y divide-slate-50"></tbody>
+                </table>
+            </div>
             <div id="attendance-empty-state" class="hidden p-10 text-center text-slate-400">
                 <i class="fa-solid fa-users-slash text-4xl mb-3 opacity-20"></i>
                 <p>No employees found.</p>
@@ -1127,23 +1170,36 @@ export const Templates = {
             
             <div id="sec-data" class="hidden border-t border-slate-100 bg-white">
                 <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <button onclick="downloadBackup()" class="flex items-center gap-4 p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition group text-left">
+                    <button id="btn-cloud-backup" onclick="cloudBackup()" class="flex items-center gap-4 p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition group text-left">
                         <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl group-hover:scale-110 transition">
-                            <i class="fa-solid fa-cloud-arrow-down"></i>
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
                         </div>
                         <div>
-                            <h4 class="font-bold text-slate-700">Backup Data</h4>
-                            <p class="text-xs text-slate-500">Download a full JSON copy</p>
+                            <h4 class="font-bold text-slate-700">Cloud Backup</h4>
+                            <p class="text-xs text-slate-500">Save snapshot to Firebase</p>
+                            <p id="last-backup-time" class="text-[10px] text-slate-400 mt-0.5"></p>
                         </div>
                     </button>
 
-                    <button onclick="factoryReset()" class="flex items-center gap-4 p-4 rounded-xl border border-red-100 bg-red-50/10 hover:bg-red-50 transition group text-left">
-                        <div class="w-12 h-12 rounded-full bg-red-100 text-red-500 flex items-center justify-center text-xl group-hover:scale-110 transition">
-                            <i class="fa-solid fa-triangle-exclamation"></i>
+                    <button id="btn-cloud-restore" onclick="cloudRestore()" class="flex items-center gap-4 p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition group text-left">
+                        <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xl group-hover:scale-110 transition">
+                            <i class="fa-solid fa-cloud-arrow-down"></i>
                         </div>
                         <div>
-                            <h4 class="font-bold text-red-600">Factory Reset</h4>
-                            <p class="text-xs text-red-400">Wipe all data & start fresh</p>
+                            <h4 class="font-bold text-slate-700">Cloud Restore</h4>
+                            <p class="text-xs text-slate-500">Restore from last backup</p>
+                        </div>
+                    </button>
+
+
+
+                    <button onclick="window.location.hash='#/bin'" class="flex items-center gap-4 p-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition group text-left">
+                        <div class="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl group-hover:scale-110 transition">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-700">Recycle Bin</h4>
+                            <p class="text-xs text-slate-500">Restore deleted items</p>
                         </div>
                     </button>
                 </div>
@@ -1182,7 +1238,7 @@ export const Templates = {
                         <p class="text-[10px] text-slate-400 mt-1">Displayed on dashboard and reports.</p>
                     </div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase mb-2">OT Rate (₹/hr)</label>
                             <input type="number" id="set-ot" disabled class="w-full p-3 border border-slate-200 rounded-lg bg-slate-50 text-slate-500 font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-colors">
@@ -1194,6 +1250,19 @@ export const Templates = {
                         <div>
                             <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Attendance Bonus (₹)</label>
                             <input type="number" id="set-bonus" disabled class="w-full p-3 border border-slate-200 rounded-lg bg-slate-50 text-slate-500 font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Default In Time</label>
+                            <input type="text" id="set-def-in" disabled placeholder="e.g. 09:30 AM" class="w-full p-3 border border-slate-200 rounded-lg bg-slate-50 text-slate-500 font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Default Out Time</label>
+                            <input type="text" id="set-def-out" disabled placeholder="e.g. 07:00 PM" class="w-full p-3 border border-slate-200 rounded-lg bg-slate-50 text-slate-500 font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-colors">
+                        </div>
+                        <div class="md:col-span-2 lg:col-span-3">
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Garment Name (Optional)</label>
+                            <input type="text" id="set-garment-name" disabled placeholder="e.g. Jeans, Pro Club, Winter Collection" class="w-full p-3 border border-slate-200 rounded-lg bg-slate-50 text-slate-500 font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition-colors">
+                            <p class="text-[10px] text-slate-400 mt-1">Appears below the logo and in the sidebar.</p>
                         </div>
                     </div>
 
@@ -1212,26 +1281,85 @@ export const Templates = {
                             </div>
                         </div>
                         
-                        <div id="cpin-forms-container" class="hidden">
+                        <div id="cpin-forms-container" class="hidden mt-6 animate-fade-in-up">
                             <!-- Form: Set New PIN -->
-                            <div id="form-set-cpin" class="hidden space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                                <p class="text-xs text-slate-500 font-bold uppercase">Set New PIN</p>
-                                <div class="flex gap-4">
-                                     <input type="password" id="new-cpin" placeholder="Enter PIN" maxlength="6" class="w-full p-2 border border-slate-200 rounded-lg text-center font-bold tracking-widest outline-none focus:ring-2 focus:ring-indigo-500">
-                                     <input type="password" id="confirm-cpin" placeholder="Confirm PIN" maxlength="6" class="w-full p-2 border border-slate-200 rounded-lg text-center font-bold tracking-widest outline-none focus:ring-2 focus:ring-indigo-500">
+                            <div id="form-set-cpin" class="hidden bg-white/50 p-6 rounded-2xl border border-slate-200 shadow-sm backdrop-blur-sm">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center">
+                                        <i class="fa-solid fa-plus"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="font-bold text-slate-700">Set New PIN</h5>
+                                        <p class="text-[10px] text-slate-400">Create a secure 4-6 digit PIN</p>
+                                    </div>
                                 </div>
-                                <button onclick="saveNewCPIN()" class="w-full bg-indigo-600 text-white py-2 rounded-lg text-sm font-bold hover:bg-indigo-700 transition">Save PIN</button>
+                                
+                                <form onsubmit="return false;">
+                                    <div class="grid grid-cols-2 gap-4 mb-4">
+                                         <div class="space-y-1">
+                                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">New PIN</label>
+                                            <div class="relative">
+                                                <i class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-xs"></i>
+                                                <input type="password" id="new-cpin" autocomplete="new-password" placeholder="••••" maxlength="6" class="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-lg text-center font-bold tracking-[0.3em] outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition bg-white text-slate-700">
+                                            </div>
+                                         </div>
+                                         <div class="space-y-1">
+                                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Confirm</label>
+                                            <div class="relative">
+                                                <i class="fa-solid fa-check-double absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-xs"></i>
+                                                <input type="password" id="confirm-cpin" autocomplete="new-password" placeholder="••••" maxlength="6" class="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-lg text-center font-bold tracking-[0.3em] outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition bg-white text-slate-700">
+                                            </div>
+                                         </div>
+                                    </div>
+                                    <button onclick="saveNewCPIN()" class="w-full bg-indigo-600 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-200 flex items-center justify-center gap-2">
+                                        <i class="fa-solid fa-save"></i> Save Secure PIN
+                                    </button>
+                                </form>
                             </div>
 
                             <!-- Form: Reset PIN -->
-                            <div id="form-reset-cpin" class="hidden space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                                <p class="text-xs text-slate-500 font-bold uppercase">Reset PIN</p>
-                                <input type="password" id="old-cpin" placeholder="Current PIN" maxlength="6" class="w-full p-2 border border-slate-200 rounded-lg text-center font-bold tracking-widest outline-none focus:ring-2 focus:ring-indigo-500">
-                                <div class="flex gap-4">
-                                     <input type="password" id="reset-new-cpin" placeholder="New PIN" maxlength="6" class="w-full p-2 border border-slate-200 rounded-lg text-center font-bold tracking-widest outline-none focus:ring-2 focus:ring-indigo-500">
-                                     <input type="password" id="reset-confirm-cpin" placeholder="Confirm" maxlength="6" class="w-full p-2 border border-slate-200 rounded-lg text-center font-bold tracking-widest outline-none focus:ring-2 focus:ring-indigo-500">
+                            <div id="form-reset-cpin" class="hidden bg-white/50 p-6 rounded-2xl border border-slate-200 shadow-sm backdrop-blur-sm">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center">
+                                        <i class="fa-solid fa-rotate"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="font-bold text-slate-700">Reset PIN</h5>
+                                        <p class="text-[10px] text-slate-400">Update your security credentials</p>
+                                    </div>
                                 </div>
-                                <button onclick="resetCPIN()" class="w-full bg-slate-800 text-white py-2 rounded-lg text-sm font-bold hover:bg-slate-700 transition">Update PIN</button>
+
+                                <form onsubmit="return false;">
+                                    <div class="space-y-4">
+                                        <div class="space-y-1">
+                                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Current PIN</label>
+                                            <div class="relative">
+                                                <i class="fa-solid fa-key absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-xs"></i>
+                                                <input type="password" id="old-cpin" autocomplete="current-password" placeholder="Current PIN" maxlength="6" class="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-lg text-center font-bold tracking-[0.3em] outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition bg-white text-slate-700">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="grid grid-cols-2 gap-4">
+                                             <div class="space-y-1">
+                                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">New PIN</label>
+                                                <div class="relative">
+                                                    <i class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-xs"></i>
+                                                    <input type="password" id="reset-new-cpin" autocomplete="new-password" placeholder="••••" maxlength="6" class="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-lg text-center font-bold tracking-[0.3em] outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition bg-white text-slate-700">
+                                                </div>
+                                             </div>
+                                             <div class="space-y-1">
+                                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Confirm</label>
+                                                <div class="relative">
+                                                    <i class="fa-solid fa-check-double absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-xs"></i>
+                                                    <input type="password" id="reset-confirm-cpin" autocomplete="new-password" placeholder="••••" maxlength="6" class="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-lg text-center font-bold tracking-[0.3em] outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition bg-white text-slate-700">
+                                                </div>
+                                             </div>
+                                        </div>
+                                    </div>
+                                    <button onclick="resetCPIN()" class="w-full mt-4 bg-slate-800 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-slate-700 transition shadow-lg flex items-center justify-center gap-2">
+                                        <i class="fa-solid fa-check"></i> Update PIN
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -1239,7 +1367,9 @@ export const Templates = {
             </div>
         </div>
 
-        <!-- Section 3: Account -->
+
+
+        <!-- Section 4: Account -->
 
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-20 transition-all duration-300">
             <button onclick="toggleSettingsSection('sec-account')" class="w-full p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 hover:bg-slate-50 transition text-left group">
@@ -1273,7 +1403,7 @@ export const Templates = {
             <form onsubmit="event.preventDefault(); verifyPasswordForEdit()">
                 <div class="mb-4">
                     <div class="relative">
-                        <input type="password" id="secure-edit-pass" 
+                        <input type="password" id="secure-edit-pass" autocomplete="current-password"
                             class="w-full text-center text-lg font-bold py-2 border-b-2 border-slate-200 focus:border-indigo-600 outline-none bg-transparent transition-colors pr-10"
                             placeholder="Password">
                         <button type="button" onclick="toggleSecurePasswordVisibility()" class="absolute right-0 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition p-2">
@@ -1291,4 +1421,7 @@ export const Templates = {
         </div>
     </div>
     </div>`
+    ,
+
+    bin: () => `<div id="bin-placeholder"></div>`
 };

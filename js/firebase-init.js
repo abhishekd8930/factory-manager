@@ -2,7 +2,7 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import { getDatabase, ref, set, get, child, onValue } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js";
 
 const firebaseConfig = {
@@ -31,6 +31,8 @@ window.onValue = onValue;
 window.signInWithEmailAndPassword = signInWithEmailAndPassword;
 window.signOut = signOut;
 window.onAuthStateChanged = onAuthStateChanged;
+window.GoogleAuthProvider = GoogleAuthProvider;
+window.signInWithPopup = signInWithPopup;
 
 // --- REAL-TIME CONNECTION STATUS MONITOR ---
 const connectedRef = ref(db, ".info/connected");
@@ -61,9 +63,12 @@ function updateStatusUI(online) {
 
 // --- HELPER FUNCTIONS ---
 window.saveToCloud = (path, data) => {
-    set(ref(db, path), data)
+    return set(ref(db, path), data)
         .then(() => console.log(`Saved: ${path}`))
-        .catch((err) => console.error("Save Error:", err));
+        .catch((err) => {
+            console.error("Save Error:", err);
+            throw err; // Re-throw so caller knows it failed
+        });
 };
 
 window.loadFromCloud = async (path) => {

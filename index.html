@@ -13,6 +13,7 @@
         rel="stylesheet">
     <link href="css/output.css" rel="stylesheet">
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
     <script src="js/chart.js"></script>
     <script type="importmap">
         {
@@ -84,52 +85,125 @@
         <div class="absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity opacity-0" id="profile-backdrop" onclick="closeProfile()"></div>
 
         <!-- Panel -->
-        <div class="absolute right-0 top-0 h-full w-full max-w-sm bg-white shadow-2xl transform transition-transform translate-x-full duration-300 ease-in-out flex flex-col" id="profile-panel-content">
-            <div class="bg-indigo-600 text-white p-6 pb-12 relative shrink-0">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h3 class="text-xl font-bold">Profile</h3>
-                        <p class="text-indigo-200 text-xs">Manage your account</p>
-                    </div>
-                    <button onclick="closeProfile()" aria-label="Close Profile"
-                        class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition backdrop-blur-sm">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-
-                <!-- PROFILE HEADER (Overlapping) -->
-                <div class="absolute -bottom-10 left-6 flex items-end gap-4">
-                    <div id="profile-avatar" class="w-20 h-20 rounded-2xl bg-white p-1 shadow-lg transform rotate-3">
-                        <div class="w-full h-full bg-slate-100 rounded-xl flex items-center justify-center text-3xl font-bold text-slate-400 border border-slate-200">
-                             <i class="fa-solid fa-user"></i>
-                        </div>
-                    </div>
-                </div>
+        <div class="absolute right-0 top-0 h-full w-full max-w-sm bg-slate-50 shadow-2xl transform transition-transform translate-x-full duration-300 ease-in-out flex flex-col" id="profile-panel-content">
+            <!-- Close Button -->
+            <div class="absolute top-4 right-4 z-50">
+                <button onclick="closeProfile()" aria-label="Close Profile"
+                    class="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
 
-            <div class="pt-12 px-6 pb-6 flex-1 overflow-y-auto custom-scrollbar space-y-6">
-                <!-- USER INFO -->
-                <div>
-                    <h2 id="profile-name" class="text-2xl font-bold text-slate-800 leading-tight">Guest User</h2>
-                    <div class="flex items-center gap-2 mt-1">
-                        <span id="profile-role" class="bg-indigo-50 text-indigo-700 text-xs font-bold px-2 py-0.5 rounded-md border border-indigo-100">
-                             Visitor
-                        </span>
-                        <div class="w-1 h-1 rounded-full bg-slate-300"></div>
-                        <span id="profile-unit" class="text-xs text-slate-500 font-medium">Unknown Unit</span>
-                    </div>
+            <div id="id-card-container" class="flex-1 flex flex-col items-center pt-8 overflow-hidden">
+                <h1 class="text-3xl font-bold text-slate-800 mb-2">Profile</h1>
+                <p class="text-xs text-slate-400 mb-8">Double-click card to flip • Hover to tilt</p>
+
+                <div class="card-wrapper">
+                    <section id="card">
+                        
+                        <div class="card__glare"></div>
+
+                        <div class="card-inner">
+                            
+                            <div class="card__face card__face--front">
+                                <div class="id-header">
+                                    <div class="company-logo">
+                                        <i class="fa-solid fa-bolt"></i>
+                                        <span>Sri Raghavendra Fashions</span>
+                                    </div>
+                                </div>
+
+                                <div class="avatar-container">
+                                    <img id="card-avatar-img" class="avatar" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" alt="Manager Photo" />
+                                </div>
+
+                                <div class="id-body">
+                                    <div id="card-user-name" class="card-user-name">Manager</div>
+                                    <div id="card-user-role" class="card-user-role">Administrator</div>
+
+                                    <div class="info-grid">
+                                        <div class="info-item">
+                                            <div class="info-label">Employee ID</div>
+                                            <div id="card-user-id" class="info-value">SRF-001</div>
+                                        </div>
+                                        <div class="info-item">
+                                            <div class="info-label">Valid Thru</div>
+                                            <div class="info-value">DEC 2026</div>
+                                        </div>
+                                        <div class="info-item">
+                                            <div class="info-label">Unit</div>
+                                            <div id="card-user-unit" class="info-value">Bengaluru HQ</div>
+                                        </div>
+                                        <div class="info-item">
+                                            <div class="info-label">Access</div>
+                                            <div class="info-value">All Areas</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="id-footer">
+                                    <i class="fa-solid fa-shield-halved"></i> AUTHORIZED PERSONNEL
+                                </div>
+                            </div>
+
+                            <div class="card__face card__face--back">
+                                <div class="magnetic-stripe"></div>
+                                
+                                <div class="signature-area">
+                                    Authorized Sig.
+                                </div>
+
+                                <div class="qr-area">
+                                    <img id="card-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=SRF-AUTH-001-MANAGER" alt="ID QR Code" class="qr-code">
+                                    <div id="card-qr-text" style="font-size: 0.7rem; color: #64748b; font-family: monospace;">SRF-AUTH-001</div>
+                                </div>
+
+                                <div class="disclaimer">
+                                    This card is the property of <strong>Sri Raghavendra Fashions</strong>.<br>
+                                    If found, please return to the administrative office in Bengaluru, Karnataka.
+                                </div>
+                            </div>
+
+                        </div>
+                    </section>
                 </div>
 
-                <!-- DETAILS GRID -->
-                <div class="grid grid-cols-2 gap-3">
-                     <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                         <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1">Employee ID</p>
-                         <p id="profile-id" class="font-mono text-sm font-semibold text-slate-700">--</p>
-                     </div>
-                     <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                         <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1">Email / Phone</p>
-                         <p id="profile-email" class="font-mono text-sm font-semibold text-slate-700 truncate">--</p>
-                     </div>
+                <!-- Profile Actions -->
+                <div class="profile-menu-list">
+                    
+                    <a href="#" class="profile-menu-item">
+                        <div class="menu-icon-box">
+                            <i class="fa-solid fa-user-pen"></i>
+                        </div>
+                        <div class="menu-text">
+                            <span class="menu-title">Edit Profile</span>
+                            <span class="menu-subtitle">Update personal details</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right menu-chevron"></i>
+                    </a>
+
+                    <a href="#" class="profile-menu-item">
+                        <div class="menu-icon-box">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <div class="menu-text">
+                            <span class="menu-title">Terms & Conditions</span>
+                            <span class="menu-subtitle">Company policies & usage</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right menu-chevron"></i>
+                    </a>
+
+                    <div onclick="handleLogout()" class="profile-menu-item danger-zone">
+                        <div class="menu-icon-box">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </div>
+                        <div class="menu-text">
+                            <span class="menu-title">Sign Out</span>
+                            <span class="menu-subtitle">End your current session</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right menu-chevron"></i>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -311,6 +385,7 @@
     <script src="js/modules/accounting.js"></script>
     <script src="js/modules/inventory.js"></script>
     <script src="js/modules/units.js"></script>
+    <script src="js/modules/bin.js"></script>
 
     <script type="module" src="js/modules/settings.js"></script>
     <script src="js/main.js"></script>

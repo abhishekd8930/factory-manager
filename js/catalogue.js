@@ -562,11 +562,42 @@ window.saveCatalogueDetail = () => {
 };
 
 window.deleteActiveCatalogueItem = () => {
-    if (confirm("Are you sure you want to delete this Catalogue item?")) {
-        catalogueItems = catalogueItems.filter(i => i.id !== activeCatalogueId);
-        localStorage.setItem('catalogueItems', JSON.stringify(catalogueItems));
-        if (window.saveToCloud) window.saveToCloud('catalogueItems', catalogueItems);
-        closeCatalogueDetail();
+    if (!confirm("⚠ Move this item to Recycle Bin?\n\nIt will be permanently deleted after 30 days unless restored.")) return;
+
+    // 1. Find the item
+    const item = catalogueItems.find(i => i.id === activeCatalogueId);
+    if (!item) return;
+
+    // 2. Create deleted item entry
+    const deletedItem = {
+        id: `deleted_${Date.now()}_${activeCatalogueId}`,
+        type: 'catalogue',
+        data: item,
+        deletedAt: Date.now(),
+        deletedBy: window.auth?.currentUser?.email || 'Unknown',
+        expiresAt: Date.now() + (30 * 24 * 60 * 60 * 1000) // 30 days
+    };
+
+    // 3. Add to deletedItems (bin)
+    state.deletedItems.push(deletedItem);
+    localStorage.setItem('srf_deleted_items', JSON.stringify(state.deletedItems));
+    if (window.saveToCloud) window.saveToCloud('deletedItems', state.deletedItems);
+
+    // 4. Remove from catalogueItems
+    catalogueItems = catalogueItems.filter(i => i.id !== activeCatalogueId);
+    localStorage.setItem('catalogueItems', JSON.stringify(catalogueItems));
+    if (window.saveToCloud) window.saveToCloud('catalogueItems', catalogueItems);
+
+    // 5. Close detail and refresh
+    closeCatalogueDetail();
+
+    // 6. Notify
+    if (window.addNotification) {
+        window.addNotification({
+            type: 'info',
+            title: 'Moved to Bin',
+            message: `${item.name} moved to Recycle Bin. Can be restored within 30 days.`
+        });
     }
 };
 

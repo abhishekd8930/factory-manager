@@ -11,10 +11,10 @@ window.openAdvanceModal = () => {
 
     const date = state.currentLedgerDate;
     const modalTitle = document.getElementById('adv-modal-month');
-    if(modalTitle) modalTitle.innerText = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    
+    if (modalTitle) modalTitle.innerText = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
     document.getElementById('adv-new-date').value = state.today;
-    
+
     renderAdvanceLog();
     document.getElementById('advance-modal').classList.remove('hidden');
 };
@@ -26,15 +26,15 @@ window.renderAdvanceLog = () => {
     const logs = state.staffLedgers[lId]?.advanceLog || [];
     const tbody = document.getElementById('advance-list-body');
     const emptyMsg = document.getElementById('adv-empty-msg');
-    
-    if(!tbody) return;
+
+    if (!tbody) return;
     tbody.innerHTML = '';
     let total = 0;
 
-    if(logs.length === 0) {
-        if(emptyMsg) emptyMsg.classList.remove('hidden');
+    if (logs.length === 0) {
+        if (emptyMsg) emptyMsg.classList.remove('hidden');
     } else {
-        if(emptyMsg) emptyMsg.classList.add('hidden');
+        if (emptyMsg) emptyMsg.classList.add('hidden');
         logs.forEach((log, index) => {
             total += Number(log.amount);
             tbody.innerHTML += `
@@ -49,16 +49,16 @@ window.renderAdvanceLog = () => {
 
     const totalEl = document.getElementById('adv-modal-total');
     const inputEl = document.getElementById('ledger-advance');
-    
-    if(totalEl) totalEl.innerText = `₹ ${total}`;
-    if(inputEl) inputEl.value = total;
-    
-    if(state.staffLedgers[lId]) {
-        state.staffLedgers[lId].advance = total; 
-        
+
+    if (totalEl) totalEl.innerText = `₹ ${total}`;
+    if (inputEl) inputEl.value = total;
+
+    if (state.staffLedgers[lId]) {
+        state.staffLedgers[lId].advance = total;
+
         // Save
         localStorage.setItem('srf_staff_ledgers', JSON.stringify(state.staffLedgers));
-        if(window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
+        if (window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
     }
 };
 
@@ -68,13 +68,13 @@ window.addAdvanceEntry = () => {
     const amount = document.getElementById('adv-new-amount').value;
     const note = document.getElementById('adv-new-note').value;
 
-    if(!amount || amount <= 0) return alert("Please enter a valid amount");
+    if (!amount || amount <= 0) return alert("Please enter a valid amount");
 
-    if(!state.staffLedgers[lId]) state.staffLedgers[lId] = { days: {}, advance: 0, advanceLog: [] };
-    if(!state.staffLedgers[lId].advanceLog) state.staffLedgers[lId].advanceLog = [];
+    if (!state.staffLedgers[lId]) state.staffLedgers[lId] = { days: {}, advance: 0, advanceLog: [] };
+    if (!state.staffLedgers[lId].advanceLog) state.staffLedgers[lId].advanceLog = [];
 
     state.staffLedgers[lId].advanceLog.push({ id: Date.now(), date: date || state.today, amount: Number(amount), note: note });
-    
+
     document.getElementById('adv-new-amount').value = '';
     document.getElementById('adv-new-note').value = '';
     document.getElementById('adv-new-amount').focus();
@@ -83,7 +83,7 @@ window.addAdvanceEntry = () => {
 
 window.deleteAdvanceEntry = (index) => {
     const lId = getLedgerId();
-    if(state.staffLedgers[lId]?.advanceLog) {
+    if (state.staffLedgers[lId]?.advanceLog) {
         state.staffLedgers[lId].advanceLog.splice(index, 1);
         renderAdvanceLog();
     }
@@ -91,14 +91,14 @@ window.deleteAdvanceEntry = (index) => {
 
 window.saveFinancials = () => {
     const lId = getLedgerId();
-    if(!state.staffLedgers[lId]) return;
+    if (!state.staffLedgers[lId]) return;
     const salInput = document.getElementById('ledger-salary');
-    if(!salInput.readOnly) state.staffLedgers[lId].salary = salInput.value;
+    if (!salInput.readOnly) state.staffLedgers[lId].salary = salInput.value;
     state.staffLedgers[lId].advance = document.getElementById('ledger-advance').value;
-    
+
     // Save
     localStorage.setItem('srf_staff_ledgers', JSON.stringify(state.staffLedgers));
-    if(window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
+    if (window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
 };
 
 
@@ -121,27 +121,27 @@ window.calculateSalary = () => {
     // END ADDED CODE
     const ledgerId = getLedgerId();
     const advInput = document.getElementById('ledger-advance');
-    
+
     // 1. Save Advance if changed
     if (advInput) {
         if (!state.staffLedgers[ledgerId]) state.staffLedgers[ledgerId] = {};
         state.staffLedgers[ledgerId].advance = advInput.value;
         localStorage.setItem('srf_staff_ledgers', JSON.stringify(state.staffLedgers));
-        if(window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
+        if (window.saveToCloud) window.saveToCloud('staffLedgers', state.staffLedgers);
     }
 
     const ledgerData = state.staffLedgers[ledgerId] || {};
     const emp = state.currentLedgerEmp;
     const basicMonthlySalary = Number(ledgerData.salary) || 0;
     const advance = Number(ledgerData.advance) || 0;
-    
-    if(!ledgerData || (!basicMonthlySalary && (!ledgerData.pcsEntries || ledgerData.pcsEntries.length === 0))) { 
-        alert("No earnings found. Cannot generate slip."); return; 
+
+    if (!ledgerData || (!basicMonthlySalary && (!ledgerData.pcsEntries || ledgerData.pcsEntries.length === 0))) {
+        alert("No earnings found. Cannot generate slip."); return;
     }
-    
+
     const modal = document.getElementById('salary-modal');
     modal.className = "fixed inset-0 bg-slate-900/80 z-[100] flex items-center justify-center p-4 backdrop-blur-sm transition-opacity duration-200";
-    
+
     let html = '';
     const dateLabel = document.getElementById('ledger-month-label').innerText;
     const RATES = (window.CONFIG && window.CONFIG.RATES) ? window.CONFIG.RATES : { OT_PER_HOUR: 45, NPL_FINE: 500, ATTENDANCE_BONUS: 600 };
@@ -151,10 +151,10 @@ window.calculateSalary = () => {
     // 1. TIME-BASED STAFF LOGIC (UNCHANGED)
     // ==========================================
     if (emp.type === 'timings') {
-        const date = state.currentLedgerDate; 
+        const date = state.currentLedgerDate;
         const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-        
-        const dailyWage = basicMonthlySalary / daysInMonth; 
+
+        const dailyWage = basicMonthlySalary / daysInMonth;
         const hourlyWage = dailyWage / 8;
 
         let fullDays = 0, partialHours = 0, totalOTHours = 0, nplCount = 0, leaveCount = 0, absentDays = 0, unpaidSundays = 0, halfPaidSundays = 0, actualWorkDays = 0, totalSundaysInMonth = 0;
@@ -162,77 +162,77 @@ window.calculateSalary = () => {
 
         // Inside js/modules/staff/finance.js
 
-    for(let i = 1; i <= daysInMonth; i++) {
-        const dayData = dayMap[i] || {}; 
-        const currentDateObj = new Date(date.getFullYear(), date.getMonth(), i);
-        const isSunday = currentDateObj.getDay() === 0 || dayData.status === 'SUNDAY'; 
-        const isHoliday = dayData.status === 'HOLIDAY';
-        
-        // 1. CHECK FOR PAID LEAVE
-        const isPaidLeave = dayData.status === 'PAID_LEAVE';
+        for (let i = 1; i <= daysInMonth; i++) {
+            const dayData = dayMap[i] || {};
+            const currentDateObj = new Date(date.getFullYear(), date.getMonth(), i);
+            const isSunday = currentDateObj.getDay() === 0 || dayData.status === 'SUNDAY';
+            const isHoliday = dayData.status === 'HOLIDAY';
 
-        if (isSunday) totalSundaysInMonth++; 
+            // 1. CHECK FOR PAID LEAVE
+            const isPaidLeave = dayData.status === 'PAID_LEAVE';
 
-        // 2. HOLIDAY OR PAID LEAVE (Full Pay + OT if they worked)
-        if (isHoliday || isPaidLeave) { 
-            fullDays++; 
-            // Safety: If they physically worked on a Holiday/Paid Leave, add it to OT
-            if (dayData.hours) totalOTHours += Number(dayData.hours);
-        } 
-        // 3. SUNDAY (Base Pay + Full OT if they worked)
-        else if (isSunday) {
-            // --- YOUR COMPLEX SUNDAY LOOKBACK LOGIC (PRESERVED) ---
-            let weekTotalHours = 0, weekWorkDays = 0, hasAnyStatus = false;
-            for (let back = 1; back <= 6; back++) {
-                const checkDate = i - back;
-                if (checkDate < 1) break;
-                const prevDayData = dayMap[checkDate];
-                if (prevDayData) {
-                    if (prevDayData.hours) { weekTotalHours += parseFloat(prevDayData.hours); weekWorkDays++; }
-                    if (prevDayData.status || prevDayData.hours || prevDayData.in) { hasAnyStatus = true; }
+            if (isSunday) totalSundaysInMonth++;
+
+            // 2. HOLIDAY OR PAID LEAVE (Full Pay + OT if they worked)
+            if (isHoliday || isPaidLeave) {
+                fullDays++;
+                // Safety: If they physically worked on a Holiday/Paid Leave, add it to OT
+                if (dayData.hours) totalOTHours += Number(dayData.hours);
+            }
+            // 3. SUNDAY (Base Pay + Full OT if they worked)
+            else if (isSunday) {
+                // --- YOUR COMPLEX SUNDAY LOOKBACK LOGIC (PRESERVED) ---
+                let weekTotalHours = 0, weekWorkDays = 0, hasAnyStatus = false;
+                for (let back = 1; back <= 6; back++) {
+                    const checkDate = i - back;
+                    if (checkDate < 1) break;
+                    const prevDayData = dayMap[checkDate];
+                    if (prevDayData) {
+                        if (prevDayData.hours) { weekTotalHours += parseFloat(prevDayData.hours); weekWorkDays++; }
+                        if (prevDayData.status || prevDayData.hours || prevDayData.in) { hasAnyStatus = true; }
+                    }
+                }
+                // Base Pay Calculation
+                if (!hasAnyStatus && i !== 1) { unpaidSundays++; }
+                else if (i === 1 && !dayMap[1]?.hours && !dayMap[2]?.hours) { fullDays++; }
+                else {
+                    const avgHours = weekWorkDays > 0 ? (weekTotalHours / weekWorkDays) : 0;
+                    if (avgHours > 0 && avgHours < 5) { fullDays += 0.5; halfPaidSundays++; } else { fullDays++; }
+                }
+
+                // OT Calculation: Any work on Sunday is Pure OT
+                if (dayData.hours) {
+                    totalOTHours += Number(dayData.hours) || 0;
+                    actualWorkDays++;
                 }
             }
-            // Base Pay Calculation
-            if (!hasAnyStatus && i !== 1) { unpaidSundays++; } 
-            else if (i === 1 && !dayMap[1]?.hours && !dayMap[2]?.hours) { fullDays++; }
+            // 4. NORMAL DAYS
             else {
-                const avgHours = weekWorkDays > 0 ? (weekTotalHours / weekWorkDays) : 0;
-                if (avgHours > 0 && avgHours < 5) { fullDays += 0.5; halfPaidSundays++; } else { fullDays++; }
-            }
-            
-            // OT Calculation: Any work on Sunday is Pure OT
-            if (dayData.hours) { 
-                totalOTHours += Number(dayData.hours) || 0; 
-                actualWorkDays++; 
-            }
-        } 
-        // 4. NORMAL DAYS
-        else {
-            if (dayData.status === 'NPL') { nplCount++; absentDays++; } 
-            else if (dayData.status === 'LEAVE') { leaveCount++; absentDays++; actualWorkDays++; } 
-            else if (dayData.hours) { 
-                const totalH = Number(dayData.hours) || 0; 
-                const otH = Number(dayData.ot) || 0; 
-                
-                totalOTHours += otH; 
-                
-                const normalWork = totalH - otH; 
-                if (normalWork >= 8) fullDays++; else partialHours += normalWork; 
-                
-                actualWorkDays++;
-            } else { 
-                if (!dayData.in && !dayData.out && !dayData.status && currentDateObj <= new Date()) absentDays++; 
+                if (dayData.status === 'NPL') { nplCount++; absentDays++; }
+                else if (dayData.status === 'LEAVE') { leaveCount++; absentDays++; actualWorkDays++; }
+                else if (dayData.hours) {
+                    const totalH = Number(dayData.hours) || 0;
+                    const otH = Number(dayData.ot) || 0;
+
+                    totalOTHours += otH;
+
+                    const normalWork = totalH - otH;
+                    if (normalWork >= 8) fullDays++; else partialHours += normalWork;
+
+                    actualWorkDays++;
+                } else {
+                    if (!dayData.in && !dayData.out && !dayData.status && currentDateObj <= new Date()) absentDays++;
+                }
             }
         }
-    }
-        
+
         if (actualWorkDays === 0) { fullDays = 0; unpaidSundays = totalSundaysInMonth; halfPaidSundays = 0; }
 
         const incentive = (absentDays === 0 && nplCount === 0 && leaveCount === 0 && unpaidSundays === 0 && actualWorkDays > 0) ? RATES.ATTENDANCE_BONUS : 0;
         const totalBasic = (fullDays * dailyWage) + (partialHours * hourlyWage);
-        const otPay = totalOTHours * RATES.OT_PER_HOUR; 
+        const otPay = totalOTHours * RATES.OT_PER_HOUR;
         const nplFine = nplCount * RATES.NPL_FINE;
-        let gross = totalBasic + otPay + incentive; 
+        let gross = totalBasic + otPay + incentive;
         let net = gross - nplFine - advance;
         if (net < 0) net = 0;
 
@@ -244,7 +244,10 @@ window.calculateSalary = () => {
         html = `
         <div class="bg-white p-6 max-w-md mx-auto text-slate-800 font-sans">
             
-            <div class="w-full flex justify-end mb-4 no-print">
+            <div class="w-full flex justify-end gap-3 mb-4 no-print">
+                <button onclick="shareSalarySlip()" class="bg-emerald-600 text-white font-bold py-2 px-6 rounded-lg shadow-lg hover:bg-emerald-700 transition flex items-center gap-2">
+                    <i class="fa-solid fa-share-nodes"></i> Share
+                </button>
                 <button onclick="window.print()" class="bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg shadow-lg hover:bg-indigo-700 transition flex items-center gap-2">
                     <i class="fa-solid fa-print"></i> Print Slip
                 </button>
@@ -278,27 +281,27 @@ window.calculateSalary = () => {
             </table>
             <div class="mt-8 pt-8 border-t border-dashed border-slate-300 text-center"><p class="text-xs text-slate-400 uppercase font-bold">Authorized Signature</p></div>
         </div>`;
-    
+
 
     } else {
-        
+
         // ==========================================
         // 2. PIECE WORK LOGIC (CONSOLIDATED & PRINT READY)
         // ==========================================
-        
+
         // Step A: Consolidate Duplicates (The "View Bill" Logic)
         const consolidatedData = {};
-        
+
         (ledgerData.pcsEntries || []).forEach(entry => {
             // Clean up the name (remove extra spaces, ignore case)
             const rawName = entry.item || 'Unknown Item';
             const cleanName = rawName.toLowerCase().trim();
             const rate = Number(entry.rate) || 0;
-            
+
             // Create a unique key based on Item Name + Rate
             // Example: "shirt_50"
             const key = `${cleanName}_${rate}`;
-            
+
             if (!consolidatedData[key]) {
                 consolidatedData[key] = {
                     displayName: rawName, // We use the first name we find for display
@@ -307,7 +310,7 @@ window.calculateSalary = () => {
                     total: 0
                 };
             }
-            
+
             // Add to the existing pile instead of creating a new row
             const qty = Number(entry.quantity) || 0;
             consolidatedData[key].quantity += qty;
@@ -327,7 +330,7 @@ window.calculateSalary = () => {
             Object.values(consolidatedData).forEach((r, i) => {
                 rowsHtml += `
                 <tr class="border-b border-slate-200 text-xs">
-                    <td class="py-2 px-3 font-bold text-slate-700 border-r border-slate-100">${i+1}. ${r.displayName}</td>
+                    <td class="py-2 px-3 font-bold text-slate-700 border-r border-slate-100">${i + 1}. ${r.displayName}</td>
                     <td class="py-2 px-3 text-center text-slate-600 border-r border-slate-100">${r.quantity}</td>
                     <td class="py-2 px-3 text-center text-slate-600 border-r border-slate-100">₹${r.rate}</td>
                     <td class="py-2 px-3 text-right font-bold text-slate-800">₹${r.total.toLocaleString('en-IN')}</td>
@@ -339,7 +342,10 @@ window.calculateSalary = () => {
         html = `
         <div class="w-full max-w-xl mx-auto bg-white p-8 text-slate-800 font-sans shadow-none">
             
-            <div class="flex justify-end mb-6 no-print">
+            <div class="flex justify-end gap-3 mb-6 no-print">
+                <button onclick="shareSalarySlip()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-6 rounded-lg shadow-lg transition flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-share-nodes"></i> Share
+                </button>
                 <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg shadow-lg transition flex items-center gap-2 text-sm">
                     <i class="fa-solid fa-print"></i> Print Statement
                 </button>
@@ -415,7 +421,7 @@ window.calculateSalary = () => {
                 <p class="text-[9px] text-slate-400">Generated by Smart Manager v5.5 • ${new Date().toLocaleTimeString()}</p>
             </div>
         </div>`;
-    
+
     }
     // --- NEW: Add Print Button ---
     // We add a specific 'no-print' class so this button doesn't appear on the paper
@@ -427,7 +433,7 @@ window.calculateSalary = () => {
         </div>
     `;
 
-    document.getElementById('salary-modal-content').innerHTML = html; 
+    document.getElementById('salary-modal-content').innerHTML = html;
     modal.classList.remove('hidden');
 };
 
@@ -441,22 +447,77 @@ window.closeSalaryModal = () => {
     }, 200);
 };
 
+// --- SHARE SALARY SLIP AS IMAGE ---
+window.shareSalarySlip = async () => {
+    const content = document.getElementById('salary-modal-content');
+    if (!content) return alert("No salary slip to share.");
+
+    try {
+        // Hide buttons before capture
+        const noPrintEls = content.querySelectorAll('.no-print');
+        noPrintEls.forEach(el => el.style.display = 'none');
+
+        // Use html-to-image (supports modern CSS like oklch)
+        const dataUrl = await htmlToImage.toPng(content, {
+            backgroundColor: '#ffffff',
+            quality: 1,
+            pixelRatio: 2,
+            skipFonts: true // Skip external fonts to avoid CORS issues
+        });
+
+        // Restore buttons
+        noPrintEls.forEach(el => el.style.display = '');
+
+        // Convert data URL to blob
+        const response = await fetch(dataUrl);
+        const blob = await response.blob();
+
+        const empName = state.currentLedgerEmp?.name || 'Employee';
+        const fileName = `Salary_Slip_${empName.replace(/\s+/g, '_')}.png`;
+        const file = new File([blob], fileName, { type: 'image/png' });
+
+        // Try Web Share API (works on mobile / supported browsers)
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+                title: `Salary Slip - ${empName}`,
+                text: `Salary slip for ${empName}`,
+                files: [file]
+            });
+        } else {
+            // Fallback: Download the image
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    } catch (err) {
+        if (err.name !== 'AbortError') {
+            console.error('Share Error:', err);
+            alert('Failed to share: ' + err.message);
+        }
+    }
+};
+
 // ==========================================
 // 3. WAGE SUMMARY MODAL (UPDATED GROUPS)
 // ==========================================
 
 window.toggleDetailsModal = () => {
     const modal = document.getElementById('details-modal');
-    if(!modal) return;
+    if (!modal) return;
 
-    if(modal.classList.contains('hidden')) {
+    if (modal.classList.contains('hidden')) {
         modal.className = "fixed inset-0 bg-slate-900/80 z-[105] flex items-center justify-center backdrop-blur-sm p-4 transition-opacity";
         modal.classList.remove('hidden');
-        
+
         const mInput = document.getElementById('details-month');
-        if(mInput && !mInput.value) {
+        if (mInput && !mInput.value) {
             const now = new Date();
-            mInput.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+            mInput.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
         }
         window.renderDetailsSummary();
     } else {
@@ -467,24 +528,24 @@ window.toggleDetailsModal = () => {
 window.renderDetailsSummary = () => {
     try {
         const mInput = document.getElementById('details-month');
-        if(!mInput || !mInput.value) return;
-        
+        if (!mInput || !mInput.value) return;
+
         const [yStr, mStr] = mInput.value.split('-');
         const year = parseInt(yStr);
         const month = parseInt(mStr);
         const daysInMonth = new Date(year, month, 0).getDate();
         const container = document.getElementById('details-modal-content');
-        
+
         const timeStaff = [];
         const frontBackStaff = [];
         const assemblyStaff = [];
 
         state.staffData.forEach(emp => {
-            if(emp.type === 'timings') {
+            if (emp.type === 'timings') {
                 timeStaff.push(emp);
             } else {
                 const role = (emp.role || '').toLowerCase();
-                if(role.includes('front') || role.includes('back')) {
+                if (role.includes('front') || role.includes('back')) {
                     frontBackStaff.push(emp);
                 } else {
                     assemblyStaff.push(emp);
@@ -497,27 +558,27 @@ window.renderDetailsSummary = () => {
         const calculateRow = (emp) => {
             const lId = `${emp.id}_${year}_${month}`;
             const ledger = state.staffLedgers[lId] || { days: {}, salary: 0, advance: 0, pcsEntries: [] };
-            const dayMap = ledger.days || {}; 
+            const dayMap = ledger.days || {};
             const advance = parseFloat(ledger.advance) || 0;
             let earned = 0;
 
-            if(emp.type === 'timings') {
+            if (emp.type === 'timings') {
                 const basicSalary = parseFloat(ledger.salary) || 0;
                 const dailyWage = basicSalary / 30;
                 const hourlyWage = dailyWage / 8;
                 let fullDays = 0, partialHours = 0, totalOTHours = 0, nplCount = 0, leaveCount = 0, absentDays = 0;
 
-                for(let i=1; i<=daysInMonth; i++) {
-                    const d = dayMap[i] || {}; 
-                    const dObj = new Date(year, month-1, i);
+                for (let i = 1; i <= daysInMonth; i++) {
+                    const d = dayMap[i] || {};
+                    const dObj = new Date(year, month - 1, i);
                     const isSun = dObj.getDay() === 0 || d.status === 'SUNDAY';
                     const isHol = d.status === 'HOLIDAY';
-                // NEW: Check for Paid Leave
+                    // NEW: Check for Paid Leave
                     const isPaidLeave = d.status === 'PAID_LEAVE';
 
-                    if(isSun || isHol || isPaidLeave) { // <--- ADD isPaidLeave HERE
-                    fullDays++;
-                    if(d.hours) totalOTHours += Number(d.hours);
+                    if (isSun || isHol || isPaidLeave) { // <--- ADD isPaidLeave HERE
+                        fullDays++;
+                        if (d.hours) totalOTHours += Number(d.hours);
                     } else {
                         if (d.status === 'NPL') { nplCount++; absentDays++; }
                         else if (d.status === 'LEAVE') { leaveCount++; absentDays++; }
@@ -526,13 +587,13 @@ window.renderDetailsSummary = () => {
                             const ot = Number(d.ot) || 0;
                             totalOTHours += ot;
                             const normal = h - ot;
-                            if(normal >= 8) fullDays++; else partialHours += normal;
+                            if (normal >= 8) fullDays++; else partialHours += normal;
                         } else {
                             if (!d.in && !d.out && !d.status) absentDays++;
                         }
                     }
                 }
-                const incentive = (absentDays===0 && nplCount===0 && leaveCount===0) ? RATES.ATTENDANCE_BONUS : 0;
+                const incentive = (absentDays === 0 && nplCount === 0 && leaveCount === 0) ? RATES.ATTENDANCE_BONUS : 0;
                 earned = (fullDays * dailyWage) + (partialHours * hourlyWage) + (totalOTHours * RATES.OT_PER_HOUR) + incentive - (nplCount * RATES.NPL_FINE);
             } else {
                 (ledger.pcsEntries || []).forEach(row => earned += Number(row.total || 0));
@@ -545,8 +606,8 @@ window.renderDetailsSummary = () => {
         let grandTotal = 0;
 
         const renderTable = (title, staffList, colorClass) => {
-            if(staffList.length === 0) return '';
-            
+            if (staffList.length === 0) return '';
+
             let sectionTotal = 0;
             let rows = staffList.map(emp => {
                 const data = calculateRow(emp);
@@ -586,8 +647,8 @@ window.renderDetailsSummary = () => {
 
         let html = '';
         html += renderTable('Based on Timings', timeStaff, 'text-indigo-600');
-        
-        if(frontBackStaff.length > 0 || assemblyStaff.length > 0) {
+
+        if (frontBackStaff.length > 0 || assemblyStaff.length > 0) {
             html += `<div class="mt-8 mb-4 px-2 border-b-2 border-dashed border-slate-200 pb-1">
                         <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Based on Piecework</span>
                      </div>`;
@@ -595,12 +656,12 @@ window.renderDetailsSummary = () => {
         html += renderTable('Front & Back', frontBackStaff, 'text-emerald-600');
         html += renderTable('Assembly', assemblyStaff, 'text-blue-600');
 
-        if(html === '') html = `<div class="p-8 text-center text-slate-400 italic">No staff found for this month.</div>`;
+        if (html === '') html = `<div class="p-8 text-center text-slate-400 italic">No staff found for this month.</div>`;
 
         container.innerHTML = html;
         document.getElementById('details-grand-total').innerText = `₹ ${Math.round(grandTotal).toLocaleString('en-IN')}`;
-    
-    } catch(e) {
+
+    } catch (e) {
         console.error("Wage Summary Error:", e);
         alert("Error loading Wage Summary. Check console for details.");
     }

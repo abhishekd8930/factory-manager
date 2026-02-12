@@ -9,9 +9,35 @@ export const renderSettings = () => {
     setVal('set-npl', config.RATES.NPL_FINE);
     setVal('set-bonus', config.RATES.ATTENDANCE_BONUS);
 
+    // Default Timings
+    setVal('set-def-in', config.RATES.DEFAULT_IN_TIME || "09:30 AM");
+    setVal('set-def-out', config.RATES.DEFAULT_OUT_TIME || "07:00 PM");
+
+    // Garment Name
+    setVal('set-garment-name', config.GARMENT_NAME || "");
+
     // 2. Attach Event Listeners
     // We can use onchange in HTML or attach here. 
     // HTML onchange="window.handleSettingChange(this)" is easier for the template.
+
+    // 3. Migrate Old CPIN Data if exists
+    const legacyCPIN = localStorage.getItem('srf_cpin');
+    const legacyEnabled = localStorage.getItem('srf_cpin_enabled');
+
+    if (legacyCPIN && (!state.systemSecurity || !state.systemSecurity.cpin)) {
+        console.log("Migrating Legacy CPIN...");
+        const newSec = {
+            cpin: legacyCPIN,
+            enabled: legacyEnabled === 'true'
+        };
+        state.systemSecurity = newSec;
+        localStorage.setItem('srf_security', JSON.stringify(newSec));
+        if (window.saveToCloud) window.saveToCloud('systemSecurity', newSec);
+
+        // Clean up
+        localStorage.removeItem('srf_cpin');
+        localStorage.removeItem('srf_cpin_enabled');
+    }
 };
 
 // Expose to window for Router
@@ -47,30 +73,7 @@ window.toggleSettingsSection = (id) => {
     }
 };
 
-window.factoryReset = () => {
-    const code = prompt("⚠ WARNING: This will wipe ALL data to start fresh.\nType 'RESET' to confirm:");
 
-    if (code === 'RESET') {
-        // Clear all App Data keys
-        localStorage.removeItem('srf_staff_list');
-        localStorage.removeItem('srf_staff_ledgers');
-        localStorage.removeItem('srf_production_history');
-        localStorage.removeItem('srf_washing_history');
-        localStorage.removeItem('srf_accounts');
-        localStorage.removeItem('srf_owner_todos');
-        localStorage.removeItem('srf_config');
-        localStorage.removeItem('srf_notifications');
-
-        if (window.saveToCloud) {
-            window.saveToCloud('staffData', []);
-            window.saveToCloud('staffLedgers', {});
-            // ... wipe other paths
-        }
-
-        alert("System Cleaned! Ready for fresh use.");
-        window.location.reload();
-    }
-};
 
 window.saveSettingsConfig = () => {
     const newConfig = { ...state.config };
@@ -79,11 +82,18 @@ window.saveSettingsConfig = () => {
     newConfig.RATES.OT_PER_HOUR = Number(document.getElementById('set-ot').value);
     newConfig.RATES.NPL_FINE = Number(document.getElementById('set-npl').value);
     newConfig.RATES.ATTENDANCE_BONUS = Number(document.getElementById('set-bonus').value);
+    newConfig.RATES.DEFAULT_IN_TIME = document.getElementById('set-def-in').value;
+    newConfig.RATES.DEFAULT_OUT_TIME = document.getElementById('set-def-out').value;
+    newConfig.GARMENT_NAME = document.getElementById('set-garment-name').value;
 
     // Save
     state.config = newConfig;
     localStorage.setItem('srf_config', JSON.stringify(newConfig));
+    localStorage.setItem('srf_config', JSON.stringify(newConfig));
     if (window.saveToCloud) window.saveToCloud('config', newConfig);
+
+    // Update UI immediately
+    if (window.updateGarmentLabel) window.updateGarmentLabel();
 
     // Feedback
     const btn = document.getElementById('btn-save-settings');
@@ -121,8 +131,9 @@ window.toggleSecurePasswordVisibility = () => {
 };
 
 window.renderCPINState = () => {
-    const cpin = localStorage.getItem('srf_cpin');
-    const isEnabled = localStorage.getItem('srf_cpin_enabled') === 'true';
+    const sec = state.systemSecurity || { cpin: null, enabled: false };
+    const cpin = sec.cpin;
+    const isEnabled = sec.enabled;
 
     // Toggle Switch
     const toggle = document.getElementById('cpin-toggle');
@@ -153,7 +164,14 @@ window.renderCPINState = () => {
 };
 
 window.toggleCPIN = (isChecked) => {
-    localStorage.setItem('srf_cpin_enabled', isChecked);
+    if (!state.systemSecurity) state.systemSecurity = { cpin: null, enabled: false };
+
+    state.systemSecurity.enabled = isEnabled;
+
+    // Save
+    localStorage.setItem('srf_security', JSON.stringify(state.systemSecurity));
+    if (window.saveToCloud) window.saveToCloud('systemSecurity', state.systemSecurity);
+
     renderCPINState();
 };
 
@@ -171,7 +189,14 @@ window.saveNewCPIN = () => {
         return;
     }
 
-    localStorage.setItem('srf_cpin', p1);
+    if (!state.systemSecurity) state.systemSecurity = { cpin: null, enabled: false };
+
+    state.systemSecurity.cpin = p1;
+
+    // Save
+    localStorage.setItem('srf_security', JSON.stringify(state.systemSecurity));
+    if (window.saveToCloud) window.saveToCloud('systemSecurity', state.systemSecurity);
+
     alert("CPIN Set Successfully!");
 
     // Clear inputs
@@ -185,7 +210,9 @@ window.resetCPIN = () => {
     const oldPin = document.getElementById('old-cpin').value;
     const newPin = document.getElementById('reset-new-cpin').value;
     const confirmPin = document.getElementById('reset-confirm-cpin').value;
-    const storedPin = localStorage.getItem('srf_cpin');
+
+    const sec = state.systemSecurity || {};
+    const storedPin = sec.cpin;
 
     if (oldPin !== storedPin) {
         alert("Incorrect Current PIN.");
@@ -202,7 +229,12 @@ window.resetCPIN = () => {
         return;
     }
 
-    localStorage.setItem('srf_cpin', newPin);
+    state.systemSecurity.cpin = newPin;
+
+    // Save
+    localStorage.setItem('srf_security', JSON.stringify(state.systemSecurity));
+    if (window.saveToCloud) window.saveToCloud('systemSecurity', state.systemSecurity);
+
     alert("CPIN Updated Successfully!");
 
     // Clear inputs
@@ -232,8 +264,9 @@ window.verifyPasswordForEdit = () => {
     if (!pass) return;
 
     // 1. Check CPIN First (Local Override)
-    const storedCPIN = localStorage.getItem('srf_cpin');
-    const isCPINEnabled = localStorage.getItem('srf_cpin_enabled') === 'true';
+    const sec = state.systemSecurity || {};
+    const storedCPIN = sec.cpin;
+    const isCPINEnabled = sec.enabled;
 
     if (isCPINEnabled && storedCPIN && pass === storedCPIN) {
         closePasswordModal();
@@ -284,7 +317,7 @@ const enableEditMode = () => {
     document.getElementById('btn-cancel-edit').classList.remove('hidden');
 
     // Enable Inputs with visual cues
-    ['set-owner', 'set-ot', 'set-npl', 'set-bonus'].forEach(id => {
+    ['set-owner', 'set-ot', 'set-npl', 'set-bonus', 'set-def-in', 'set-def-out', 'set-garment-name'].forEach(id => {
         const el = document.getElementById(id);
         if (el) {
             el.disabled = false;
@@ -310,7 +343,7 @@ window.cancelEditMode = () => {
     document.getElementById('btn-cancel-edit').classList.add('hidden');
 
     // Disable Inputs
-    ['set-owner', 'set-ot', 'set-npl', 'set-bonus'].forEach(id => {
+    ['set-owner', 'set-ot', 'set-npl', 'set-bonus', 'set-def-in', 'set-def-out', 'set-garment-name'].forEach(id => {
         const el = document.getElementById(id);
         if (el) {
             el.disabled = true;
@@ -323,6 +356,9 @@ window.cancelEditMode = () => {
                 if (id === 'set-ot') el.value = state.config.RATES.OT_PER_HOUR;
                 if (id === 'set-npl') el.value = state.config.RATES.NPL_FINE;
                 if (id === 'set-bonus') el.value = state.config.RATES.ATTENDANCE_BONUS;
+                if (id === 'set-def-in') el.value = state.config.RATES.DEFAULT_IN_TIME || "09:30 AM";
+                if (id === 'set-def-out') el.value = state.config.RATES.DEFAULT_OUT_TIME || "07:00 PM";
+                if (id === 'set-garment-name') el.value = state.config.GARMENT_NAME || "";
             }
         }
     });
