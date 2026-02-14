@@ -12,6 +12,7 @@ const state = {
     washingData: JSON.parse(localStorage.getItem('srf_washing_history')) || [],
     ownerTodos: JSON.parse(localStorage.getItem('srf_owner_todos') || '[]'),
     inventoryData: JSON.parse(localStorage.getItem('srf_inventory')) || [],
+    unitPiecesData: JSON.parse(localStorage.getItem('srf_unit_pieces')) || [],
 
     // UI STATE
     selectedCalendarDate: null,
@@ -112,6 +113,7 @@ window.setupRealTimeSync = () => {
     syncNode('ownerTodos', 'ownerTodos', 'srf_owner_todos');
     syncNode('notifications', 'notifications', 'srf_notifications');
     syncNode('inventoryData', 'inventoryData', 'srf_inventory');
+    syncNode('unitPiecesData', 'unitPiecesData', 'srf_unit_pieces');
     syncNode('catalogueItems', 'catalogueItems', 'catalogueItems');
 
     // 2. Sync Objects

@@ -87,7 +87,68 @@ window.renderHome = () => {
     // Explicitly call the global render functions
     if (window.renderHomeCalendar) window.renderHomeCalendar();
     if (window.renderTodoList) window.renderTodoList();
+
+    // Start Auto-Scroll for Snapshots
+    startSnapshotAutoScroll();
 };
+
+function startSnapshotAutoScroll() {
+    const container = document.getElementById('snapshot-container');
+    if (!container) return;
+
+    // Use a global flag to check hover state across re-renders
+    if (typeof window.isSnapshotHovered === 'undefined') window.isSnapshotHovered = false;
+
+    // If interval exists and container is consistent, don't reset (prevents jitter)
+    if (window.snapshotScrollInterval && document.getElementById('snapshot-container')) {
+        return;
+    }
+
+    if (window.snapshotScrollInterval) clearInterval(window.snapshotScrollInterval);
+
+    const intervalTime = 3500;
+
+    const scrollNext = () => {
+        // 1. Check if paused
+        if (window.isSnapshotHovered) return;
+
+        // 2. Check existence
+        const currentContainer = document.getElementById('snapshot-container');
+        if (!currentContainer) {
+            clearInterval(window.snapshotScrollInterval);
+            window.snapshotScrollInterval = null;
+            return;
+        }
+
+        // 3. Dynamic width calculation
+        let scrollStep = 300;
+        if (currentContainer.children.length > 0) {
+            scrollStep = currentContainer.children[0].offsetWidth + 16; // 16px gap
+        }
+
+        const maxScroll = currentContainer.scrollWidth - currentContainer.clientWidth;
+        // If content fits, no need to scroll
+        if (maxScroll <= 0) return;
+
+        let nextScroll = currentContainer.scrollLeft + scrollStep;
+
+        if (nextScroll >= maxScroll - 10) {
+            currentContainer.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+            currentContainer.scrollTo({ left: nextScroll, behavior: 'smooth' });
+        }
+    };
+
+    window.snapshotScrollInterval = setInterval(scrollNext, intervalTime);
+
+    const setHoverTrue = () => { window.isSnapshotHovered = true; };
+    const setHoverFalse = () => { window.isSnapshotHovered = false; };
+
+    container.onmouseenter = setHoverTrue;
+    container.ontouchstart = setHoverTrue;
+    container.onmouseleave = setHoverFalse;
+    container.ontouchend = setHoverFalse;
+}
 
 function localUpdateTrend(type, current, prev) {
     const el = document.getElementById(`trend-${type}`);

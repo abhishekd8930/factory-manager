@@ -1,51 +1,122 @@
 
 export const Templates = {
     login: () => `
-    <div id="login-view" class="h-screen w-full flex items-center justify-center login-bg fixed inset-0 z-50">
-        <div class="glass-card p-8 md:p-10 w-full max-w-[400px] mx-4 relative z-10 fade-in border-t border-white/20">
-            <div class="text-center mb-8">
-                <div class="bg-white/10 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-2xl ring-4 ring-white/5 text-white text-3xl backdrop-blur-md">
-                    <i class="fa-solid fa-user-shield"></i>
+    <div id="login-view">
+        <div class="login-card-container">
+        
+        <!-- Left Side: Branding & Greeting -->
+        <div class="login-left-panel">
+            <!-- Decorative Background Elements -->
+            <div class="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-blue-100/50 blur-[100px]"></div>
+            <div class="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-indigo-100/50 blur-[100px]"></div>
+
+            <div class="relative z-10 max-w-lg text-center">
+                <div class="flex flex-col items-center justify-center gap-4 mb-8">
+                    <img src="assets/images/logo.jpg" alt="Smart Manager Logo" class="w-24 h-24 object-contain drop-shadow-md mix-blend-multiply rounded-3xl">
+                    <h1 class="text-3xl font-bold text-slate-800 tracking-tight">Smart Manager</h1>
                 </div>
-                <h2 class="text-white/70 text-xs font-bold uppercase tracking-[0.2em] mb-2">Welcome to</h2>
-                <h3 class="text-2xl md:text-3xl font-bold text-white tracking-tight leading-tight">
-                    Sri Raghavendra Fashions<br>
-                </h3>
+
+                <div class="mb-6 transform hover:scale-[1.02] transition duration-500 shrink-1 min-h-0">
+                    <img src="assets/images/welcome-parrot.jpg" alt="Welcome Team" class="w-full h-auto max-h-[40vh] object-contain rounded-[24px] mix-blend-multiply">
+                </div>
+
+                <h2 class="text-3xl font-bold text-slate-800 mb-4">Welcome back!</h2>
+                <p class="text-slate-500 text-lg leading-relaxed">
+                    Streamline your factory operations, track production, and manage staff efficiently.
+                </p>
             </div>
-            <form onsubmit="handleLogin(event)" class="space-y-5">
-                <div class="relative group">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <i class="fa-solid fa-user text-indigo-200/50 group-focus-within:text-white transition-colors"></i>
-                    </div>
-                    <input type="text" id="login-user" autocomplete="username" class="w-full bg-black/20 text-white placeholder-white/40 rounded-xl py-3.5 pl-12 pr-4 border border-white/10 focus:border-white/30 focus:bg-black/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium" placeholder="Username">
-                </div>
-                <div class="relative group">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <i class="fa-solid fa-lock text-indigo-200/50 group-focus-within:text-white transition-colors"></i>
-                    </div>
-                    <input type="password" id="login-pass" autocomplete="current-password" class="w-full bg-black/20 text-white placeholder-white/40 rounded-xl py-3.5 pl-12 pr-12 border border-white/10 focus:border-white/30 focus:bg-black/30 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all font-medium" placeholder="Password">
-                    <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-4 flex items-center text-indigo-200/50 hover:text-white transition-colors cursor-pointer outline-none">
-                        <i class="fa-solid fa-eye" id="pass-icon"></i>
-                    </button>
-                </div>
-                <button type="submit" class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-900/30 transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 group">
-                    <span>Access Dashboard</span>
-                    <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                </button>
-            </form>
-            <div class="flex items-center gap-3 my-5">
-                <div class="flex-1 h-px bg-white/10"></div>
-                <span class="text-white/30 text-xs font-bold uppercase tracking-wider">or</span>
-                <div class="flex-1 h-px bg-white/10"></div>
-            </div>
-            <button id="btn-google-login" onclick="signInWithGoogle()" class="w-full bg-white hover:bg-gray-50 text-gray-700 font-bold py-3.5 rounded-xl shadow-lg transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3">
-                <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#34A853" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#FBBC05" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-                <span>Sign in with Google</span>
-            </button>
-            <div class="text-center mt-8 space-y-2">
-                <p class="text-indigo-200/40 text-[10px] uppercase tracking-widest">gifted by abhishek • Protected</p>
+
+            <!-- Footer Copyright -->
+            <div class="absolute bottom-6 text-slate-400 text-xs font-medium">
+                © 2026 Sri Raghavendra Fashions
             </div>
         </div>
+
+        <!-- Right Side: Login Form -->
+        <div class="login-right-panel">
+             <div class="w-full max-w-md">
+                <div class="text-center md:text-left mb-10">
+                    <!-- Mobile Logo (Visible only on small screens) -->
+                    <div class="md:hidden flex items-center justify-center gap-2 mb-6 text-indigo-600">
+                        <img src="assets/images/logo.jpg" alt="Logo" class="w-10 h-10 object-contain mix-blend-multiply rounded-xl">
+                        <span class="text-xl font-bold text-slate-800">Smart Manager</span>
+                    </div>
+
+                    <h2 class="text-slate-900 text-3xl font-bold mb-3">Sign in to your account</h2>
+                    <p class="text-slate-500">Please enter your details to continue.</p>
+                </div>
+            <!-- Role Selection -->
+            <div class="flex p-1 bg-slate-100/80 rounded-2xl mb-8 border border-slate-200 relative overflow-hidden">
+                <div id="role-highlight" class="absolute top-1 left-1 bottom-1 w-[calc(33.33%-4px)] bg-indigo-600 rounded-xl shadow-md transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] z-0"></div>
+                
+                <button onclick="switchLoginRole('owner', this)" class="role-btn active flex-1 text-center py-2.5 relative z-10 transition-colors text-white font-medium shadow-none" data-role="owner">Owner</button>
+                <button onclick="switchLoginRole('manager', this)" class="role-btn flex-1 text-center py-2.5 relative z-10 transition-colors text-slate-500 hover:text-slate-800 font-medium" data-role="manager">Manager</button>
+                <button onclick="switchLoginRole('employee', this)" class="role-btn flex-1 text-center py-2.5 relative z-10 transition-colors text-slate-500 hover:text-slate-800 font-medium" data-role="employee">Employee</button>
+            </div>
+
+            <!-- Email/Password Form (Owner/Manager) -->
+            <div id="email-login-container" class="space-y-6 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]">
+                <form onsubmit="handleLogin(event)" class="space-y-5">
+                    
+                    <div class="input-group relative">
+                        <input type="text" id="login-user" autocomplete="username" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 pt-5 pb-2 text-slate-800 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition placeholder-transparent peer" placeholder=" " required>
+                        <label for="login-user" class="absolute left-4 top-3.5 text-sm text-slate-500 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-placeholder-shown:text-slate-500 peer-focus:top-1 peer-focus:text-[10px] peer-focus:font-bold peer-focus:text-indigo-500 peer-focus:uppercase peer-focus:tracking-wider peer-[:not(:placeholder-shown)]:top-1 peer-[:not(:placeholder-shown)]:text-[10px] peer-[:not(:placeholder-shown)]:font-bold peer-[:not(:placeholder-shown)]:uppercase peer-[:not(:placeholder-shown)]:tracking-wider">Username</label>
+                        <i class="fa-solid fa-user absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 peer-focus:text-indigo-500 transition-colors"></i>
+                    </div>
+
+                    <div class="input-group relative">
+                        <input type="password" id="login-pass" autocomplete="current-password" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 pt-5 pb-2 text-slate-800 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition placeholder-transparent peer pr-12" placeholder=" " required>
+                        <label for="login-pass" class="absolute left-4 top-3.5 text-sm text-slate-500 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-placeholder-shown:text-slate-500 peer-focus:top-1 peer-focus:text-[10px] peer-focus:font-bold peer-focus:text-indigo-500 peer-focus:uppercase peer-focus:tracking-wider peer-[:not(:placeholder-shown)]:top-1 peer-[:not(:placeholder-shown)]:text-[10px] peer-[:not(:placeholder-shown)]:font-bold peer-[:not(:placeholder-shown)]:uppercase peer-[:not(:placeholder-shown)]:tracking-wider">Password</label>
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-indigo-600 transition-colors cursor-pointer outline-none z-20">
+                            <i class="fa-solid fa-eye" id="pass-icon"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center justify-between text-xs">
+                        <label class="flex items-center gap-2 text-slate-500 cursor-pointer hover:text-slate-700">
+                            <input type="checkbox" id="remember-me" class="accent-indigo-600 w-3 h-3 rounded custom-checkbox">
+                            <span>Remember me</span>
+                        </label>
+                        <a href="javascript:void(0)" onclick="alert('We will inform owner')" class="text-indigo-600 font-bold hover:text-indigo-700">Forgot Password?</a>
+                    </div>
+                    
+                    <!-- Auto-fill init -->
+                    <script>setTimeout(() => window.initLoginForm && window.initLoginForm(), 100);</script>
+
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-200 transition-all transform hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-2 group relative overflow-hidden">
+                         <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                        <span class="relative z-10">Sign In</span>
+                        <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform relative z-10"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Google Login (Employee) -->
+             <div id="google-login-container" class="hidden space-y-6 pt-2 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]">
+                  <div class="text-center text-slate-500 text-sm mb-6 font-medium bg-slate-50 p-3 rounded-lg border border-slate-100">
+                     Access your workspace securely via Google.
+                 </div>
+                 <button id="btn-google-login" onclick="signInWithGoogle()" class="w-full bg-white hover:bg-slate-50 text-slate-700 font-bold py-3.5 rounded-xl shadow-sm border border-slate-200 transition-all transform hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-3 relative overflow-hidden group">
+                     <span class="absolute inset-0 bg-slate-100 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300"></span>
+                     <svg width="20" height="20" viewBox="0 0 48 48" class="relative z-10"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#34A853" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#FBBC05" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                     <span class="relative z-10">Continue with Google</span>
+                 </button>
+                 <button id="btn-apple-login" onclick="signInWithApple()" style="background-color: black !important; color: white !important;" class="w-full bg-black hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-sm border border-slate-700 transition-all transform hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-3 relative overflow-hidden group">
+                     <span class="absolute inset-0 bg-slate-900 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300"></span>
+                     <i class="fa-brands fa-apple text-xl relative z-10"></i>
+                     <span class="relative z-10">Continue with Apple</span>
+                 </button>
+             </div>
+            
+            <div class="mt-8 text-center">
+                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">
+                    Secured by Google Firebase
+                </p>
+            </div>
+
+        </div>
+    </div>
+    </div>
     </div>`,
 
     appLayout: () => `
@@ -59,9 +130,7 @@ export const Templates = {
                 
                 <!-- Logo Moved to Header -->
                 <div class="flex items-center gap-3 select-none cursor-pointer" onclick="window.location.hash='#/home'">
-                     <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-md shadow-indigo-200 group">
-                        <i class="fa-solid fa-bolt text-lg drop-shadow-sm group-hover:scale-110 transition-transform"></i>
-                    </div>
+                    <img src="assets/images/logo.jpg" alt="App Logo" class="w-9 h-9 rounded-xl shadow-md shadow-indigo-200 object-contain mix-blend-multiply">
                     <div class="flex flex-col">
                         <span class="text-xl font-bold text-slate-800 tracking-tight leading-none">Smart Manager</span>
                         <span id="header-garment-name" class="text-[10px] font-bold text-indigo-500 uppercase tracking-widest hidden"></span>
@@ -213,77 +282,151 @@ export const Templates = {
                     <span id="greet-msg">Hello,</span> <span id="greet-name" class="font-bold">Manager</span>
                 </h1>
                 <p class="text-slate-500 max-w-lg mb-6">Start now to set your priorities and progress toward your goals with a clear, structured plan.</p>
-                <button onclick="window.openProfile()" class="bg-blue-600 text-white font-medium py-2.5 px-6 rounded-full hover:bg-blue-700 transition inline-block">
-                    View Profile
-                </button>
-                <button onclick="window.showNotifications()" class="ml-2 bg-slate-100 text-slate-600 font-medium py-2.5 px-6 rounded-full hover:bg-slate-200 transition inline-block relative">
-                    <div id="btn-noti-badge" class="hidden w-3 h-3 bg-red-500 rounded-full border-2 border-slate-100 absolute top-0 right-0"></div>
-                    <i class="fa-solid fa-bell mr-2"></i> Notifications
-                </button>
+                <div class="flex flex-wrap justify-center md:justify-start gap-2">
+                    <button onclick="window.openProfile()" class="bg-blue-600 text-white font-medium py-2.5 px-6 rounded-full hover:bg-blue-700 transition inline-block">
+                        View Profile
+                    </button>
+                    <button onclick="window.showNotifications()" class="ml-2 bg-slate-100 text-slate-600 font-medium py-2.5 px-6 rounded-full hover:bg-slate-200 transition inline-block relative">
+                        <div id="btn-noti-badge" class="hidden w-3 h-3 bg-red-500 rounded-full border-2 border-slate-100 absolute top-0 right-0"></div>
+                        <i class="fa-solid fa-bell mr-2"></i> Notifications
+                    </button>
+                </div>
             </div>
             <div class="shrink-0">
-                <img src="assets/images/welcome-parrot.jpg" alt="Welcome" class="h-40 w-auto object-contain drop-shadow-sm hover:scale-105 transition duration-500">
+                <img src="assets/images/welcome-parrot.jpg" alt="Welcome" class="h-40 w-auto object-contain drop-shadow-sm hover:scale-105 transition duration-500 rounded-[32px]">
             </div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-[32px] shadow-sm border border-slate-100 flex flex-col justify-between h-full relative group hover:shadow-md transition">
-                <div>
-                    <span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider mb-3 inline-block">
-                        <i class="fa-solid fa-users text-slate-400 mr-1"></i> Staff
-                    </span>
-                    <h3 class="text-xl font-bold text-slate-800 mb-1 leading-tight">Staff Attendance</h3>
-                    <p class="text-slate-500 text-sm mb-4">Live tracking of active workers.</p>
-                    <div class="flex items-baseline gap-1">
-                        <span class="text-4xl font-normal text-slate-800" id="stat-staff-today">0</span>
-                        <span class="text-sm text-slate-500">Active</span>
+
+        <div class="grid grid-cols-1 gap-8 mb-8">
+            <!-- Metrics Section (Scrollable) -->
+            <div class="min-w-0">
+                <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2 text-lg">
+                    <i class="fa-solid fa-chart-simple text-indigo-500"></i> Snapshots
+                </h3>
+                <div id="snapshot-container" class="flex overflow-x-auto gap-6 hide-scrollbar snap-x snap-mandatory pb-4">
+                    <!-- Staff Card -->
+                    <div class="w-full snap-center bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 flex flex-col justify-between relative group hover:shadow-md transition" style="width: 100%; flex-shrink: 0;">
+                         <div>
+                            <span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider mb-3 inline-block">
+                                <i class="fa-solid fa-users text-slate-400 mr-1"></i> Staff
+                            </span>
+                            <h3 class="text-xl font-bold text-slate-800 mb-1 leading-tight">Staff Attendance</h3>
+                            <p class="text-slate-500 text-sm mb-4">Live tracking of active workers.</p>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-4xl font-normal text-slate-800" id="stat-staff-today">0</span>
+                                <span class="text-sm text-slate-500">Active</span>
+                            </div>
+                            <div id="trend-staff" class="min-h-[20px]"></div>
+                        </div>
+                        <div class="mt-6 flex justify-between items-center border-t border-slate-50 pt-4">
+                            <div class="text-xs text-slate-400">Yesterday: <span id="stat-staff-yest" class="font-bold text-slate-600">0</span></div>
+                            <a href="#/staff" class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 transition">
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
                     </div>
-                    <div id="trend-staff" class="min-h-[20px]"></div>
-                </div>
-                <div class="mt-6 flex justify-between items-center border-t border-slate-50 pt-4">
-                    <div class="text-xs text-slate-400">Yesterday: <span id="stat-staff-yest" class="font-bold text-slate-600">0</span></div>
-                    <a href="#/staff" class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 transition">
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </a>
+
+                    <!-- Production Card -->
+                     <div class="w-full snap-center bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 flex flex-col justify-between relative group hover:shadow-md transition" style="width: 100%; flex-shrink: 0;">
+                        <div>
+                            <span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider mb-3 inline-block">
+                                <i class="fa-solid fa-layer-group text-slate-400 mr-1"></i> Output
+                            </span>
+                            <h3 class="text-xl font-bold text-slate-800 mb-1 leading-tight">Production Output</h3>
+                            <p class="text-slate-500 text-sm mb-4">Daily finished pieces count.</p>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-4xl font-normal text-slate-800" id="stat-prod-today">0</span>
+                                <span class="text-sm text-slate-500">Pcs</span>
+                            </div>
+                            <div id="trend-prod" class="min-h-[20px]"></div>
+                        </div>
+                        <div class="mt-6 flex justify-between items-center border-t border-slate-50 pt-4">
+                            <div class="text-xs text-slate-400">Yesterday: <span id="stat-prod-yest" class="font-bold text-slate-600">0</span></div>
+                            <a href="#/dashboard" class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 transition">
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Washing Card -->
+                    <div class="w-full snap-center bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 flex flex-col justify-between relative group hover:shadow-md transition" style="width: 100%; flex-shrink: 0;">
+                        <div>
+                            <span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider mb-3 inline-block">
+                                <i class="fa-solid fa-soap text-slate-400 mr-1"></i> Washing
+                            </span>
+                            <h3 class="text-xl font-bold text-slate-800 mb-1 leading-tight">Washing Output</h3>
+                            <p class="text-slate-500 text-sm mb-4">Items returned from washing.</p>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-4xl font-normal text-slate-800" id="stat-wash-today">0</span>
+                                <span class="text-sm text-slate-500">Pcs</span>
+                            </div>
+                            <div id="trend-wash" class="min-h-[20px]"></div>
+                        </div>
+                         <div class="mt-6 flex justify-between items-center border-t border-slate-50 pt-4">
+                            <div class="text-xs text-slate-400">Yesterday: <span id="stat-wash-yest" class="font-bold text-slate-600">0</span></div>
+                            <a href="#/dashboard" class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 transition">
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="bg-white p-6 rounded-[32px] shadow-sm border border-slate-100 flex flex-col justify-between h-full relative group hover:shadow-md transition">
-                <div>
-                    <span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider mb-3 inline-block">
-                        <i class="fa-solid fa-layer-group text-slate-400 mr-1"></i> Output
-                    </span>
-                    <h3 class="text-xl font-bold text-slate-800 mb-1 leading-tight">Production Output</h3>
-                    <p class="text-slate-500 text-sm mb-4">Daily finished pieces count.</p>
-                    <div class="flex items-baseline gap-1">
-                        <span class="text-4xl font-normal text-slate-800" id="stat-prod-today">0</span>
-                        <span class="text-sm text-slate-500">Pcs</span>
+
+            <!-- Recommendation Panel (White Theme) -->
+            <div class="flex flex-col">
+                <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2 text-lg">
+                    <i class="fa-solid fa-lightbulb text-yellow-500"></i> Smart Recommendations
+                </h3>
+                <div class="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 flex-1 flex flex-col relative group hover:shadow-md transition">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Insight Item 1 -->
+                        <div class="flex items-start gap-4 border-b border-slate-50 pb-4 last:border-0 last:pb-0">
+                            <div class="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 shrink-0">
+                                <i class="fa-solid fa-arrow-trend-up"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm mb-0.5">Production Surge</h4>
+                                <p class="text-sm text-slate-500 leading-relaxed">
+                                    Production is <strong class="text-slate-700">12% higher</strong> than last Tuesday. Team "A" is outperforming targets.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Insight Item 2 -->
+                        <div class="flex items-start gap-4 border-b border-slate-50 pb-4 last:border-0 last:pb-0">
+                            <div class="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-500 shrink-0">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm mb-0.5">Stock Alert</h4>
+                                <p class="text-sm text-slate-500 leading-relaxed">
+                                    <strong class="text-slate-700">Grey Thread</strong> count is low. Recommend reordering within 2 days to avoid delays.
+                                </p>
+                            </div>
+                        </div>
+
+                         <!-- Insight Item 3 -->
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 shrink-0">
+                                <i class="fa-solid fa-cloud-sun"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm mb-0.5">Weather Update</h4>
+                                <p class="text-sm text-slate-500 leading-relaxed">
+                                    Rain expected tomorrow. Ensure outdoor drying area is cleared by 4 PM.
+                                </p>
+                            </div>
+                        </div>
                     </div>
-                    <div id="trend-prod" class="min-h-[20px]"></div>
-                </div>
-                <div class="mt-6 flex justify-between items-center border-t border-slate-50 pt-4">
-                    <div class="text-xs text-slate-400">Yesterday: <span id="stat-prod-yest" class="font-bold text-slate-600">0</span></div>
-                    <a href="#/dashboard" class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 transition">
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="bg-white p-6 rounded-[32px] shadow-sm border border-slate-100 flex flex-col justify-between h-full relative group hover:shadow-md transition">
-                <div>
-                    <span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider mb-3 inline-block">
-                        <i class="fa-solid fa-soap text-slate-400 mr-1"></i> Washing
-                    </span>
-                    <h3 class="text-xl font-bold text-slate-800 mb-1 leading-tight">Washing Output</h3>
-                    <p class="text-slate-500 text-sm mb-4">Items returned from washing.</p>
-                    <div class="flex items-baseline gap-1">
-                        <span class="text-4xl font-normal text-slate-800" id="stat-wash-today">0</span>
-                        <span class="text-sm text-slate-500">Pcs</span>
+
+                    <div class="mt-auto pt-6 border-t border-slate-100 flex justify-between items-center">
+                        <span class="text-xs text-slate-400 font-medium">Updated 5 mins ago</span>
+                        <button class="text-indigo-600 text-sm font-bold hover:bg-indigo-50 px-4 py-2 rounded-lg transition flex items-center gap-2">
+                            View All Insights <i class="fa-solid fa-arrow-right"></i>
+                        </button>
                     </div>
-                    <div id="trend-wash" class="min-h-[20px]"></div>
-                </div>
-                <div class="mt-6 flex justify-between items-center border-t border-slate-50 pt-4">
-                    <div class="text-xs text-slate-400">Yesterday: <span id="stat-wash-yest" class="font-bold text-slate-600">0</span></div>
-                    <a href="#/dashboard" class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 transition">
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </a>
+
                 </div>
             </div>
         </div>
@@ -352,10 +495,10 @@ export const Templates = {
     <div id="catalogue" class="fade-in max-w-7xl mx-auto">
         <div id="catalogue-list-view">
             <div class="text-center mb-12 mt-8">
-                <h1 class="text-4xl md:text-5xl font-normal text-slate-800 mb-6 tracking-tight">
+                <h1 class="text-2xl font-normal text-slate-800 mb-6 tracking-tight">
                     Production Catalogue<br>& Specifications
                 </h1>
-                <p class="text-slate-500 max-w-2xl mx-auto text-lg mb-8 leading-relaxed">
+                <p class="text-slate-500 max-w-2xl mx-auto text-xs mb-8 leading-relaxed">
                     Reference guide for manufacturing standards. Access detailed composition, stitching, and finishing specifications to ensure production consistency.
                 </p>
                 <div class="max-w-2xl mx-auto mb-8 relative">
@@ -448,10 +591,7 @@ export const Templates = {
                 <!-- Tab Headers -->
                 <div class="flex border-b border-slate-100 mb-6">
                     <button onclick="switchDetailTab('details')" id="tab-btn-details" class="flex-1 px-6 py-3 font-bold text-indigo-600 border-b-2 border-indigo-600 transition">
-                        Details
-                    </button>
-                    <button onclick="switchDetailTab('ledger')" id="tab-btn-ledger" class="flex-1 px-6 py-3 font-medium text-slate-500 hover:text-slate-800 transition">
-                        Cutting Ledger
+                        Catalogue Details
                     </button>
                     <button onclick="switchDetailTab('3d')" id="tab-btn-3d" class="flex-1 px-6 py-3 font-medium text-slate-500 hover:text-slate-800 transition flex items-center justify-center gap-2">
                         <i class="fa-solid fa-cube"></i> 3D Pattern
@@ -460,34 +600,42 @@ export const Templates = {
 
                 <!-- Tab: Details -->
                 <div id="tab-content-details">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 align-top">
-                        <!-- Image Section -->
-                        <div class="rounded-2xl overflow-hidden bg-slate-50 h-[400px] flex items-center justify-center border border-slate-100 relative group">
-                            <img id="detail-image" src="" class="max-w-full max-h-full object-contain" alt="Catalogue Item">
-                        </div>
-                        
-                        <!-- Form Section -->
-                        <div class="flex flex-col">
-                            <div class="flex justify-between items-center mb-4">
-                                <h2 class="text-xl font-bold text-slate-800">Details</h2>
-                                <div class="w-full max-w-[140px]">
-                                    <input type="date" id="detail-date" disabled aria-label="Date" class="detail-input w-full bg-transparent border-none p-0 text-slate-500 font-medium text-sm text-right outline-none focus:ring-0 disabled:text-slate-500 disabled:opacity-100">
-                                </div>
-                            </div>
-                            
-                            <div class="mb-6">
-                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Description</label>
-                                <textarea id="detail-description" disabled class="detail-input w-full h-24 bg-slate-50 border-none rounded-xl p-3 text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500/20 outline-none resize-none transition disabled:bg-transparent disabled:cursor-default disabled:resize-none" placeholder="Add a description..."></textarea>
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 align-top">
+                        <!-- Col 1: Image Section (25%) -->
+                        <div class="lg:col-span-1">
+                            <div class="rounded-2xl overflow-hidden bg-slate-50 h-[300px] flex items-center justify-center border border-slate-100 relative group mb-6">
+                                <img id="detail-image" src="" class="max-w-full max-h-full object-contain cursor-pointer" alt="Catalogue Item">
                             </div>
 
-                            <div class="grid grid-cols-2 gap-4 mb-6">
+                            <!-- Additional Pages Gallery -->
+                            <div id="detail-pages-section" class="border-t border-slate-100 pt-6">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Additional Pages (<span id="count-additional">0</span>/10)</h3>
+                                </div>
+                                <div class="flex gap-2 overflow-x-auto pb-2 min-h-[100px]" id="gallery-additional"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Col 2: Details Section (25%) -->
+                        <div class="lg:col-span-1 flex flex-col">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-lg font-bold text-slate-800">Product Info</h2>
+                                <input type="date" id="detail-date" disabled aria-label="Date" class="detail-input bg-transparent border-none p-0 text-slate-500 font-medium text-xs text-right outline-none focus:ring-0 disabled:text-slate-500 disabled:opacity-100">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Description</label>
+                                <textarea id="detail-description" disabled class="detail-input w-full h-20 bg-slate-50 border-none rounded-xl p-3 text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500/20 outline-none resize-none transition disabled:bg-transparent disabled:cursor-default disabled:resize-none" placeholder="Add a description..."></textarea>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-4 mb-6">
                                 <div>
                                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Fabric</label>
-                                    <input type="text" id="detail-fabric" disabled class="detail-input w-full bg-slate-50 border-none rounded-lg px-3 py-2 text-sm text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500/20 outline-none transition disabled:bg-transparent disabled:cursor-default" placeholder="e.g. Cotton">
+                                    <input type="text" id="detail-fabric" disabled class="detail-input w-full bg-slate-50 border-none rounded-lg px-3 py-2 text-sm text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500/20 outline-none transition disabled:bg-transparent disabled:cursor-default" placeholder="Fabric">
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Brand</label>
-                                    <input type="text" id="detail-brand" disabled class="detail-input w-full bg-slate-50 border-none rounded-lg px-3 py-2 text-sm text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500/20 outline-none transition disabled:bg-transparent disabled:cursor-default" placeholder="e.g. Levi's">
+                                    <input type="text" id="detail-brand" disabled class="detail-input w-full bg-slate-50 border-none rounded-lg px-3 py-2 text-sm text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500/20 outline-none transition disabled:bg-transparent disabled:cursor-default" placeholder="Brand">
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Fitting</label>
@@ -501,68 +649,50 @@ export const Templates = {
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Pattern</label>
-                                    <input type="text" id="detail-pattern" disabled class="detail-input w-full bg-slate-50 border-none rounded-lg px-3 py-2 text-sm text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500/20 outline-none transition disabled:bg-transparent disabled:cursor-default" placeholder="e.g. Solid">
+                                    <input type="text" id="detail-pattern" disabled class="detail-input w-full bg-slate-50 border-none rounded-lg px-3 py-2 text-sm text-slate-700 font-medium focus:ring-2 focus:ring-indigo-500/20 outline-none transition disabled:bg-transparent disabled:cursor-default" placeholder="Pattern">
                                 </div>
                             </div>
 
-                            <div class="mt-auto flex justify-end gap-3">
-                                <button id="cancel-catalogue-btn" onclick="cancelEditMode()" class="hidden px-6 py-2 bg-slate-100 text-slate-600 rounded-full text-sm font-bold hover:bg-slate-200 transition shadow-sm animate-fade-in-up">
-                                    Cancel
-                                </button>
-                                <button id="save-catalogue-btn" onclick="saveCatalogueDetail()" class="hidden px-6 py-2 bg-indigo-600 text-white rounded-full text-sm font-bold hover:bg-indigo-700 transition shadow-md animate-fade-in-up">
+                            <div class="mt-auto flex flex-col gap-2">
+                                <button id="save-catalogue-btn" onclick="saveCatalogueDetail()" class="hidden w-full px-6 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition shadow-md">
                                     Save Changes
+                                </button>
+                                <button id="cancel-catalogue-btn" onclick="cancelEditMode()" class="hidden w-full px-6 py-2 bg-slate-100 text-slate-600 rounded-xl text-sm font-bold hover:bg-slate-200 transition">
+                                    Cancel
                                 </button>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Additional Pages Gallery -->
-                    <div id="detail-pages-section" class="mt-8 border-t border-slate-100 pt-6">
-                        <h3 class="font-bold text-slate-800 mb-4">Additional Pages</h3>
-                        
-                        <!-- Front Pages -->
-                        <div class="mb-6">
-                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Front View Pages (<span id="count-front">0</span>/5)</h4>
-                            <div class="flex gap-4 overflow-x-auto pb-2" id="gallery-front"></div>
+                        <!-- Col 3: Ledger Section (50%) -->
+                        <div class="lg:col-span-2 flex flex-col border-l border-slate-100 pl-8">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-lg font-bold text-slate-800">Cutting Output</h2>
+                                <button onclick="addCatalogueLedgerRow()" class="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg text-sm font-bold hover:bg-indigo-100 transition flex items-center gap-2">
+                                    <i class="fa-solid fa-plus"></i> Add Row
+                                </button>
+                            </div>
+                            <div class="overflow-x-auto border rounded-xl border-slate-200">
+                                <table class="w-full text-sm text-left">
+                                    <thead class="bg-slate-50 text-slate-500 font-semibold uppercase text-[10px]">
+                                        <tr>
+                                            <th class="p-3 w-16 text-center">Sl No</th>
+                                            <th class="p-3 w-24 text-center">Meters</th>
+                                            <th class="p-3 w-16 text-center border-l border-slate-200">30</th>
+                                            <th class="p-3 w-16 text-center">32</th>
+                                            <th class="p-3 w-16 text-center">34</th>
+                                            <th class="p-3 w-16 text-center">36</th>
+                                            <th class="p-3 w-20 text-center font-bold text-slate-700 border-l border-slate-200">Total</th>
+                                            <th class="p-3 w-10"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="catalogue-ledger-body" class="text-xs"></tbody>
+                                </table>
+                            </div>
                         </div>
-
-                        <!-- Back Pages -->
-                        <div>
-                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Back View Pages (<span id="count-back">0</span>/5)</h4>
-                            <div class="flex gap-4 overflow-x-auto pb-2" id="gallery-back"></div>
-                        </div>
                     </div>
-
-                    <!-- Hidden Input for Page Upload -->
-                    <input type="file" id="catalogue-page-upload" class="hidden" accept="image/*" onchange="handlePageUpload(this)">
                 </div>
 
-                <!-- Tab: Cutting Ledger -->
-                <div id="tab-content-ledger" class="hidden">
-                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-bold text-slate-800">Cutting Output</h2>
-                    </div>
-                     <div class="overflow-x-auto border rounded-xl border-slate-200 mb-4">
-                        <table class="w-full text-sm text-left">
-                            <thead class="bg-slate-50 text-slate-500 font-semibold uppercase text-xs">
-                                <tr>
-                                    <th class="p-3 w-16 text-center">Sl No</th>
-                                    <th class="p-3 w-24 text-center">Meters</th>
-                                    <th class="p-3 w-16 text-center border-l border-slate-200">30</th>
-                                    <th class="p-3 w-16 text-center">32</th>
-                                    <th class="p-3 w-16 text-center">34</th>
-                                    <th class="p-3 w-16 text-center">36</th>
-                                    <th class="p-3 w-20 text-center font-bold text-slate-700 border-l border-slate-200">Total</th>
-                                    <th class="p-3 w-10"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="catalogue-ledger-body"></tbody>
-                        </table>
-                    </div>
-                    <button onclick="addCatalogueLedgerRow()" class="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg text-sm font-bold hover:bg-indigo-100 transition flex items-center gap-2">
-                        <i class="fa-solid fa-plus"></i> Add Row
-                    </button>
-                </div>
+
 
                 <!-- Tab: 3D Pattern View -->
                 <div id="tab-content-3d" class="hidden">
@@ -999,73 +1129,107 @@ export const Templates = {
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <!-- Cutting Unit -->
-            <div onclick="window.filterUnit('Cutting')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md hover:border-indigo-200 transition cursor-pointer group">
-                <div class="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
-                    <i class="fa-solid fa-scissors"></i>
-                </div>
-                <h3 class="font-bold text-slate-700 text-lg">Cutting Unit</h3>
-                <p class="text-xs text-slate-400 mt-1">Fabric & Pattern Cutting</p>
-                <div class="mt-4 pt-4 border-t border-slate-50 flex justify-between items-center">
-                    <span class="text-xs font-bold text-slate-500">Staff Count</span>
-                    <span class="text-lg font-bold text-indigo-600" id="count-cutting">0</span>
-                </div>
-            </div>
+             <div onclick="window.filterUnit('Cutting')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md hover:border-indigo-200 transition cursor-pointer group">
+                 <div class="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
+                     <i class="fa-solid fa-scissors"></i>
+                 </div>
+                 <h3 class="font-bold text-slate-700 text-lg">Cutting Unit</h3>
+                 <p class="text-xs text-slate-400 mt-1">Fabric & Pattern Cutting</p>
+                 <div class="mt-4 pt-4 border-t border-slate-50 flex justify-between items-center">
+                     <span class="text-xs font-bold text-slate-500">Staff: <span id="count-cutting" class="text-slate-700">0</span></span>
+                     <span class="text-xs font-bold text-slate-500">Today: <span class="text-indigo-600 text-base" id="pcs-cutting">0</span> Pcs</span>
+                 </div>
+             </div>
+ 
+             <!-- FB Unit -->
+             <div onclick="window.filterUnit('FB')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md hover:border-emerald-200 transition cursor-pointer group">
+                 <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
+                     <i class="fa-solid fa-vest"></i>
+                 </div>
+                 <h3 class="font-bold text-slate-700 text-lg">Front & Back</h3>
+                 <p class="text-xs text-slate-400 mt-1">Stitching Operations</p>
+                 <div class="mt-4 pt-4 border-t border-slate-50 flex justify-between items-center">
+                     <span class="text-xs font-bold text-slate-500">Staff: <span id="count-fb" class="text-slate-700">0</span></span>
+                     <span class="text-xs font-bold text-slate-500">Today: <span class="text-emerald-600 text-base" id="pcs-fb">0</span> Pcs</span>
+                 </div>
+             </div>
+ 
+             <!-- Assembly Unit -->
+             <div onclick="window.filterUnit('Assembly')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md hover:border-blue-200 transition cursor-pointer group">
+                 <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
+                     <i class="fa-solid fa-people-group"></i>
+                 </div>
+                 <h3 class="font-bold text-slate-700 text-lg">Assembly Unit</h3>
+                 <p class="text-xs text-slate-400 mt-1">Final Assembly</p>
+                 <div class="mt-4 pt-4 border-t border-slate-50 flex justify-between items-center">
+                     <span class="text-xs font-bold text-slate-500">Staff: <span id="count-assembly" class="text-slate-700">0</span></span>
+                     <span class="text-xs font-bold text-slate-500">Today: <span class="text-blue-600 text-base" id="pcs-assembly">0</span> Pcs</span>
+                 </div>
+             </div>
+ 
+             <!-- Finishing Unit -->
+             <div onclick="window.filterUnit('Finishing')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md hover:border-orange-200 transition cursor-pointer group">
+                 <div class="w-12 h-12 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
+                     <i class="fa-solid fa-shirt"></i>
+                 </div>
+                 <h3 class="font-bold text-slate-700 text-lg">Finishing Unit</h3>
+                 <p class="text-xs text-slate-400 mt-1">Ironing & Packing</p>
+                 <div class="mt-4 pt-4 border-t border-slate-50 flex justify-between items-center">
+                     <span class="text-xs font-bold text-slate-500">Staff: <span id="count-finishing" class="text-slate-700">0</span></span>
+                     <span class="text-xs font-bold text-slate-500">Today: <span class="text-orange-600 text-base" id="pcs-finishing">0</span> Pcs</span>
+                 </div>
+             </div>
+         </div>
+ 
+         <!-- Unit Details Section -->
+         <div id="unit-details-panel" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden fade-in">
+             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                 <div>
+                     <h3 class="text-xl font-bold text-slate-800" id="selected-unit-title">Unit Name</h3>
+                     <p class="text-xs text-slate-500">Detailed View & Tracking</p>
+                 </div>
+                 <button onclick="closeUnitDetails()" class="w-8 h-8 rounded-full bg-white border border-slate-200 text-slate-400 hover:text-slate-700 flex items-center justify-center transition">
+                     <i class="fa-solid fa-xmark"></i>
+                 </button>
+             </div>
+             
+             <div class="grid grid-cols-1 lg:grid-cols-3">
+                 <!-- Staff List -->
+                 <div class="lg:col-span-2 p-6 border-r border-slate-100">
+                     <h4 class="text-sm font-bold text-slate-700 mb-4 uppercase tracking-wide">Assigned Staff</h4>
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="unit-staff-list">
+                         <!-- Staff Cards Injected Here -->
+                     </div>
+                 </div>
+                 
+                 <!-- Production Tracking -->
+                <div class="p-6 bg-slate-50/50" id="unit-tracking-section">
+                    <h4 class="text-sm font-bold text-slate-700 mb-4 uppercase tracking-wide">Output Tracking</h4>
+                    
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm mb-6">
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Select Catalogue Item</label>
+                        <div class="flex flex-col gap-2">
+                            <input list="catalogue-list-options" id="unit-catalogue-input" onchange="updatePiecePreview(this)" placeholder="Search Catalogue..." class="w-full p-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 font-bold text-slate-700">
+                            <datalist id="catalogue-list-options">
+                                ${(JSON.parse(localStorage.getItem('catalogueItems')) || []).map(item => {
+        const total = (item.ledger || []).reduce((sum, row) => sum + (parseInt(row.total) || 0), 0);
+        return `<option value="${item.name}" data-id="${item.id}" data-total="${total}">Total Pcs: ${total}</option>`;
+    }).join('')}
+                            </datalist>
+                            <p id="unit-pcs-preview" class="text-xs text-right hidden"></p>
+                            <button onclick="addUnitPieces()" class="bg-indigo-600 text-white w-full py-2 rounded-lg font-bold hover:bg-indigo-700 transition shadow-md mt-2">
+                                Add to Daily Log
+                            </button>
+                        </div>
+                    </div>
 
-            <!-- FB Unit -->
-            <div onclick="window.filterUnit('FB')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md hover:border-emerald-200 transition cursor-pointer group">
-                <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
-                    <i class="fa-solid fa-vest"></i>
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Production Log</h4>
+                    <div class="max-h-[300px] overflow-y-auto pr-1" id="unit-production-log">
+                        <!-- Logs injected here -->
+                    </div>
                 </div>
-                <h3 class="font-bold text-slate-700 text-lg">Front & Back</h3>
-                <p class="text-xs text-slate-400 mt-1">Stitching Operations</p>
-                <div class="mt-4 pt-4 border-t border-slate-50 flex justify-between items-center">
-                    <span class="text-xs font-bold text-slate-500">Staff Count</span>
-                    <span class="text-lg font-bold text-emerald-600" id="count-fb">0</span>
-                </div>
-            </div>
-
-            <!-- Assembly Unit -->
-            <div onclick="window.filterUnit('Assembly')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md hover:border-blue-200 transition cursor-pointer group">
-                <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
-                    <i class="fa-solid fa-people-group"></i>
-                </div>
-                <h3 class="font-bold text-slate-700 text-lg">Assembly Unit</h3>
-                <p class="text-xs text-slate-400 mt-1">Final Assembly</p>
-                <div class="mt-4 pt-4 border-t border-slate-50 flex justify-between items-center">
-                    <span class="text-xs font-bold text-slate-500">Staff Count</span>
-                    <span class="text-lg font-bold text-blue-600" id="count-assembly">0</span>
-                </div>
-            </div>
-
-            <!-- Finishing Unit -->
-            <div onclick="window.filterUnit('Finishing')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md hover:border-orange-200 transition cursor-pointer group">
-                <div class="w-12 h-12 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition">
-                    <i class="fa-solid fa-shirt"></i>
-                </div>
-                <h3 class="font-bold text-slate-700 text-lg">Finishing Unit</h3>
-                <p class="text-xs text-slate-400 mt-1">Ironing & Packing</p>
-                <div class="mt-4 pt-4 border-t border-slate-50 flex justify-between items-center">
-                    <span class="text-xs font-bold text-slate-500">Staff Count</span>
-                    <span class="text-lg font-bold text-orange-600" id="count-finishing">0</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Unit Details Section -->
-        <div id="unit-details-panel" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden fade-in">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <div>
-                    <h3 class="text-xl font-bold text-slate-800" id="selected-unit-title">Unit Name</h3>
-                    <p class="text-xs text-slate-500">Assigned Employees</p>
-                </div>
-                <button onclick="closeUnitDetails()" class="w-8 h-8 rounded-full bg-white border border-slate-200 text-slate-400 hover:text-slate-700 flex items-center justify-center transition">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="unit-staff-list">
-                <!-- Staff Cards Injected Here -->
-            </div>
-        </div>
+             </div>
+         </div>
     </div>`,
 
     inventory: () => `

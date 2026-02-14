@@ -324,6 +324,10 @@ window.openCatalogueDetail = (id) => {
     document.getElementById('save-catalogue-btn').classList.add('hidden');
     document.getElementById('cancel-catalogue-btn').classList.add('hidden');
     document.getElementById('catalogue-settings-menu').classList.add('hidden');
+
+    // Merge Fix: Automatically render ledger and additional pages
+    renderCatalogueLedgerTable();
+    switchDetailTab('details'); // Ensure we start on the merged tab
 };
 
 window.closeCatalogueDetail = () => {
@@ -341,20 +345,15 @@ window.switchDetailTab = (tabName) => {
         ? "px-6 py-3 font-bold text-indigo-600 border-b-2 border-indigo-600 transition"
         : "px-6 py-3 font-medium text-slate-500 hover:text-slate-800 transition";
 
-    document.getElementById('tab-btn-ledger').className = tabName === 'ledger'
-        ? "px-6 py-3 font-bold text-indigo-600 border-b-2 border-indigo-600 transition"
-        : "px-6 py-3 font-medium text-slate-500 hover:text-slate-800 transition";
-
     document.getElementById('tab-btn-3d').className = tabName === '3d'
-        ? "px-6 py-3 font-bold text-indigo-600 border-b-2 border-indigo-600 transition flex items-center gap-2"
-        : "px-6 py-3 font-medium text-slate-500 hover:text-slate-800 transition flex items-center gap-2";
+        ? "px-6 py-3 font-bold text-indigo-600 border-b-2 border-indigo-600 transition flex items-center gap-2 text-sm"
+        : "px-6 py-3 font-medium text-slate-500 hover:text-slate-800 transition flex items-center gap-2 text-sm";
 
     // Content
     document.getElementById('tab-content-details').className = tabName === 'details' ? '' : 'hidden';
-    document.getElementById('tab-content-ledger').className = tabName === 'ledger' ? '' : 'hidden';
     document.getElementById('tab-content-3d').className = tabName === '3d' ? '' : 'hidden';
 
-    if (tabName === 'ledger') {
+    if (tabName === 'details') {
         renderCatalogueLedgerTable();
     }
 
@@ -728,23 +727,7 @@ function endDrag() {
 }
 
 // --- MULTI-PAGE CATALOGUE LOGIC ---
-let activePageType = 'front'; // 'front' or 'back'
-
 window.triggerAddPage = () => {
-    // ask the user if it is the back or front page
-    const choice = prompt("Add Page:\nType 'F' for Front View\nType 'B' for Back View");
-    if (!choice) return;
-
-    const c = choice.toLowerCase().trim();
-    if (c === 'f' || c === 'front') {
-        activePageType = 'front';
-    } else if (c === 'b' || c === 'back') {
-        activePageType = 'back';
-    } else {
-        alert("Invalid selection. Please type 'F' or 'B'.");
-        return;
-    }
-
     document.getElementById('catalogue-page-upload').click();
     document.getElementById('catalogue-settings-menu').classList.add('hidden');
 };
@@ -760,32 +743,33 @@ window.handlePageUpload = (input) => {
         const reader = new FileReader();
         reader.onload = (e) => {
             const src = e.target.result;
-            addPageToItem(activePageType, src);
+            addPageToItem(src);
         };
         reader.readAsDataURL(file);
     }
     input.value = ''; // Reset
 };
 
-function addPageToItem(type, src) {
+function addPageToItem(src) {
     catalogueItems = JSON.parse(localStorage.getItem('catalogueItems')) || [];
     const idx = catalogueItems.findIndex(i => i.id === activeCatalogueId);
     if (idx === -1) return;
 
     const item = catalogueItems[idx];
 
-    // Init arrays if missing
-    if (!item.frontPages) item.frontPages = [];
-    if (!item.backPages) item.backPages = [];
+    // Migrate or init array
+    if (!item.additionalPages) {
+        item.additionalPages = [...(item.frontPages || []), ...(item.backPages || [])];
+        delete item.frontPages;
+        delete item.backPages;
+    }
 
-    const targetArray = type === 'front' ? item.frontPages : item.backPages;
-
-    if (targetArray.length >= 5) {
-        alert(`Maximum 5 ${type} pages allowed.`);
+    if (item.additionalPages.length >= 10) {
+        alert("Maximum 10 additional pages allowed.");
         return;
     }
 
-    targetArray.push(src);
+    item.additionalPages.push(src);
     catalogueItems[idx] = item;
 
     localStorage.setItem('catalogueItems', JSON.stringify(catalogueItems));
@@ -798,42 +782,44 @@ function addPageToItem(type, src) {
 window.renderAdditionalPages = () => {
     catalogueItems = JSON.parse(localStorage.getItem('catalogueItems')) || [];
     const item = catalogueItems.find(i => i.id === activeCatalogueId);
-    const galleryFront = document.getElementById('gallery-front');
-    const galleryBack = document.getElementById('gallery-back');
+    const gallery = document.getElementById('gallery-additional');
 
-    if (!item || !galleryFront || !galleryBack) return;
+    if (!item || !gallery) return;
 
-    // Helper to render lists
-    const renderList = (pages, container, type, typeLabel) => {
-        container.innerHTML = '';
-        if (!pages) pages = [];
+    // Migrate if needed
+    let pages = item.additionalPages;
+    if (!pages) {
+        pages = [...(item.frontPages || []), ...(item.backPages || [])];
+        // Note: we don't save the migration here to avoid writing on every render, 
+        // but we treat them as one list UI-wise.
+    }
 
-        // Update Count
-        const countSpan = document.getElementById(`count-${typeLabel}`);
-        if (countSpan) countSpan.innerText = pages.length;
+    gallery.innerHTML = '';
+    const countSpan = document.getElementById('count-additional');
+    if (countSpan) countSpan.innerText = pages.length;
 
-        pages.forEach((src, index) => {
-            const div = document.createElement('div');
-            div.className = "w-24 h-24 flex-shrink-0 relative group rounded-lg overflow-hidden border border-slate-200";
-            div.innerHTML = `
-                <img src="${src}" class="w-full h-full object-cover cursor-pointer" onclick="openLightbox('${src}')">
-                <button onclick="deleteCataloguePage('${typeLabel}', ${index})" class="absolute top-1 right-1 bg-red-500 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-md">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            `;
-            container.appendChild(div);
-        });
+    pages.forEach((src, index) => {
+        const div = document.createElement('div');
+        div.className = "w-24 h-24 flex-shrink-0 relative group rounded-xl overflow-hidden border border-slate-200 shadow-sm transition hover:shadow-md";
+        div.innerHTML = `
+            <img src="${src}" class="w-full h-full object-cover cursor-pointer hover:scale-105 transition duration-500" onclick="openLightbox('${src}')">
+            <button onclick="deleteCataloguePage(${index})" class="absolute top-1 right-1 bg-red-500/90 backdrop-blur-sm text-white w-6 h-6 rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-lg transform hover:scale-110">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        `;
+        gallery.appendChild(div);
+    });
 
-        if (pages.length === 0) {
-            container.innerHTML = `<p class="text-xs text-slate-400 italic p-2">No ${typeLabel} pages added.</p>`;
-        }
-    };
-
-    renderList(item.frontPages, galleryFront, 'frontPages', 'front');
-    renderList(item.backPages, galleryBack, 'backPages', 'back');
+    if (pages.length === 0) {
+        gallery.innerHTML = `
+            <div class="w-full flex flex-col items-center justify-center text-slate-400 py-4 dashed-border rounded-xl">
+                <i class="fa-regular fa-image mb-2 text-xl opacity-30"></i>
+                <p class="text-[10px] font-medium uppercase tracking-widest">No additional pages</p>
+            </div>`;
+    }
 };
 
-window.deleteCataloguePage = (type, index) => {
+window.deleteCataloguePage = (index) => {
     if (!confirm("Delete this page?")) return;
 
     catalogueItems = JSON.parse(localStorage.getItem('catalogueItems')) || [];
@@ -841,14 +827,17 @@ window.deleteCataloguePage = (type, index) => {
     if (idx === -1) return;
 
     const item = catalogueItems[idx];
-    if (type === 'frontPages' || type === 'front') { // Handle both keys
-        if (item.frontPages) item.frontPages.splice(index, 1);
-    } else {
-        if (item.backPages) item.backPages.splice(index, 1);
+
+    // Ensure migration state before delete
+    if (!item.additionalPages) {
+        item.additionalPages = [...(item.frontPages || []), ...(item.backPages || [])];
+        delete item.frontPages;
+        delete item.backPages;
     }
+
+    item.additionalPages.splice(index, 1);
 
     localStorage.setItem('catalogueItems', JSON.stringify(catalogueItems));
     if (window.saveToCloud) window.saveToCloud('catalogueItems', catalogueItems);
-
     renderAdditionalPages();
 };

@@ -9,31 +9,88 @@ window.handleLogin = (e) => {
     const passIn = document.getElementById('login-pass').value.trim();
     const btn = e.target.querySelector('button');
     const originalText = btn.innerText;
+    const rememberMe = document.getElementById('remember-me')?.checked;
+
+    // 1. Validation
+    if (!userIn || !passIn) {
+        alert("Please enter both username and password.");
+        if (!userIn) document.getElementById('login-user').focus();
+        else document.getElementById('login-pass').focus();
+        return;
+    }
 
     // Loading State
-    btn.innerText = "Verifying...";
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Verifying...';
     btn.disabled = true;
 
     // THE REAL LOGIN
     window.signInWithEmailAndPassword(window.auth, userIn, passIn)
         .then((userCredential) => {
             console.log("Login Success:", userCredential.user.email);
-            // We don't need to manually redirect here. 
-            // The 'onAuthStateChanged' listener below will handle it.
+
+            // 2. Remember Me Logic
+            if (rememberMe) {
+                localStorage.setItem('srf_remember_user', userIn);
+            } else {
+                localStorage.removeItem('srf_remember_user');
+            }
+
+            btn.classList.add('bg-emerald-500');
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Success';
+            // Redirect handled by onAuthStateChanged
         })
         .catch((error) => {
             console.error("Login Failed:", error.code, error.message);
 
             // Error Animation
             btn.classList.add('bg-red-500', 'animate-shake');
-            btn.innerText = "Invalid Credentials";
             btn.disabled = false;
 
+            // 3. User-Friendly Error Messages
+            let errorMsg = "Invalid Credentials";
+            switch (error.code) {
+                case 'auth/user-not-found':
+                case 'auth/invalid-email':
+                    errorMsg = "User not found";
+                    break;
+                case 'auth/wrong-password':
+                    errorMsg = "Incorrect Password";
+                    break;
+                case 'auth/too-many-requests':
+                    errorMsg = "Too many attempts. Try later.";
+                    break;
+                case 'auth/network-request-failed':
+                    errorMsg = "Network Error. Check internet.";
+                    break;
+            }
+            btn.innerText = errorMsg;
+
+            // Reset Button
             setTimeout(() => {
                 btn.classList.remove('bg-red-500', 'animate-shake');
                 btn.innerText = originalText;
-            }, 1000);
+                if (errorMsg === "Incorrect Password") {
+                    document.getElementById('login-pass').value = '';
+                    document.getElementById('login-pass').focus();
+                } else if (errorMsg === "User not found") {
+                    document.getElementById('login-user').select();
+                }
+            }, 2000);
         });
+};
+
+// New: Initialize Login Form (Auto-fill)
+window.initLoginForm = () => {
+    const savedUser = localStorage.getItem('srf_remember_user');
+    if (savedUser) {
+        const userInput = document.getElementById('login-user');
+        const rememberBox = document.getElementById('remember-me');
+        if (userInput) {
+            userInput.value = savedUser;
+            // Trigger floating label style if needed, or rely on :placeholder-shown logic
+        }
+        if (rememberBox) rememberBox.checked = true;
+    }
 };
 
 // --- 1b. GOOGLE SIGN-IN ---
@@ -58,6 +115,37 @@ window.signInWithGoogle = () => {
             }
             if (error.code !== 'auth/popup-closed-by-user') {
                 alert("Google Sign-In failed: " + error.message);
+            }
+        });
+};
+
+// --- 1c. APPLE SIGN-IN ---
+window.signInWithApple = () => {
+    const provider = new window.OAuthProvider('apple.com');
+    const btn = document.getElementById('btn-apple-login');
+    const originalText = btn.innerText;
+
+    // Show Loading State
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...';
+    btn.disabled = true;
+
+    window.signInWithPopup(window.auth, provider)
+        .then((result) => {
+            console.log("Apple Sign-In Success:", result.user.email);
+            // Result comes with user/credential/etc.
+            // On success, onAuthStateChanged will trigger and handle store updates/redirects.
+        })
+        .catch((error) => {
+            console.error("Apple Sign-In Failed:", error.code, error.message);
+            // Reset Button
+            btn.innerHTML = '<i class="fa-brands fa-apple text-xl relative z-10"></i> <span class="relative z-10">Continue with Apple</span>';
+            btn.disabled = false;
+
+            // Helpful error handling
+            if (error.code === 'auth/popup-closed-by-user') {
+                console.log("User closed the Apple popup");
+            } else {
+                alert("Apple Sign-In failed: " + error.message);
             }
         });
 };
@@ -205,7 +293,42 @@ window.cloudRestore = async () => {
     }
 };
 
-// Password Toggle Helper
+// Role Switcher Logic
+window.switchLoginRole = (role, btn) => {
+    // 1. Update Buttons State
+    document.querySelectorAll('[data-role]').forEach(el => {
+        el.classList.remove('active');
+    });
+
+    if (btn) {
+        btn.classList.add('active');
+    }
+
+    // 2. Move Highlight
+    const highlight = document.getElementById('role-highlight');
+    if (highlight) {
+        if (role === 'owner') highlight.style.transform = 'translateX(0%)';
+        if (role === 'manager') highlight.style.transform = 'translateX(100%)';
+        if (role === 'employee') highlight.style.transform = 'translateX(200%)';
+    }
+
+    // 3. Toggle Forms
+    const emailForm = document.getElementById('email-login-container');
+    const googleForm = document.getElementById('google-login-container');
+    const appleBtn = document.getElementById('btn-apple-login'); // Apple button is inside google-login-container
+
+    if (role === 'employee') {
+        // Show Google, Hide Email
+        if (emailForm) emailForm.classList.add('hidden');
+        if (googleForm) googleForm.classList.remove('hidden');
+    } else {
+        // Show Email, Hide Google
+        if (emailForm) emailForm.classList.remove('hidden');
+        if (googleForm) googleForm.classList.add('hidden');
+    }
+};
+
+// ... existing togglePasswordVisibility ...
 window.togglePasswordVisibility = () => {
     const input = document.getElementById('login-pass');
     const icon = document.getElementById('pass-icon');

@@ -32,46 +32,227 @@ input:focus, select:focus, textarea:focus {
     outline-offset: -1px;
 }
 
-.voice-active { color: #dc2626 !important; animation: pulse 1s infinite; }
-@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
-
-/* Login Glassmorphism */
-.login-bg {
-    background: linear-gradient(135deg, #4f46e5 0%, #0f172a 100%);
+/* Login Redesign - Unified Card Layout */
+#login-view {
+    background-color: #f1f5f9; /* Light gray background */
+    background-image: url('../assets/images/background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     position: relative;
-    overflow: hidden;
+    overflow: hidden; /* Prevent scrolling */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100vh; /* Fixed height */
+    padding: 1rem;
 }
-.login-bg::before {
+
+/* The "Big Tab" Card */
+.login-card-container {
+    width: 100%;
+    max-width: 1100px;
+    height: auto;
+    max-height: 95vh; /* constrain height */
+    min-height: 0; /* remove strict min-height */
+    background-color: #ffffff;
+    border-radius: 32px; /* Large rounded corners */
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15); /* Deep shadow */
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    z-index: 10;
+}
+
+/* Custom Split Screen Styles */
+.login-left-panel {
+    display: none; /* Mobile default */
+    width: 50%;
+    background-color: #f8fafc; 
+    position: relative;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem;
+    overflow: hidden;
+    border-right: 1px solid #e2e8f0;
+}
+
+.login-right-panel {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+    background-color: #ffffff;
+}
+
+/* Desktop Styles */
+@media (min-width: 768px) {
+    .login-left-panel {
+        display: flex !important;
+    }
+    .login-right-panel {
+        width: 50%;
+        padding: 3rem;
+    }
+    .login-right-panel {
+        width: 50%;
+        padding: 3rem;
+    }
+}
+
+/* Responsive adjustments for smaller height screens */
+@media (max-height: 800px) {
+    .login-card-container {
+        border-radius: 20px;
+        min-height: 0;
+    }
+    .login-left-panel {
+        padding: 1.5rem;
+    }
+    .login-right-panel {
+        padding: 1.5rem 2rem;
+    }
+    .login-input {
+        padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+    }
+    .input-icon {
+        left: 0.8rem;
+    }
+}
+/* .login-bg::after {
+    background: radial-gradient(#ec4899, transparent 70%); 
+    bottom: -10%;
+    right: -10%;
+    animation-delay: -10s;
+} */
+
+@keyframes drift {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(30px, 50px) scale(1.1); }
+}
+
+/* Glass Card Enhanced (Light) */
+.glass-card {
+    /* background: rgba(255, 255, 255, 0.8); overridden */
+    box-shadow: 0 20px 40px -6px rgba(0, 0, 0, 0.05), 0 0 10px rgba(0,0,0,0.02);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    /* border: 1px solid rgba(255, 255, 255, 0.8); overridden */
+    position: relative;
+    z-index: 10;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card::before {
     content: '';
     position: absolute;
-    width: 150%;
-    height: 150%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 60%);
-    top: -25%;
-    left: -25%;
-    animation: rotate 20s linear infinite;
+    inset: 0;
+    /* background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.1)); overridden */
+    pointer-events: none;
+    z-index: -1;
 }
-@keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-.glass-card {
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
+/* Floating Label Inputs (Light) */
+.input-group {
+    position: relative;
 }
 
 .login-input {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: white;
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1rem 1rem 1rem 3rem; /* Left padding for icon */
+    color: #1e293b;
+    font-size: 1rem;
+    transition: all 0.3s ease;
 }
-.login-input::placeholder { color: rgba(255, 255, 255, 0.5); }
+
 .login-input:focus {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.5);
+    background: #ffffff;
+    border-color: #6366f1; /* Indigo 500 */
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
     outline: none;
+}
+
+.input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    transition: color 0.3s ease;
+    pointer-events: none;
+}
+
+.input-group:focus-within .input-icon {
+    color: #6366f1;
+}
+
+/* Floating Label (Light) */
+.floating-label {
+    position: absolute;
+    left: 3rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+.login-input:focus ~ .floating-label,
+.login-input:not(:placeholder-shown) ~ .floating-label {
+    top: -0.8rem; /* revised for inside input feel or move to standard top label */
+    left: 0.5rem;
+    font-size: 0.75rem;
+    color: #64748b;
+    background: #f8fafc; /* Match container bg or white if on card? Card is semi-transparent, so maybe white */
+    background: rgba(255,255,255,0.9);
+    padding: 0 0.5rem;
+    border-radius: 4px;
+}
+
+/* Role Selector Styled (Light) */
+.role-btn {
+    position: relative;
+    z-index: 10;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    transition: color 0.3s ease;
+}
+.role-btn.active {
+    color: white; /* Active text is white because highlight is dark/colored */
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Button Glow (Light) */
+.btn-glow {
+    position: relative;
+    overflow: hidden;
+}
+.btn-glow::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 60%);
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.3s, transform 0.3s;
+}
+.btn-glow:hover::after {
+    opacity: 1;
+    transform: scale(1);
 }
 
 /* Print Styles */
@@ -588,3 +769,33 @@ thead .sticky-col-left { background-color: #f8fafc; z-index: 30; }
 #profile-panel-content::-webkit-scrollbar-track {
     background: transparent;
 }
+
+/* Hide scrollbar utility */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.hide-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+/* AI Panel Animations */
+@keyframes blob {
+    0% { transform: translate(0px, 0px) scale(1); }
+    33% { transform: translate(30px, -50px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+    100% { transform: translate(0px, 0px) scale(1); }
+}
+.animate-blob {
+    animation: blob 7s infinite;
+}
+.animation-delay-2000 {
+    animation-delay: 2s;
+}
+.animation-delay-4000 {
+    animation-delay: 4s;
+}
+
+
+
+
