@@ -491,8 +491,19 @@ window.setDefaultsForTimeStaff = () => {
                 const startObj = parseTime12h(foundIn, 'in');
                 const endObj = parseTime12h(foundOut, 'out');
                 if (startObj && endObj) {
-                    const totalMins = (endObj.mins - startObj.mins) - 30; // 30 mins break
-                    const totalHrs = totalMins / 60;
+                    const totalMins = (endObj.mins - startObj.mins);
+
+                    // Deduct Lunch Break (1:30 PM - 2:00 PM) Only if overlap
+                    const LUNCH_START = 13 * 60 + 30; // 810
+                    const LUNCH_END = 14 * 60;        // 840
+
+                    const overlapStart = Math.max(startObj.mins, LUNCH_START);
+                    const overlapEnd = Math.min(endObj.mins, LUNCH_END);
+                    const deduction = Math.max(0, overlapEnd - overlapStart);
+
+                    const finalMins = totalMins - deduction;
+                    const totalHrs = finalMins / 60;
+
                     let otHrs = 0;
                     if (totalHrs > 8) otHrs = totalHrs - 8;
                     currentDayData.hours = totalHrs.toFixed(1);
@@ -610,8 +621,19 @@ window.updateDailyTime = (empId, type, val) => {
                 const startObj = parseTime12h(dayData.in, 'in');
                 const endObj = parseTime12h(dayData.out, 'out');
                 if (startObj && endObj) {
-                    const totalMins = (endObj.mins - startObj.mins) - 30;
-                    const totalHrs = totalMins / 60;
+                    const totalMins = (endObj.mins - startObj.mins);
+
+                    // Deduct Lunch Break (1:30 PM - 2:00 PM) Only if overlap
+                    const LUNCH_START = 13 * 60 + 30; // 810
+                    const LUNCH_END = 14 * 60;        // 840
+
+                    const overlapStart = Math.max(startObj.mins, LUNCH_START);
+                    const overlapEnd = Math.min(endObj.mins, LUNCH_END);
+                    const deduction = Math.max(0, overlapEnd - overlapStart);
+
+                    const finalMins = totalMins - deduction;
+                    const totalHrs = finalMins / 60;
+
                     let otHrs = 0;
                     if (totalHrs > 8) otHrs = totalHrs - 8;
                     dayData.hours = totalHrs.toFixed(1);

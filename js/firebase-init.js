@@ -6,16 +6,21 @@ import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, Googl
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDeAvREXEottX1_jyFV2sCamSHW7DgW6AE",
-    authDomain: "smart-manager-by-abhi.firebaseapp.com",
-    projectId: "smart-manager-by-abhi",
-    storageBucket: "smart-manager-by-abhi.firebasestorage.app",
-    messagingSenderId: "382205577494",
-    appId: "1:382205577494:web:a99580da8b60ba945e6837",
-    measurementId: "G-E9FG4W9LHT",
+    apiKey: window.ENV?.FIREBASE_API_KEY,
+    authDomain: window.ENV?.FIREBASE_AUTH_DOMAIN,
+    projectId: window.ENV?.FIREBASE_PROJECT_ID,
+    storageBucket: window.ENV?.FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: window.ENV?.FIREBASE_MESSAGING_SENDER_ID,
+    appId: window.ENV?.FIREBASE_APP_ID,
+    measurementId: window.ENV?.FIREBASE_MEASUREMENT_ID,
     // Updated to Asia-Southeast1 based on Firebase Warning
-    databaseURL: "https://smart-manager-by-abhi-default-rtdb.asia-southeast1.firebasedatabase.app"
+    databaseURL: window.ENV?.FIREBASE_DATABASE_URL
 };
+
+if (!firebaseConfig.apiKey) {
+    console.error("Firebase Config Missing! Ensure .env is set and server.js is running.");
+    alert("System Error: Configuration missing. Please contact administrator.");
+}
 
 // Initialize App
 const app = initializeApp(firebaseConfig);

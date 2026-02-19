@@ -459,6 +459,21 @@ window.openProfile = () => {
         user.email = window.auth.currentUser.email;
     }
 
+    // Employee override: use Google profile data
+    if (window.isEmployee && window.isEmployee()) {
+        const empName = localStorage.getItem('srf_employee_name');
+        const empPhoto = localStorage.getItem('srf_employee_photo');
+        if (empName) {
+            user.name = empName;
+            user.initials = empName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        }
+        user.role = 'Employee';
+        if (empPhoto) {
+            // Store as avatar override for ID card
+            user.photoURL = empPhoto;
+        }
+    }
+
     // Update DOM for ID Card
     const els = {
         name: document.getElementById('card-user-name'),
@@ -475,6 +490,15 @@ window.openProfile = () => {
     if (els.unit) els.unit.innerText = user.unit;
     if (els.id) els.id.innerText = user.id;
     if (els.qrText) els.qrText.innerText = `SRF-${user.id}`;
+
+    // Set Avatar
+    if (els.avatarImg) {
+        if (user.photoURL) {
+            els.avatarImg.src = user.photoURL;
+        } else {
+            els.avatarImg.src = state.config.OWNER_AVATAR || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=90";
+        }
+    }
 
     // Generate QR Code
     if (els.qrImg) {
@@ -505,6 +529,144 @@ window.closeProfile = () => {
         if (wrapper) wrapper.classList.add('hidden');
     }, 300);
 };
+
+window.openEditProfile = () => {
+    // 1. Close Profile Panel
+    window.closeProfile();
+
+    // 2. Get Elements
+    const modal = document.getElementById('edit-profile-modal');
+    const nameInput = document.getElementById('edit-owner-name');
+    const businessInput = document.getElementById('edit-garment-name');
+    const previewImg = document.getElementById('edit-avatar-preview');
+
+    // 3. Populate Data
+    if (nameInput) nameInput.value = state.config.OWNER_NAME || "";
+    if (businessInput) businessInput.value = state.config.GARMENT_NAME || "";
+
+    // Set Preview
+    if (previewImg) {
+        previewImg.src = state.config.OWNER_AVATAR || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=90";
+        previewImg.classList.remove('opacity-50');
+    }
+
+    // Reset file input
+    const fileInput = document.getElementById('edit-avatar-file');
+    if (fileInput) fileInput.value = "";
+
+    // 4. Show Modal
+    if (modal) modal.classList.remove('hidden');
+};
+
+// New: Handle Image Upload with Client-Side Resize
+window.handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_SIZE = 800; // Max width/height
+            let width = img.width;
+            let height = img.height;
+
+            // Resize logic
+            if (width > height) {
+                if (width > MAX_SIZE) {
+                    height *= MAX_SIZE / width;
+                    width = MAX_SIZE;
+                }
+            } else {
+                if (height > MAX_SIZE) {
+                    width *= MAX_SIZE / height;
+                    height = MAX_SIZE;
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // Compress as JPEG 0.9
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+
+            // Update Preview
+            const previewImg = document.getElementById('edit-avatar-preview');
+            if (previewImg) {
+                previewImg.src = dataUrl;
+                previewImg.classList.remove('opacity-50');
+            }
+
+            // Store temporarily in a global var or on the element
+            window.tempAvatarData = dataUrl;
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+};
+
+window.saveEditProfile = () => {
+    const nameInput = document.getElementById('edit-owner-name');
+    const businessInput = document.getElementById('edit-garment-name');
+
+    if (nameInput && businessInput) {
+        // Update State
+        state.config.OWNER_NAME = nameInput.value.trim() || "Administrator";
+        state.config.GARMENT_NAME = businessInput.value.trim() || "Factory Manager";
+
+        // Save Avatar if changed
+        if (window.tempAvatarData) {
+            state.config.OWNER_AVATAR = window.tempAvatarData;
+            window.tempAvatarData = null; // Clear temp
+        }
+
+        // Persist
+        localStorage.setItem('srf_config', JSON.stringify(state.config));
+
+        // Sync (if active)
+        // if (window.saveToCloud) window.saveToCloud('config', state.config);
+
+        // Update UI
+        if (window.updateGarmentLabel) window.updateGarmentLabel();
+        if (window.updateHeaderProfile) window.updateHeaderProfile(); // Sync Header
+
+        // Close Modal
+        document.getElementById('edit-profile-modal').classList.add('hidden');
+
+
+        // Optional: Show Success?
+        // Re-open profile to see changes
+        setTimeout(() => window.openProfile(), 300);
+    }
+};
+
+window.openPrivacyModal = () => {
+    window.closeProfile();
+    const modal = document.getElementById('privacy-modal');
+    if (modal) modal.classList.remove('hidden');
+};
+
+window.closePrivacyModal = () => {
+    const modal = document.getElementById('privacy-modal');
+    if (modal) modal.classList.add('hidden');
+    // Re-open profile for smooth flow, or just close. Let's just close for now.
+    // setTimeout(() => window.openProfile(), 100); 
+};
+
+window.openTermsModal = () => {
+    window.closeProfile();
+    const modal = document.getElementById('terms-modal');
+    if (modal) modal.classList.remove('hidden');
+};
+
+window.closeTermsModal = () => {
+    const modal = document.getElementById('terms-modal');
+    if (modal) modal.classList.add('hidden');
+};
+
 
 
 
@@ -612,6 +774,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 2. Initialize Garment Label
     if (window.updateGarmentLabel) window.updateGarmentLabel();
+
+    // 3. Initialize Header Profile
+    if (window.updateHeaderProfile) window.updateHeaderProfile();
 });
 
 // --- GARMENT LABEL LOGIC ---
@@ -634,5 +799,34 @@ window.updateGarmentLabel = () => {
         // Hide
         if (headerEl) headerEl.classList.add('hidden');
         if (sidebarEl) sidebarEl.classList.add('hidden');
+    }
+};
+
+// --- HEADER PROFILE SYNC ---
+window.updateHeaderProfile = () => {
+    const imgEl = document.getElementById('header-profile-img');
+    const initEl = document.getElementById('header-profile-initial');
+
+    if (imgEl && initEl) {
+        // Employee override: use Google photo
+        const isEmp = window.isEmployee && window.isEmployee();
+        const empPhoto = isEmp ? localStorage.getItem('srf_employee_photo') : null;
+        const empName = isEmp ? localStorage.getItem('srf_employee_name') : null;
+
+        if (empPhoto) {
+            imgEl.src = empPhoto;
+            imgEl.classList.remove('hidden');
+            initEl.classList.add('hidden');
+        } else if (state.config.OWNER_AVATAR) {
+            imgEl.src = state.config.OWNER_AVATAR;
+            imgEl.classList.remove('hidden');
+            initEl.classList.add('hidden');
+        } else {
+            imgEl.classList.add('hidden');
+            initEl.classList.remove('hidden');
+            // Update Initial
+            const name = (isEmp && empName) ? empName : (state.config.OWNER_NAME || "Manager");
+            initEl.innerText = name.charAt(0).toUpperCase();
+        }
     }
 };

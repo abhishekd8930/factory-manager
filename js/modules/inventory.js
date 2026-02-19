@@ -3,6 +3,7 @@ console.log("Inventory Module Loaded");
 // --- 1. CORE LOGIC ---
 
 window.addInventoryItem = () => {
+    if (!window.canEdit()) return;
     const name = document.getElementById('inv-new-name').value.trim();
     const type = document.getElementById('inv-new-type').value; // 'Fabric', 'Trim', 'Packaging'
     const qty = parseFloat(document.getElementById('inv-new-qty').value) || 0;
@@ -36,6 +37,7 @@ window.addInventoryItem = () => {
 };
 
 window.updateInventoryStock = (id, delta) => {
+    if (!window.canEdit()) return;
     const item = state.inventoryData.find(i => i.id === id);
     if (item) {
         const newQty = parseFloat(prompt(`Current Stock: ${item.quantity} ${item.unit}.\nEnter adjustment amount (e.g. +10 or -5):`));
@@ -49,6 +51,7 @@ window.updateInventoryStock = (id, delta) => {
 };
 
 window.deleteInventoryItem = (id) => {
+    if (!window.canEdit()) return;
     if (confirm("Permanently delete this item from stock?")) {
         state.inventoryData = state.inventoryData.filter(i => i.id !== id);
         window.saveInventory();
@@ -101,12 +104,13 @@ window.renderInventory = () => {
             </td>
             <td class="p-4 text-xs text-slate-400 font-mono text-center">${dateStr}</td>
             <td class="p-4 text-center">
+                ${window.canEdit() ? `
                 <button onclick="updateInventoryStock(${item.id})" class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition shadow-sm" title="Adjust Stock">
                     <i class="fa-solid fa-pen-to-square"></i>
                 </button>
                 <button onclick="deleteInventoryItem(${item.id})" class="w-8 h-8 rounded-full bg-slate-50 text-slate-400 hover:bg-red-50 hover:text-red-500 transition ml-2" title="Delete">
                     <i class="fa-solid fa-trash"></i>
-                </button>
+                </button>` : ''}
             </td>
         `;
         listContainer.appendChild(tr);

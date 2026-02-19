@@ -22,8 +22,27 @@ const mimeTypes = {
     '.wasm': 'application/wasm'
 };
 
+// Load Environment Variables (Simple Parser since dependencies might be limited)
+const envConfig = {};
+try {
+    const envFile = fs.readFileSync('.env', 'utf8');
+    envFile.split('\n').forEach(line => {
+        const [key, value] = line.split('=');
+        if (key && value) envConfig[key.trim()] = value.trim();
+    });
+} catch (e) {
+    console.warn("No .env file found or error reading it:", e.message);
+}
+
 http.createServer(function (request, response) {
     console.log('request ', request.url);
+
+    // Serve Environment Config dynamically
+    if (request.url === '/env-config.js') {
+        response.writeHead(200, { 'Content-Type': 'application/javascript' });
+        response.end(`window.ENV = ${JSON.stringify(envConfig)};`, 'utf-8');
+        return;
+    }
 
     let filePath = '.' + request.url;
     if (filePath === './') {

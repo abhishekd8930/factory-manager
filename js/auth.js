@@ -1,6 +1,9 @@
 // js/auth.js
 console.log("Auth Module Loaded");
 
+// Track the currently selected login role
+let _selectedLoginRole = 'owner';
+
 // --- 1. LOGIN LOGIC ---
 window.handleLogin = (e) => {
     e.preventDefault();
@@ -27,6 +30,10 @@ window.handleLogin = (e) => {
     window.signInWithEmailAndPassword(window.auth, userIn, passIn)
         .then((userCredential) => {
             console.log("Login Success:", userCredential.user.email);
+
+            // Store selected role
+            localStorage.setItem('srf_user_role', _selectedLoginRole);
+            if (typeof state !== 'undefined') state.userRole = _selectedLoginRole;
 
             // 2. Remember Me Logic
             if (rememberMe) {
@@ -105,6 +112,16 @@ window.signInWithGoogle = () => {
     window.signInWithPopup(window.auth, provider)
         .then((result) => {
             console.log("Google Sign-In Success:", result.user.email);
+
+            // Employee role (Google Sign-In is only shown for employees)
+            localStorage.setItem('srf_user_role', 'employee');
+            if (typeof state !== 'undefined') state.userRole = 'employee';
+
+            // Store Google profile info for employee profile panel
+            const gUser = result.user;
+            if (gUser.displayName) localStorage.setItem('srf_employee_name', gUser.displayName);
+            if (gUser.photoURL) localStorage.setItem('srf_employee_photo', gUser.photoURL);
+
             // onAuthStateChanged handles redirect
         })
         .catch((error) => {
@@ -153,6 +170,10 @@ window.signInWithApple = () => {
 // --- 2. LOGOUT LOGIC ---
 window.logout = () => {
     if (confirm("Are you sure you want to sign out?")) {
+        localStorage.removeItem('srf_user_role');
+        localStorage.removeItem('srf_employee_name');
+        localStorage.removeItem('srf_employee_photo');
+        if (typeof state !== 'undefined') state.userRole = 'owner';
         window.signOut(window.auth).then(() => {
             console.log("Signed Out");
             window.location.reload();
@@ -295,6 +316,9 @@ window.cloudRestore = async () => {
 
 // Role Switcher Logic
 window.switchLoginRole = (role, btn) => {
+    // Track selected role
+    _selectedLoginRole = role;
+
     // 1. Update Buttons State
     document.querySelectorAll('[data-role]').forEach(el => {
         el.classList.remove('active');

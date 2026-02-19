@@ -646,6 +646,8 @@ thead .sticky-col-left { background-color: #f8fafc; z-index: 30; }
     max-width: 320px;
     margin-top: 2rem;
     padding-bottom: 2rem; /* Spacing for scroll */
+    position: relative;
+    z-index: 50;
 }
 
 .profile-menu-item {

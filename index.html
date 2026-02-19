@@ -24,6 +24,7 @@
         }
     </script>
     <script type="module" src="js/catalogue.js"></script>
+    <script src="/env-config.js"></script> <!-- Load Environment Variables -->
 
     <link rel="stylesheet" href="css/style.css">
     <link rel="manifest" href="manifest.json">
@@ -85,18 +86,21 @@
         <div class="absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity opacity-0" id="profile-backdrop" onclick="closeProfile()"></div>
 
         <!-- Panel -->
-        <div class="absolute right-0 top-0 h-full w-full max-w-sm bg-slate-50 shadow-2xl transform transition-transform translate-x-full duration-300 ease-in-out flex flex-col" id="profile-panel-content">
+        <div class="absolute right-0 top-0 h-full w-full max-w-sm bg-slate-50 shadow-2xl transform transition-transform translate-x-full duration-300 ease-in-out flex flex-col overflow-y-auto custom-scrollbar" id="profile-panel-content">
             <!-- Close Button -->
-            <div class="absolute top-4 right-4 z-50">
-                <button onclick="closeProfile()" aria-label="Close Profile"
-                    class="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center transition">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+            <!-- Fixed Header -->
+            <div class="sticky top-0 bg-slate-50 z-20 w-full flex flex-col items-center pt-8 pb-4 shrink-0 shadow-sm">
+                <div class="absolute top-4 right-4">
+                    <button onclick="closeProfile()" aria-label="Close Profile"
+                        class="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center transition">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <h1 class="text-3xl font-bold text-slate-800 mb-1">Profile</h1>
+                <p class="text-xs text-slate-400">Double-click card to flip • Hover to tilt</p>
             </div>
 
-            <div id="id-card-container" class="flex-1 flex flex-col items-center pt-8 overflow-hidden">
-                <h1 class="text-3xl font-bold text-slate-800 mb-2">Profile</h1>
-                <p class="text-xs text-slate-400 mb-8">Double-click card to flip • Hover to tilt</p>
+            <div id="id-card-container" class="w-full flex flex-col items-center pt-4 pb-20">
 
                 <div class="card-wrapper">
                     <section id="card">
@@ -113,8 +117,12 @@
                                     </div>
                                 </div>
 
-                                <div class="avatar-container">
-                                    <img id="card-avatar-img" class="avatar" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" alt="Manager Photo" />
+                                <div class="avatar-container relative group">
+                                    <img id="card-avatar-img" class="avatar" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=90" alt="Manager Photo" />
+                                    <!-- Edit Button (Blue) -->
+                                    <button onclick="openEditProfile()" class="absolute -bottom-2 -right-2 flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white shadow-lg border-2 border-white hover:bg-blue-700 hover:scale-110 transition z-10" aria-label="Edit Profile">
+                                        <i class="fa-solid fa-pen text-xs"></i>
+                                    </button>
                                 </div>
 
                                 <div class="id-body">
@@ -171,29 +179,31 @@
                 <!-- Profile Actions -->
                 <div class="profile-menu-list">
                     
-                    <a href="#" class="profile-menu-item">
-                        <div class="menu-icon-box">
-                            <i class="fa-solid fa-user-pen"></i>
-                        </div>
-                        <div class="menu-text">
-                            <span class="menu-title">Edit Profile</span>
-                            <span class="menu-subtitle">Update personal details</span>
-                        </div>
-                        <i class="fa-solid fa-chevron-right menu-chevron"></i>
-                    </a>
 
-                    <a href="#" class="profile-menu-item">
+
+                    <div onclick="openTermsModal()" class="profile-menu-item">
                         <div class="menu-icon-box">
-                            <i class="fa-solid fa-shield-halved"></i>
+                            <i class="fa-solid fa-file-contract"></i>
                         </div>
                         <div class="menu-text">
                             <span class="menu-title">Terms & Conditions</span>
                             <span class="menu-subtitle">Company policies & usage</span>
                         </div>
                         <i class="fa-solid fa-chevron-right menu-chevron"></i>
-                    </a>
+                    </div>
 
-                    <div onclick="handleLogout()" class="profile-menu-item danger-zone">
+                    <div onclick="openPrivacyModal()" class="profile-menu-item">
+                        <div class="menu-icon-box">
+                            <i class="fa-solid fa-lock"></i>
+                        </div>
+                        <div class="menu-text">
+                            <span class="menu-title">Privacy Policy</span>
+                            <span class="menu-subtitle">Data protection & rights</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right menu-chevron"></i>
+                    </div>
+
+                    <div onclick="logout()" class="profile-menu-item danger-zone">
                         <div class="menu-icon-box">
                             <i class="fa-solid fa-right-from-bracket"></i>
                         </div>
@@ -208,10 +218,142 @@
             </div>
         </div>
     </div>
+    
+    <!-- Privacy Policy Modal -->
+    <div id="privacy-modal" class="hidden fixed inset-0 z-[110] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closePrivacyModal()"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col relative z-10 overflow-hidden">
+            <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
+                <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-lock text-indigo-500"></i> Privacy Policy
+                </h3>
+                <button onclick="closePrivacyModal()" aria-label="Close Privacy Policy" class="text-slate-400 hover:text-slate-600 transition w-8 h-8 rounded-full hover:bg-slate-200 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto text-slate-600 text-sm leading-relaxed space-y-4">
+                <p><strong>Effective Date:</strong> February 18, 2026</p>
+                
+                <h4 class="font-bold text-slate-800 text-base mt-2">1. Information We Collect</h4>
+                <p>We collect information you provide directly to us when you use the Smart Manager application, including but not limited to:</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li>Personal identification information (Name, employee ID, role).</li>
+                    <li>Contact information (Email address, phone number).</li>
+                    <li>Production data (Output logs, efficiency metrics).</li>
+                </ul>
+
+                <h4 class="font-bold text-slate-800 text-base mt-2">2. How We Use Your Information</h4>
+                <p>We use the information we collect to:</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li>Provide, maintain, and improve our services.</li>
+                    <li>Process transactions and manage payroll.</li>
+                    <li>Monitor and analyze trends, usage, and activities.</li>
+                </ul>
+
+                <h4 class="font-bold text-slate-800 text-base mt-2">3. Data Security</h4>
+                <p>We implement appropriate technical and organizational measures to protect your personal data against unauthorized access, alteration, disclosure, or destruction.</p>
+
+                <h4 class="font-bold text-slate-800 text-base mt-2">4. Your Rights</h4>
+                <p>You have the right to access, correct, or delete your personal information. Please contact the administrator for any data-related requests.</p>
+            </div>
+            <div class="p-4 bg-slate-50 border-t border-slate-100 text-right">
+                <button onclick="closePrivacyModal()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-indigo-700 transition shadow-sm">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms Modal -->
+    <div id="terms-modal" class="hidden fixed inset-0 z-[110] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeTermsModal()"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col relative z-10 overflow-hidden">
+            <div class="flex justify-between items-center p-5 border-b border-slate-100 bg-slate-50">
+                <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-file-contract text-indigo-500"></i> Terms & Conditions
+                </h3>
+                <button onclick="closeTermsModal()" aria-label="Close Terms" class="text-slate-400 hover:text-slate-600 transition w-8 h-8 rounded-full hover:bg-slate-200 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto text-slate-600 text-sm leading-relaxed space-y-4">
+                <p><strong>Last Updated:</strong> February 18, 2026</p>
+                
+                <h4 class="font-bold text-slate-800 text-base mt-2">1. Acceptance of Terms</h4>
+                <p>By accessing or using the Smart Manager application, you agree to be bound by these Terms & Conditions. If you do not agree, please do not use the service.</p>
+
+                <h4 class="font-bold text-slate-800 text-base mt-2">2. User Responsibilities</h4>
+                <p>You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. You agree to notify us immediately of any unauthorized use.</p>
+
+                <h4 class="font-bold text-slate-800 text-base mt-2">3. Intellectual Property</h4>
+                <p>The Smart Manager application and its original content, features, and functionality are owned by Abhishek D (Abhi Company) and are protected by international copyright, trademark, patent, trade secret, and other intellectual property or proprietary rights laws.</p>
+
+                 <h4 class="font-bold text-slate-800 text-base mt-2">4. Limitation of Liability</h4>
+                <p>In no event shall Abhishek D (Abhi Company), nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses.</p>
+                
+                <h4 class="font-bold text-slate-800 text-base mt-2">5. Termination</h4>
+                <p>We may terminate or suspend your account immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.</p>
+            </div>
+            <div class="p-4 bg-slate-50 border-t border-slate-100 text-right">
+                <button onclick="closeTermsModal()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-indigo-700 transition shadow-sm">I Agree</button>
+            </div>
+        </div>
+    </div>
 
 
 
 
+
+    <div id="edit-profile-modal"
+        class="hidden fixed inset-0 bg-black/50 z-[110] flex items-center justify-center backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-slate-800">Edit Profile</h3>
+                <button onclick="document.getElementById('edit-profile-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 transition">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1" for="edit-owner-name">Your Name</label>
+                    <input type="text" id="edit-owner-name" placeholder="Enter your name"
+                        class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-slate-700 font-bold">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1" for="edit-garment-name">Business Name</label>
+                    <input type="text" id="edit-garment-name" placeholder="Enter business name"
+                        class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-slate-700 font-bold">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Profile Picture</label>
+                    
+                    <div class="flex items-center gap-4">
+                        <!-- Preview -->
+                        <div class="w-16 h-16 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0">
+                            <img id="edit-avatar-preview" src="" alt="Preview" class="w-full h-full object-cover opacity-50">
+                        </div>
+
+                        <!-- Upload Button -->
+                        <div class="flex-1">
+                            <label for="edit-avatar-file" class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition text-sm font-bold border border-indigo-100">
+                                <i class="fa-solid fa-camera"></i> Choose Photo
+                            </label>
+                            <input type="file" id="edit-avatar-file" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+                            <p class="text-[10px] text-slate-400 mt-2">Max size 400x400px (Auto-resized)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 flex gap-3">
+                <button onclick="document.getElementById('edit-profile-modal').classList.add('hidden')" 
+                    class="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition">Cancel</button>
+                <button onclick="saveEditProfile()" 
+                    class="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-200">Save Changes</button>
+            </div>
+        </div>
+    </div>
 
     <div id="details-modal"
         class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm p-4">
@@ -317,7 +459,7 @@
                     this month.</div>
             </div>
 
-            <div class="p-4 bg-slate-50 border-t border-slate-200">
+            <div id="adv-add-container" class="p-4 bg-slate-50 border-t border-slate-200">
                 <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Add New Advance</p>
                 <div class="flex gap-2">
                     <label for="adv-new-date" class="sr-only">Date</label>

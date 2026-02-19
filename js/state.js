@@ -33,8 +33,15 @@ const state = {
     deletedItems: JSON.parse(localStorage.getItem('srf_deleted_items')) || [],
 
     // NOTIFICATIONS (Persistent)
-    notifications: JSON.parse(localStorage.getItem('srf_notifications')) || []
+    notifications: JSON.parse(localStorage.getItem('srf_notifications')) || [],
+
+    // USER ROLE (Persisted across sessions)
+    userRole: localStorage.getItem('srf_user_role') || 'owner'
 };
+
+// --- ROLE HELPERS ---
+window.canEdit = () => state.userRole === 'owner' || state.userRole === 'manager';
+window.isEmployee = () => state.userRole === 'employee';
 
 // --- HELPER: ADD NOTIFICATION ---
 window.addNotification = (notification) => {

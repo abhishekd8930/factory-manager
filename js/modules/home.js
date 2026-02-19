@@ -87,6 +87,7 @@ window.renderHome = () => {
     // Explicitly call the global render functions
     if (window.renderHomeCalendar) window.renderHomeCalendar();
     if (window.renderTodoList) window.renderTodoList();
+    if (window.renderHomeIssues) window.renderHomeIssues();
 
     // Start Auto-Scroll for Snapshots
     startSnapshotAutoScroll();
@@ -663,3 +664,58 @@ window.deleteHolidayAnnouncement = () => {
         if (window.renderAttendanceBook) window.renderAttendanceBook();
     }
 };
+
+// --- REPORTED ISSUES LOGIC ---
+
+window.renderHomeIssues = () => {
+    const list = document.getElementById('home-issues-list');
+    if (!list) return;
+
+    const allProblems = JSON.parse(localStorage.getItem('srf_unit_problems')) || [];
+    const openProblems = allProblems.filter(p => p.status === 'open').sort((a, b) => b.timestamp - a.timestamp);
+
+    if (openProblems.length === 0) {
+        list.innerHTML = `
+            <div class="flex flex-col items-center justify-center h-full text-slate-400 opacity-60 min-h-[200px]">
+                <i class="fa-regular fa-circle-check text-4xl mb-3"></i>
+                <p class="text-sm italic">All systems operational.</p>
+            </div>
+        `;
+    } else {
+        list.innerHTML = openProblems.map(p => {
+            const date = new Date(p.timestamp);
+            const now = new Date();
+            const diffMins = Math.floor((now - date) / 60000);
+            let timeAgo = dpTimeAgo(date);
+
+            return `
+            <div class="bg-red-50 p-3 rounded-xl border border-red-100 flex gap-3 items-start relative group hover:bg-red-100/50 transition">
+                <div class="w-8 h-8 rounded-full bg-white text-red-500 flex items-center justify-center shrink-0 shadow-sm text-xs border border-red-100 font-bold">
+                    ${p.unit ? p.unit[0].toUpperCase() : '!'}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex justify-between items-start mb-1">
+                        <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wide truncate">${p.unit}</h4>
+                        <span class="text-[10px] text-slate-400 bg-white px-1.5 py-0.5 rounded border border-slate-100 whitespace-nowrap">${timeAgo}</span>
+                    </div>
+                    <p class="text-sm text-slate-600 leading-snug break-words font-medium">${p.description}</p>
+                    <div class="mt-2 flex items-center gap-2">
+                         <span class="text-[10px] text-slate-400 flex items-center gap-1 bg-white px-1.5 py-0.5 rounded-full border border-slate-100">
+                            <i class="fa-solid fa-user text-slate-300"></i> ${p.reportedBy}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        `}).join('');
+    }
+};
+
+function dpTimeAgo(date) {
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - date) / 1000);
+
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    return `${Math.floor(diffInSeconds / 86400)}d ago`;
+}

@@ -4,6 +4,7 @@ const DEFAULT_CONFIG = {
     // --- 1. PERSONALIZATION ---
     // Change this to the name you want to see on the Home Screen
     OWNER_NAME: "Mr. Raghavendra",
+    OWNER_AVATAR: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80",
 
     // --- 2. SECURITY ---
     AUTH: {
@@ -29,5 +30,5 @@ const DEFAULT_CONFIG = {
     },
 
     // Garment Name (displayed in header/sidebar)
-    GARMENT_NAME: ""
+    GARMENT_NAME: "Sri Raghavendra Fashions"
 };

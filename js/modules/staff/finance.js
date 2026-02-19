@@ -16,6 +16,13 @@ window.openAdvanceModal = () => {
     document.getElementById('adv-new-date').value = state.today;
 
     renderAdvanceLog();
+
+    const addContainer = document.getElementById('adv-add-container');
+    if (addContainer) {
+        if (window.canEdit()) addContainer.classList.remove('hidden');
+        else addContainer.classList.add('hidden');
+    }
+
     document.getElementById('advance-modal').classList.remove('hidden');
 };
 
@@ -42,7 +49,9 @@ window.renderAdvanceLog = () => {
                     <td class="p-3 text-slate-600">${log.date}</td>
                     <td class="p-3 font-bold text-slate-700">${log.note || '-'}</td>
                     <td class="p-3 text-right font-bold text-red-500">₹${log.amount}</td>
-                    <td class="p-3 text-center"><button onclick="deleteAdvanceEntry(${index})" class="text-slate-300 hover:text-red-500 transition"><i class="fa-solid fa-trash"></i></button></td>
+                    <td class="p-3 text-center">
+                        ${window.canEdit() ? `<button onclick="deleteAdvanceEntry(${index})" class="text-slate-300 hover:text-red-500 transition"><i class="fa-solid fa-trash"></i></button>` : ''}
+                    </td>
                 </tr>`;
         });
     }
@@ -63,6 +72,7 @@ window.renderAdvanceLog = () => {
 };
 
 window.addAdvanceEntry = () => {
+    if (!window.canEdit()) return;
     const lId = getLedgerId();
     const date = document.getElementById('adv-new-date').value;
     const amount = document.getElementById('adv-new-amount').value;
@@ -82,6 +92,7 @@ window.addAdvanceEntry = () => {
 };
 
 window.deleteAdvanceEntry = (index) => {
+    if (!window.canEdit()) return;
     const lId = getLedgerId();
     if (state.staffLedgers[lId]?.advanceLog) {
         state.staffLedgers[lId].advanceLog.splice(index, 1);
@@ -90,6 +101,7 @@ window.deleteAdvanceEntry = (index) => {
 };
 
 window.saveFinancials = () => {
+    if (!window.canEdit()) return;
     const lId = getLedgerId();
     if (!state.staffLedgers[lId]) return;
     const salInput = document.getElementById('ledger-salary');
@@ -122,8 +134,8 @@ window.calculateSalary = () => {
     const ledgerId = getLedgerId();
     const advInput = document.getElementById('ledger-advance');
 
-    // 1. Save Advance if changed
-    if (advInput) {
+    // 1. Save Advance if changed (ONLY IF CAN EDIT)
+    if (advInput && window.canEdit()) {
         if (!state.staffLedgers[ledgerId]) state.staffLedgers[ledgerId] = {};
         state.staffLedgers[ledgerId].advance = advInput.value;
         localStorage.setItem('srf_staff_ledgers', JSON.stringify(state.staffLedgers));

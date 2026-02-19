@@ -68,6 +68,7 @@ window.filterUnit = (unitName) => {
     if (trackingSection) {
         trackingSection.dataset.unit = unitName;
         renderUnitProductionLog(unitName);
+        if (window.renderUnitProblems) renderUnitProblems(unitName);
     }
 
     // Filter Staff
@@ -210,4 +211,197 @@ window.deleteUnitLog = (id) => {
 
 window.closeUnitDetails = () => {
     document.getElementById('unit-details-panel').classList.add('hidden');
+};
+
+// --- Catalogue Selection Modal Logic ---
+
+window.openUnitCatalogueSelection = () => {
+    const staffView = document.getElementById('unit-staff-view');
+    const catalogueView = document.getElementById('unit-catalogue-view');
+    const grid = document.getElementById('unit-catalogue-grid');
+    const header = document.getElementById('unit-section-header');
+
+    if (!staffView || !catalogueView || !grid) return;
+
+    // Toggle Views
+    staffView.classList.add('hidden');
+    catalogueView.classList.remove('hidden');
+
+    // Update Header
+    if (header) header.innerText = "Select Item to Add";
+
+    // Get catalogues
+    let catalogues = JSON.parse(localStorage.getItem('catalogueItems')) || [];
+
+    // Filter out finished items
+    // Logic: If total pieces in 'Finishing' unit >= Total Ledger Pieces, hide it.
+    catalogues = catalogues.filter(item => {
+        const totalPlanned = (item.ledger || []).reduce((sum, row) => sum + (parseInt(row.total) || 0), 0);
+        if (totalPlanned === 0) return true; // Show if no plan yet
+
+        const totalFinished = (state.unitPiecesData || [])
+            .filter(log => log.unit === 'Finishing' && log.catalogueId === item.id)
+            .reduce((sum, log) => sum + (parseInt(log.count) || 0), 0);
+
+        return totalFinished < totalPlanned;
+    });
+
+    if (catalogues.length === 0) {
+        grid.innerHTML = `<div class="col-span-full text-center text-slate-400 italic py-8">No available items (All finished).</div>`;
+    } else {
+        grid.innerHTML = catalogues.map(item => {
+            const totalPcs = (item.ledger || []).reduce((sum, row) => sum + (parseInt(row.total) || 0), 0);
+            return `
+                <div onclick="selectCatalogueItemForLog('${item.id}', '${item.name}', ${totalPcs})" 
+                     class="bg-white border border-slate-200 rounded-xl overflow-hidden cursor-pointer hover:border-indigo-500 hover:shadow-md transition group relative">
+                    <div class="h-16 bg-slate-100 flex items-center justify-center relative overflow-hidden">
+                        ${item.src
+                    ? `<img src="${item.src}" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" alt="${item.name}">`
+                    : `<div class="flex flex-col items-center justify-center text-slate-300">
+                                 <i class="fa-regular fa-image text-lg mb-0.5"></i>
+                                 <span class="text-[8px] uppercase font-bold">No Image</span>
+                               </div>`
+                }
+                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition"></div>
+                    </div>
+                    <div class="p-3">
+                        <h4 class="text-slate-700 font-bold text-sm truncate">${item.name}</h4>
+                        <div class="flex justify-between items-center mt-1">
+                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">${item.brand || '-'}</span>
+                            <span class="bg-indigo-50 text-indigo-600 text-[10px] font-bold px-1.5 py-0.5 rounded">${totalPcs} Pcs</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+};
+
+window.closeCatalogueSelectionPanel = () => {
+    const staffView = document.getElementById('unit-staff-view');
+    const catalogueView = document.getElementById('unit-catalogue-view');
+    const header = document.getElementById('unit-section-header');
+
+    if (staffView && catalogueView) {
+        catalogueView.classList.add('hidden');
+        staffView.classList.remove('hidden');
+
+        // Reset Header
+        if (header) header.innerText = "Assigned Staff";
+    }
+};
+
+window.selectCatalogueItemForLog = (id, name, total) => {
+    const trackingSection = document.getElementById('unit-tracking-section');
+    const unitName = trackingSection ? trackingSection.dataset.unit : null;
+
+    if (!unitName) return;
+
+    if (confirm(`Add "${name}" (${total} Pcs) to ${unitName} production log?`)) {
+        const newEntry = {
+            id: Date.now().toString(),
+            unit: unitName,
+            count: parseInt(total) || 0,
+            catalogueId: id,
+            catalogueName: name,
+            date: new Date().toISOString().split('T')[0],
+            timestamp: Date.now(),
+            addedBy: 'Manager'
+        };
+
+        if (!state.unitPiecesData) state.unitPiecesData = [];
+        state.unitPiecesData.push(newEntry);
+
+        // Save & Sync
+        localStorage.setItem('srf_unit_pieces', JSON.stringify(state.unitPiecesData));
+        if (window.saveToCloud) window.saveToCloud('unitPiecesData', state.unitPiecesData);
+
+        // Update UI
+        renderUnitProductionLog(unitName);
+        renderUnitsView(); // Update main card counts
+
+        // Return to staff view
+        closeCatalogueSelectionPanel();
+    }
+};
+
+// --- PROBLEM PANEL LOGIC ---
+
+window.renderUnitProblems = (unitName) => {
+    const list = document.getElementById('unit-problems-list');
+    if (!list) return;
+
+    const allProblems = JSON.parse(localStorage.getItem('srf_unit_problems')) || [];
+    const unitProblems = allProblems.filter(p => p.unit === unitName && p.status === 'open').sort((a, b) => b.timestamp - a.timestamp);
+
+    if (unitProblems.length === 0) {
+        list.innerHTML = `<p class="text-center text-slate-400 italic text-sm py-8">No issues reported.</p>`;
+    } else {
+        list.innerHTML = unitProblems.map(p => `
+            <div class="bg-white p-3 rounded-xl border border-red-100 shadow-sm flex justify-between items-start">
+                <div>
+                    <p class="text-sm text-slate-700 font-medium">${p.description}</p>
+                    <div class="flex items-center gap-2 mt-2">
+                        <span class="text-[10px] bg-red-50 text-red-600 px-2 py-0.5 rounded font-bold uppercase">${p.reportedBy}</span>
+                        <span class="text-[10px] text-slate-400">${new Date(p.timestamp).toLocaleDateString()} ${new Date(p.timestamp).toLocaleTimeString()}</span>
+                    </div>
+                </div>
+                <button onclick="resolveUnitProblem('${p.id}')" class="text-slate-300 hover:text-green-600 transition" title="Resolve Issue">
+                    <i class="fa-solid fa-check-circle text-lg"></i>
+                </button>
+            </div>
+        `).join('');
+    }
+};
+
+window.reportUnitProblem = () => {
+    const trackingSection = document.getElementById('unit-tracking-section');
+    const unitName = trackingSection ? trackingSection.dataset.unit : null;
+    const input = document.getElementById('unit-problem-input');
+
+    if (!unitName || !input || !input.value.trim()) {
+        alert("Please select a unit and describe the problem.");
+        return;
+    }
+
+    const newProblem = {
+        id: Date.now().toString(),
+        unit: unitName,
+        description: input.value.trim(),
+        reportedBy: (window.auth?.currentUser?.email || 'Employee').split('@')[0],
+        timestamp: Date.now(),
+        status: 'open'
+    };
+
+    const problems = JSON.parse(localStorage.getItem('srf_unit_problems')) || [];
+    problems.push(newProblem);
+
+    // Save & Sync
+    localStorage.setItem('srf_unit_problems', JSON.stringify(problems));
+    if (window.saveToCloud) window.saveToCloud('unitProblems', problems);
+
+    // Update UI
+    input.value = '';
+    renderUnitProblems(unitName);
+};
+
+window.resolveUnitProblem = (id) => {
+    if (!confirm("Mark this issue as resolved?")) return;
+
+    let problems = JSON.parse(localStorage.getItem('srf_unit_problems')) || [];
+    const idx = problems.findIndex(p => p.id === id);
+
+    if (idx !== -1) {
+        problems[idx].status = 'resolved';
+        problems[idx].resolvedAt = Date.now();
+        problems[idx].resolvedBy = window.auth?.currentUser?.email || 'Manager';
+
+        // Save & Sync
+        localStorage.setItem('srf_unit_problems', JSON.stringify(problems));
+        if (window.saveToCloud) window.saveToCloud('unitProblems', problems);
+
+        const trackingSection = document.getElementById('unit-tracking-section');
+        const unitName = trackingSection ? trackingSection.dataset.unit : null;
+        if (unitName) renderUnitProblems(unitName);
+    }
 };

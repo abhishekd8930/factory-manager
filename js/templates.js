@@ -28,7 +28,7 @@ export const Templates = {
 
             <!-- Footer Copyright -->
             <div class="absolute bottom-6 text-slate-400 text-xs font-medium">
-                © 2026 Sri Raghavendra Fashions
+                © 2026 Abhi Company
             </div>
         </div>
 
@@ -42,8 +42,9 @@ export const Templates = {
                         <span class="text-xl font-bold text-slate-800">Smart Manager</span>
                     </div>
 
-                    <h2 class="text-slate-900 text-3xl font-bold mb-3">Sign in to your account</h2>
-                    <p class="text-slate-500">Please enter your details to continue.</p>
+                    <h2 id="login-garment-name" class="text-2xl font-bold text-indigo-500 uppercase tracking-[0.2em] mb-4 leading-tight text-center md:text-center w-full">Abhi Company</h2>
+                    <h2 class="text-slate-900 text-3xl font-bold mb-3 text-center md:text-left">Sign in to your account</h2>
+                    <p class="text-slate-500 text-center md:text-left">Please enter your details to continue.</p>
                 </div>
             <!-- Role Selection -->
             <div class="flex p-1 bg-slate-100/80 rounded-2xl mb-8 border border-slate-200 relative overflow-hidden">
@@ -160,8 +161,9 @@ export const Templates = {
                     <div id="header-noti-badge" class="hidden w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white absolute top-1.5 right-2"></div>
                 </button>
 
-                <button onclick="window.openProfile()" class="w-9 h-9 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm border-2 border-white shadow-sm hover:scale-105 active:scale-95 transition" title="Profile">
-                    ${(window.CONFIG && window.CONFIG.OWNER_NAME) ? window.CONFIG.OWNER_NAME[0].toUpperCase() : 'M'}
+                <button id="header-profile-btn" onclick="window.openProfile()" class="w-9 h-9 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm border-2 border-white shadow-sm hover:scale-105 active:scale-95 transition p-0 overflow-hidden" title="Profile">
+                    <img id="header-profile-img" src="" alt="Profile" class="w-full h-full object-cover hidden">
+                    <span id="header-profile-initial">${(window.CONFIG && window.CONFIG.OWNER_NAME) ? window.CONFIG.OWNER_NAME[0].toUpperCase() : 'M'}</span>
                 </button>
             </div>
         </header>
@@ -205,10 +207,10 @@ export const Templates = {
                         <span class="nav-label hidden">Analytics</span> <span class="nav-label ml-auto text-[10px] opacity-50 hidden">Alt+6</span>
                     </a>
 
-                    <a href="#/accounts" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3 group justify-center" id="nav-accounts">
+                    ${window.canEdit() ? `<a href="#/accounts" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3 group justify-center" id="nav-accounts">
                          <i class="fa-solid fa-file-invoice-dollar w-5 text-center"></i>
                          <span class="nav-label hidden">Expenses</span>
-                    </a>
+                    </a>` : ''}
                     
 
                 </nav>
@@ -219,10 +221,10 @@ export const Templates = {
 
                 <!-- Bottom Status -->
                 <div class="p-3 border-t border-slate-100 bg-slate-50/50">
-                     <a href="#/settings" class="nav-btn w-full mb-3 text-left p-3 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-md transition font-bold text-sm flex items-center gap-3 group justify-center">
+                     ${window.canEdit() ? `<a href="#/settings" class="nav-btn w-full mb-3 text-left p-3 rounded-full bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 hover:shadow-md transition font-bold text-sm flex items-center gap-3 group justify-center">
                         <i class="fa-solid fa-gear group-hover:rotate-90 transition duration-500 w-5 text-center"></i>
                         <span class="nav-label flex-1 text-sm hidden">App Settings</span>
-                    </a>
+                    </a>` : ''}
 
                     <!-- Restore Cloud Status -->
                     <div class="bg-white rounded-xl p-3 border border-slate-200 shadow-sm flex items-center gap-3 mb-2 justify-center group hover:border-indigo-200 transition">
@@ -282,15 +284,7 @@ export const Templates = {
                     <span id="greet-msg">Hello,</span> <span id="greet-name" class="font-bold">Manager</span>
                 </h1>
                 <p class="text-slate-500 max-w-lg mb-6">Start now to set your priorities and progress toward your goals with a clear, structured plan.</p>
-                <div class="flex flex-wrap justify-center md:justify-start gap-2">
-                    <button onclick="window.openProfile()" class="bg-blue-600 text-white font-medium py-2.5 px-6 rounded-full hover:bg-blue-700 transition inline-block">
-                        View Profile
-                    </button>
-                    <button onclick="window.showNotifications()" class="ml-2 bg-slate-100 text-slate-600 font-medium py-2.5 px-6 rounded-full hover:bg-slate-200 transition inline-block relative">
-                        <div id="btn-noti-badge" class="hidden w-3 h-3 bg-red-500 rounded-full border-2 border-slate-100 absolute top-0 right-0"></div>
-                        <i class="fa-solid fa-bell mr-2"></i> Notifications
-                    </button>
-                </div>
+
             </div>
             <div class="shrink-0">
                 <img src="assets/images/welcome-parrot.jpg" alt="Welcome" class="h-40 w-auto object-contain drop-shadow-sm hover:scale-105 transition duration-500 rounded-[32px]">
@@ -372,61 +366,83 @@ export const Templates = {
                 </div>
             </div>
 
-            <!-- Recommendation Panel (White Theme) -->
-            <div class="flex flex-col">
-                <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2 text-lg">
-                    <i class="fa-solid fa-lightbulb text-yellow-500"></i> Smart Recommendations
-                </h3>
-                <div class="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 flex-1 flex flex-col relative group hover:shadow-md transition">
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <!-- Insight Item 1 -->
-                        <div class="flex items-start gap-4 border-b border-slate-50 pb-4 last:border-0 last:pb-0">
-                            <div class="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 shrink-0">
-                                <i class="fa-solid fa-arrow-trend-up"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-slate-800 text-sm mb-0.5">Production Surge</h4>
-                                <p class="text-sm text-slate-500 leading-relaxed">
-                                    Production is <strong class="text-slate-700">12% higher</strong> than last Tuesday. Team "A" is outperforming targets.
-                                </p>
+            <!-- Issues & Recommendations Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- 1. Reported Issues Panel (New) -->
+                <div class="lg:col-span-1 flex flex-col">
+                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2 text-lg">
+                        <i class="fa-solid fa-triangle-exclamation text-red-500"></i> Reported Issues
+                    </h3>
+                    <div class="bg-white p-6 rounded-[32px] shadow-sm border border-slate-100 flex-1 flex flex-col relative h-full min-h-[300px]">
+                        <div id="home-issues-list" class="space-y-4 overflow-y-auto max-h-[400px] pr-2 custom-scrollbar flex-1">
+                            <!-- Issues injected here -->
+                            <div class="flex flex-col items-center justify-center h-full text-slate-400 opacity-60">
+                                <i class="fa-regular fa-circle-check text-4xl mb-3"></i>
+                                <p class="text-sm italic">All systems operational.</p>
                             </div>
                         </div>
-
-                        <!-- Insight Item 2 -->
-                        <div class="flex items-start gap-4 border-b border-slate-50 pb-4 last:border-0 last:pb-0">
-                            <div class="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-500 shrink-0">
-                                <i class="fa-solid fa-triangle-exclamation"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-slate-800 text-sm mb-0.5">Stock Alert</h4>
-                                <p class="text-sm text-slate-500 leading-relaxed">
-                                    <strong class="text-slate-700">Grey Thread</strong> count is low. Recommend reordering within 2 days to avoid delays.
-                                </p>
-                            </div>
-                        </div>
-
-                         <!-- Insight Item 3 -->
-                        <div class="flex items-start gap-4">
-                            <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 shrink-0">
-                                <i class="fa-solid fa-cloud-sun"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-slate-800 text-sm mb-0.5">Weather Update</h4>
-                                <p class="text-sm text-slate-500 leading-relaxed">
-                                    Rain expected tomorrow. Ensure outdoor drying area is cleared by 4 PM.
-                                </p>
-                            </div>
+                         <div class="mt-4 pt-4 border-t border-slate-50 text-center">
+                            <a href="#/units" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition">Manage Units <i class="fa-solid fa-arrow-right ml-1"></i></a>
                         </div>
                     </div>
+                </div>
 
-                    <div class="mt-auto pt-6 border-t border-slate-100 flex justify-between items-center">
-                        <span class="text-xs text-slate-400 font-medium">Updated 5 mins ago</span>
-                        <button class="text-indigo-600 text-sm font-bold hover:bg-indigo-50 px-4 py-2 rounded-lg transition flex items-center gap-2">
-                            View All Insights <i class="fa-solid fa-arrow-right"></i>
-                        </button>
+                <!-- 2. Recommendation Panel (Existing) -->
+                <div class="lg:col-span-2 flex flex-col">
+                    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2 text-lg">
+                        <i class="fa-solid fa-lightbulb text-yellow-500"></i> Smart Recommendations
+                    </h3>
+                    <div class="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 flex-1 flex flex-col relative group hover:shadow-md transition">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <!-- Insight Item 1 -->
+                            <div class="flex items-start gap-4 border-b border-slate-50 pb-4 last:border-0 last:pb-0">
+                                <div class="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 shrink-0">
+                                    <i class="fa-solid fa-arrow-trend-up"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-800 text-sm mb-0.5">Production Surge</h4>
+                                    <p class="text-sm text-slate-500 leading-relaxed">
+                                        Production is <strong class="text-slate-700">12% higher</strong> than last Tuesday. Team "A" is outperforming targets.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Insight Item 2 -->
+                            <div class="flex items-start gap-4 border-b border-slate-50 pb-4 last:border-0 last:pb-0">
+                                <div class="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-500 shrink-0">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-800 text-sm mb-0.5">Stock Alert</h4>
+                                    <p class="text-sm text-slate-500 leading-relaxed">
+                                        <strong class="text-slate-700">Grey Thread</strong> count is low. Recommend reordering within 2 days to avoid delays.
+                                    </p>
+                                </div>
+                            </div>
+
+                             <!-- Insight Item 3 -->
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 shrink-0">
+                                    <i class="fa-solid fa-cloud-sun"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-800 text-sm mb-0.5">Weather Update</h4>
+                                    <p class="text-sm text-slate-500 leading-relaxed">
+                                        Rain expected tomorrow. Ensure outdoor drying area is cleared by 4 PM.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-auto pt-6 border-t border-slate-100 flex justify-between items-center">
+                            <span class="text-xs text-slate-400 font-medium">Updated 5 mins ago</span>
+                            <button class="text-indigo-600 text-sm font-bold hover:bg-indigo-50 px-4 py-2 rounded-lg transition flex items-center gap-2">
+                                View All Insights <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+
                     </div>
-
                 </div>
             </div>
         </div>
@@ -494,63 +510,70 @@ export const Templates = {
     catalogue: () => `
     <div id="catalogue" class="fade-in max-w-7xl mx-auto">
         <div id="catalogue-list-view">
-            <div class="text-center mb-12 mt-8">
-                <h1 class="text-2xl font-normal text-slate-800 mb-6 tracking-tight">
-                    Production Catalogue<br>& Specifications
-                </h1>
-                <p class="text-slate-500 max-w-2xl mx-auto text-xs mb-8 leading-relaxed">
-                    Reference guide for manufacturing standards. Access detailed composition, stitching, and finishing specifications to ensure production consistency.
-                </p>
-                <div class="max-w-2xl mx-auto mb-8 relative">
-                    <div class="relative">
-                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
-                        <input type="text" id="catalogue-search-input" oninput="handleCatalogueSearch(this.value)" placeholder="Search catalog (name, date, fabric...)" class="w-full !bg-white border-2 border-transparent focus:border-indigo-500/20 rounded-full py-4 pl-12 pr-6 text-slate-700 outline-none focus:!ring-4 focus:!ring-indigo-500/10 shadow-sm transition hover:shadow-md text-lg placeholder:text-slate-400">
-                        <button class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-2">
-                            <i class="fa-solid fa-arrow-right"></i>
-                        </button>
-                    </div>
+            <!-- New Compact Header -->
+            <div class="flex flex-col md:flex-row justify-between items-end mb-6 mt-6 gap-4 border-b border-slate-100 pb-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-800 tracking-tight">Production Catalogue</h1>
+                    <p class="text-slate-500 text-sm mt-1">Manage manufacturing standards and specifications.</p>
                 </div>
-                <div class="flex flex-wrap justify-center gap-3 relative z-40">
-                    <div class="relative group">
-                        <button id="filter-btn-fabric" onclick="toggleFilterDropdown('fabric')" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-2 shadow-sm transition">
-                            Fabric <i class="fa-solid fa-caret-down text-xs"></i>
-                        </button>
-                        <ul id="filter-dropdown-fabric" class="hidden absolute top-12 left-0 w-48 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 max-h-60 overflow-y-auto"></ul>
+                <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+                    <!-- Expandable Search Wrapper -->
+                    <div class="group relative transition-all duration-300 ease-out w-10 focus-within:w-48 lg:focus-within:w-64 h-10 bg-white rounded-full shadow-sm border border-slate-200 focus-within:border-indigo-500 overflow-hidden flex items-center shrink-0">
+                         <!-- Icon (Absolute Left) -->
+                         <i class="fa-solid fa-magnifying-glass absolute left-3 text-slate-400 group-focus-within:text-indigo-500 transition-colors pointer-events-none text-sm"></i>
+                         <!-- Input (Full Width, padded left) -->
+                         <input type="text" 
+                                id="catalogue-search-input"
+                                oninput="handleCatalogueSearch(this.value)" 
+                                class="w-full h-full pl-10 pr-4 text-sm bg-transparent outline-none text-slate-700 placeholder-transparent focus:placeholder-slate-400 cursor-pointer focus:cursor-text"
+                                placeholder="Search catalog...">
                     </div>
-                    <div class="relative group">
-                        <button id="filter-btn-pattern" onclick="toggleFilterDropdown('pattern')" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-2 shadow-sm transition">
-                            Pattern <i class="fa-solid fa-caret-down text-xs"></i>
-                        </button>
-                        <ul id="filter-dropdown-pattern" class="hidden absolute top-12 left-0 w-48 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 max-h-60 overflow-y-auto"></ul>
-                    </div>
-                    <div class="relative group">
-                        <button id="filter-btn-brand" onclick="toggleFilterDropdown('brand')" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-2 shadow-sm transition">
-                            Brand <i class="fa-solid fa-caret-down text-xs"></i>
-                        </button>
-                        <ul id="filter-dropdown-brand" class="hidden absolute top-12 left-0 w-48 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 max-h-60 overflow-y-auto"></ul>
-                    </div>
-                    <div class="relative group">
-                        <button id="filter-btn-fitting" onclick="toggleFilterDropdown('fitting')" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-2 shadow-sm transition">
-                            Fitting <i class="fa-solid fa-caret-down text-xs"></i>
-                        </button>
-                        <ul id="filter-dropdown-fitting" class="hidden absolute top-12 left-0 w-48 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 max-h-60 overflow-y-auto"></ul>
-                    </div>
-                     <div class="relative group">
-                        <button id="filter-btn-duration" onclick="toggleFilterDropdown('duration')" class="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-2 shadow-sm transition">
-                            Duration <i class="fa-solid fa-caret-down text-xs"></i>
-                        </button>
-                        <ul id="filter-dropdown-duration" class="hidden absolute top-12 left-0 w-48 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 max-h-60 overflow-y-auto"></ul>
-                    </div>
+                    
+                    <!-- Full Upload Button (Right) -->
+                    ${window.canEdit() ? `<button onclick="document.getElementById('catalogue-upload').click()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold shadow-sm transition flex items-center gap-2 text-sm whitespace-nowrap shrink-0">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Upload Image
+                    </button>
+                    <input type="file" id="catalogue-upload" class="hidden" accept="image/*" onchange="handleCatalogueUpload(this)">` : ''}
                 </div>
-                <div id="catalogue-result-count" class="mt-8 text-left text-slate-500 font-medium"></div>
             </div>
-            <div class="flex justify-between items-center max-w-7xl mx-auto mb-6 px-2">
-                <h2 class="text-2xl font-bold text-slate-800">My Catalogue</h2>
-                <button onclick="document.getElementById('catalogue-upload').click()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-full font-bold shadow-lg transition flex items-center gap-2">
-                    <i class="fa-solid fa-cloud-arrow-up"></i> Upload Image
-                </button>
-                <input type="file" id="catalogue-upload" class="hidden" accept="image/*" onchange="handleCatalogueUpload(this)">
+
+            <!-- Compact Filters Row -->
+            <div class="flex flex-wrap gap-2 mb-6 items-center">
+                <span class="text-xs font-bold text-slate-400 uppercase mr-2"><i class="fa-solid fa-filter"></i> Filters:</span>
+                
+                <div class="relative group">
+                    <button id="filter-btn-fabric" onclick="toggleFilterDropdown('fabric')" class="px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-2 shadow-sm transition">
+                        Fabric <i class="fa-solid fa-caret-down text-[10px]"></i>
+                    </button>
+                    <ul id="filter-dropdown-fabric" class="hidden absolute top-9 left-0 w-48 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 max-h-60 overflow-y-auto"></ul>
+                </div>
+                <div class="relative group">
+                    <button id="filter-btn-pattern" onclick="toggleFilterDropdown('pattern')" class="px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-2 shadow-sm transition">
+                        Pattern <i class="fa-solid fa-caret-down text-[10px]"></i>
+                    </button>
+                    <ul id="filter-dropdown-pattern" class="hidden absolute top-9 left-0 w-48 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 max-h-60 overflow-y-auto"></ul>
+                </div>
+                <div class="relative group">
+                    <button id="filter-btn-brand" onclick="toggleFilterDropdown('brand')" class="px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-2 shadow-sm transition">
+                        Brand <i class="fa-solid fa-caret-down text-[10px]"></i>
+                    </button>
+                    <ul id="filter-dropdown-brand" class="hidden absolute top-9 left-0 w-48 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 max-h-60 overflow-y-auto"></ul>
+                </div>
+                <div class="relative group">
+                    <button id="filter-btn-fitting" onclick="toggleFilterDropdown('fitting')" class="px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-2 shadow-sm transition">
+                        Fitting <i class="fa-solid fa-caret-down text-[10px]"></i>
+                    </button>
+                    <ul id="filter-dropdown-fitting" class="hidden absolute top-9 left-0 w-48 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 max-h-60 overflow-y-auto"></ul>
+                </div>
+                 <div class="relative group">
+                    <button id="filter-btn-duration" onclick="toggleFilterDropdown('duration')" class="px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-2 shadow-sm transition">
+                        Duration <i class="fa-solid fa-caret-down text-[10px]"></i>
+                    </button>
+                    <ul id="filter-dropdown-duration" class="hidden absolute top-9 left-0 w-48 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 max-h-60 overflow-y-auto"></ul>
+                </div>
             </div>
+
+            <div id="catalogue-result-count" class="mb-6 text-left text-slate-500 font-medium text-xs hidden"></div>
             <div id="catalogue-empty" class="text-center py-20 hidden">
                 <div class="w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-6">
                     <i class="fa-regular fa-images text-4xl text-indigo-300"></i>
@@ -565,7 +588,7 @@ export const Templates = {
                 <button onclick="closeCatalogueDetail()" class="text-slate-500 hover:text-slate-800 transition flex items-center gap-2 font-medium">
                     <i class="fa-solid fa-arrow-left"></i> Back to Catalog
                 </button>
-                <div class="relative">
+                ${window.canEdit() ? `<div class="relative">
                     <button onclick="toggleCatalogueSettings()" class="w-10 h-10 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-500 transition">
                         <i class="fa-solid fa-ellipsis-vertical"></i>
                     </button>
@@ -583,7 +606,7 @@ export const Templates = {
                             <i class="fa-solid fa-trash"></i> Remove
                         </button>
                     </div>
-                </div>
+                </div>` : ''}
             </div>
             <input type="file" id="catalogue-page-upload" class="hidden" accept="image/*" onchange="handlePageUpload(this)">
             <h1 id="detail-title" class="text-2xl md:text-3xl font-bold text-slate-800 mb-6 text-center tracking-tight">Item Name</h1>
@@ -667,9 +690,9 @@ export const Templates = {
                         <div class="lg:col-span-2 flex flex-col border-l border-slate-100 pl-8">
                             <div class="flex justify-between items-center mb-6">
                                 <h2 class="text-lg font-bold text-slate-800">Cutting Output</h2>
-                                <button onclick="addCatalogueLedgerRow()" class="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg text-sm font-bold hover:bg-indigo-100 transition flex items-center gap-2">
+                                ${window.canEdit() ? `<button onclick="addCatalogueLedgerRow()" class="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg text-sm font-bold hover:bg-indigo-100 transition flex items-center gap-2">
                                     <i class="fa-solid fa-plus"></i> Add Row
-                                </button>
+                                </button>` : ''}
                             </div>
                             <div class="overflow-x-auto border rounded-xl border-slate-200">
                                 <table class="w-full text-sm text-left">
@@ -694,41 +717,158 @@ export const Templates = {
 
 
 
-                <!-- Tab: 3D Pattern View -->
+                <!-- Tab: Pattern View (SVG) -->
                 <div id="tab-content-3d" class="hidden">
-                    <div class="flex flex-col md:flex-row gap-6 h-[500px]">
-                        <!-- Controls -->
-                        <div class="w-full md:w-56 bg-slate-50 rounded-xl p-6 border border-slate-100 flex flex-col gap-4">
-                            <h3 class="font-bold text-slate-700 mb-2">Pattern Options</h3>
-                            
-                            <label class="flex items-center gap-3 p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:border-indigo-300 transition">
-                                <input type="checkbox" id="chk-3d-flap" onchange="update3DScene()" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
-                                <span class="text-sm font-medium text-slate-700">Box Flap</span>
-                            </label>
+                    <style>
+                        /* Interactive Pattern Editor Styles */
+                        .pattern-editor-container {
+                            background-color: white; 
+                            border: 1px solid #e2e8f0; 
+                            border-radius: 16px;
+                            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                            position: relative; 
+                            overflow: hidden;
+                            width: 100%; 
+                            max-width: 900px;
+                            margin: 0 auto;
+                            display: flex; 
+                            flex-direction: column;
+                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        }
 
-                            <label class="flex items-center gap-3 p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:border-indigo-300 transition">
-                                <input type="checkbox" id="chk-3d-box" onchange="update3DScene()" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
-                                <span class="text-sm font-medium text-slate-700">Box Style</span>
-                            </label>
+                        .pe-header {
+                            display: flex; justify-content: space-between; align-items: center;
+                            padding: 15px 25px; background-color: #f8f9fa; border-bottom: 1px solid #eee;
+                        }
+                        .pe-header h2 { margin: 0; font-size: 16px; font-weight: 700; color: #334155; }
 
-                            <div class="mt-auto">
-                                <p class="text-xs text-slate-400">
-                                    <i class="fa-solid fa-mouse me-1"></i> left click to rotate<br>
-                                    <i class="fa-solid fa-computer-mouse me-1"></i> scroll to zoom
-                                </p>
-                            </div>
+                        .pe-workspace { position: relative; display: flex; width: 100%; height: 500px; background-color: #f1f5f9; }
+                        .pe-svg-canvas { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+
+                        /* HOTSPOT STYLES */
+                        .hotspot { fill: transparent; cursor: pointer; transition: fill 0.2s ease; }
+                        .hotspot:hover { fill: rgba(79, 70, 229, 0.2); } /* Indigo-600 with opacity */
+                        .hotspot-round { fill: transparent; cursor: pointer; transition: fill 0.2s ease; border-radius: 50%; }
+                        .hotspot-round:hover { fill: rgba(79, 70, 229, 0.4); }
+
+                        /* Options Panel */
+                        .pe-options-panel {
+                            display: none; position: absolute; right: 0; top: 0;
+                            width: 320px; height: 100%; background: #ffffff; border-left: 1px solid #e2e8f0;
+                            padding: 20px; box-sizing: border-box; box-shadow: -4px 0 15px rgba(0,0,0,0.05);
+                            z-index: 10;
+                        }
+                        .pe-options-panel.active { display: block; animation: slideInPanel 0.3s ease forwards; }
+                        @keyframes slideInPanel { from { transform: translateX(50px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+                        
+                        .pe-back-btn { 
+                            background: none; border: none; color: #4f46e5; cursor: pointer; 
+                            font-size: 13px; padding: 0; margin-bottom: 15px; font-weight: 600;
+                            display: flex; align-items: center; gap: 5px;
+                        }
+                        .pe-back-btn:hover { text-decoration: underline; }
+                        
+                        .pe-options-panel h3 { margin: 0 0 15px 0; color: #1e293b; font-size: 15px; font-weight: 700; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+                        
+                        .pe-option-item {
+                            display: flex; align-items: center; padding: 10px 12px; margin-bottom: 8px;
+                            background: white; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer;
+                            transition: all 0.2s;
+                        }
+                        .pe-option-item:hover { border-color: #4f46e5; background: #eef2ff; }
+                        .pe-option-item input { margin-right: 10px; accent-color: #4f46e5; }
+                        .pe-option-label { font-size: 13px; color: #334155; font-weight: 500; }
+
+                        /* Standard SVG Styles */
+                        .pant-fill { fill: #cbd5e1; transition: fill 0.3s; } 
+                        .pe-svg-canvas:hover .pant-fill { fill: #d1d5db; }
+                        .outline { fill: none; stroke: #334155; stroke-width: 1.5; stroke-linejoin: round; }
+                        .detail-line { fill: none; stroke: #334155; stroke-width: 1; stroke-linejoin: round; }
+                        .crease-line { fill: none; stroke: #334155; stroke-width: 0.5; opacity: 0.4; }
+                        .stitch-line { fill: none; stroke: #475569; stroke-width: 0.8; stroke-dasharray: 2, 2; }
+                        .title-text { font-family: sans-serif; font-size: 12px; fill: #64748b; text-anchor: middle; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;}
+                    </style>
+
+                    <div class="pattern-editor-container">
+                        <div class="pe-header">
+                            <h2>Interactive Pattern Configuration</h2>
+                            <div class="text-xs text-slate-400 font-medium">Click on parts to edit</div>
                         </div>
 
-                        <!-- Canvas -->
-                        <div class="flex-1 bg-slate-900 rounded-xl overflow-hidden relative shadow-inner" id="pattern-canvas-container">
-                            <div id="pattern-canvas" class="w-full h-full"></div>
-                            <div class="absolute bottom-4 right-4 bg-black/50 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm pointer-events-none">
-                                Three.js Viewer
+                        <div class="pe-workspace">
+                            <div class="pe-svg-canvas">
+                                <svg viewBox="0 0 700 450" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" id="pattern-svg">
+                                    
+                                    <g id="front-view-group" transform="translate(80, 50)" style="transition: all 0.5s ease;">
+                                        <path class="pant-fill outline" d="M 60 20 L 200 20 C 205 60, 215 120, 205 340 L 155 340 L 130 150 L 105 340 L 55 340 C 45 120, 55 60, 60 20 Z" />
+                                        <path class="pant-fill outline" d="M 58 20 L 202 20 L 204 40 L 56 40 Z" />
+                                        <line class="detail-line" x1="130" y1="20" x2="130" y2="40" /> 
+                                        <circle cx="140" cy="30" r="4" fill="#334155" stroke="#1e293b" stroke-width="0.5"/>
+                                        <rect x="85" y="18" width="8" height="24" class="pant-fill outline" />
+                                        <rect x="167" y="18" width="8" height="24" class="pant-fill outline" />
+                                        <path class="stitch-line" d="M 130 42 L 130 115 C 130 132, 118 132, 112 125" />
+                                        <line class="detail-line" x1="130" y1="40" x2="130" y2="145" /> 
+                                        <path class="detail-line" d="M 80 40 L 52 110" /> <path class="stitch-line" d="M 86 40 L 58 108" />
+                                        <path class="detail-line" d="M 180 40 L 208 110" /> <path class="stitch-line" d="M 174 40 L 202 108" />
+                                        <path class="detail-line" d="M 125 150 L 105 135" opacity="0.6"/> <path class="detail-line" d="M 135 150 L 155 135" opacity="0.6"/>
+                                        <line class="crease-line" x1="92" y1="150" x2="80" y2="338" /> <line class="crease-line" x1="168" y1="150" x2="180" y2="338" /> 
+                                        <path class="pant-fill outline" d="M 53 340 L 107 340 L 107 355 L 53 355 Z" />
+                                        <path class="pant-fill outline" d="M 153 340 L 207 340 L 207 355 L 153 355 Z" />
+                                        <text x="130" y="390" class="title-text">FRONT VIEW</text>
+
+                                        <!-- Hotspots -->
+                                        <path class="hotspot" d="M 60 20 L 200 20 C 205 60, 215 120, 205 340 L 155 340 L 130 150 L 105 340 L 55 340 C 45 120, 55 60, 60 20 Z" onclick="showDesignOptions('mainBody', 'front')" />
+                                        <rect x="56" y="20" width="148" height="20" class="hotspot" onclick="showDesignOptions('waistband', 'front')" />
+                                        <polygon points="50,40 85,40 85,115 50,115" class="hotspot" onclick="showDesignOptions('frontPocket', 'front')" />
+                                        <polygon points="175,40 210,40 210,115 175,115" class="hotspot" onclick="showDesignOptions('frontPocket', 'front')" />
+                                        <rect x="50" y="335" width="60" height="25" class="hotspot" onclick="showDesignOptions('bottom', 'front')" />
+                                        <rect x="150" y="335" width="60" height="25" class="hotspot" onclick="showDesignOptions('bottom', 'front')" />
+                                        <rect x="80" y="15" width="18" height="30" class="hotspot" onclick="showDesignOptions('beltLoop', 'front')" />
+                                        <rect x="162" y="15" width="18" height="30" class="hotspot" onclick="showDesignOptions('beltLoop', 'front')" />
+                                        <circle cx="140" cy="30" r="10" class="hotspot-round" onclick="showDesignOptions('button', 'front')" />
+                                    </g>
+
+                                    <g id="back-view-group" transform="translate(380, 50)" style="transition: all 0.5s ease;">
+                                        <path class="pant-fill outline" d="M 60 20 L 200 20 C 205 60, 215 120, 205 340 L 155 340 L 130 150 L 105 340 L 55 340 C 45 120, 55 60, 60 20 Z" />
+                                        <path class="pant-fill outline" d="M 58 20 L 202 20 L 204 40 L 56 40 Z" />
+                                        <rect x="65" y="18" width="8" height="24" class="pant-fill outline" />
+                                        <rect x="126" y="18" width="8" height="24" class="pant-fill outline" />
+                                        <rect x="185" y="18" width="8" height="24" class="pant-fill outline" />
+                                        <line class="detail-line" x1="130" y1="40" x2="130" y2="150" />
+                                        <line class="stitch-line" x1="126" y1="40" x2="126" y2="148" />
+                                        <path class="detail-line" d="M 70 75 L 115 75 L 115 80 L 70 80 Z" />
+                                        <path class="detail-line" d="M 145 75 L 190 75 L 190 80 L 145 80 Z" />
+                                        <circle cx="92.5" cy="85" r="2.5" fill="#333" /> 
+                                        <path class="pant-fill outline" d="M 53 340 L 107 340 L 107 355 L 53 355 Z" />
+                                        <path class="pant-fill outline" d="M 153 340 L 207 340 L 207 355 L 153 355 Z" />
+                                        <text x="130" y="390" class="title-text">BACK VIEW</text>
+
+                                        <!-- Hotspots -->
+                                        <path class="hotspot" d="M 60 20 L 200 20 C 205 60, 215 120, 205 340 L 155 340 L 130 150 L 105 340 L 55 340 C 45 120, 55 60, 60 20 Z" onclick="showDesignOptions('mainBody', 'back')" />
+                                        <rect x="56" y="20" width="148" height="20" class="hotspot" onclick="showDesignOptions('waistband', 'back')" />
+                                        <rect x="50" y="335" width="60" height="25" class="hotspot" onclick="showDesignOptions('bottom', 'back')" />
+                                        <rect x="150" y="335" width="60" height="25" class="hotspot" onclick="showDesignOptions('bottom', 'back')" />
+                                        <rect x="65" y="65" width="55" height="30" class="hotspot" onclick="showDesignOptions('backPocket', 'back')" />
+                                        <rect x="140" y="65" width="55" height="30" class="hotspot" onclick="showDesignOptions('backPocket', 'back')" />
+                                        <rect x="60" y="15" width="18" height="30" class="hotspot" onclick="showDesignOptions('beltLoop', 'back')" />
+                                        <rect x="121" y="15" width="18" height="30" class="hotspot" onclick="showDesignOptions('beltLoop', 'back')" />
+                                        <rect x="180" y="15" width="18" height="30" class="hotspot" onclick="showDesignOptions('beltLoop', 'back')" />
+                                        <circle cx="92.5" cy="85" r="8" class="hotspot-round" onclick="showDesignOptions('button', 'back')" />
+                                    </g>
+                                </svg>
+                            </div>
+
+                            <div id="design-panel" class="pe-options-panel">
+                                <button class="pe-back-btn" onclick="restoreFullView()">
+                                    <i class="fa-solid fa-arrow-left"></i> Back to Full View
+                                </button>
+                                <h3 id="panel-title">Component Design</h3>
+                                <div id="panel-content"></div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                </div>
         </div>
     </div>`,
     dashboard: () => `
@@ -884,9 +1024,9 @@ export const Templates = {
                     <a href="#/attendance" class="bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 px-4 py-2 rounded-lg font-bold shadow-sm transition flex items-center gap-2">
                         <i class="fa-solid fa-clipboard-user"></i> Attendance
                     </a>
-                    <button onclick="toggleAddStaffModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-medium shadow-lg transition flex items-center gap-2">
+                    ${window.canEdit() ? `<button onclick="toggleAddStaffModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-medium shadow-lg transition flex items-center gap-2">
                         <i class="fa-solid fa-user-plus"></i> Add Employee
-                    </button>
+                    </button>` : ''}
                     <button onclick="toggleDetailsModal()" class="bg-white border border-indigo-200 text-indigo-600 hover:bg-indigo-50 px-3 py-2 rounded-lg font-medium shadow-md transition flex items-center gap-2" title="Wage Summary">
                         <i class="fa-solid fa-circle-info text-xl"></i>
                     </button>
@@ -1083,7 +1223,7 @@ export const Templates = {
             </div>
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 h-fit">
+            ${window.canEdit() ? `<div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 h-fit">
                 <h3 class="font-bold text-slate-700 mb-4">New Transaction</h3>
                 <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Type</label>
                 <div class="flex gap-2 mb-4">
@@ -1098,7 +1238,7 @@ export const Templates = {
                 <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Amount (₹)</label>
                 <input type="number" id="trans-amt" placeholder="0.00" class="w-full mb-6 p-2 border rounded-lg outline-none focus:border-indigo-500 text-lg font-bold">
                 <button onclick="addTransaction()" class="w-full bg-slate-800 text-white py-3 rounded-xl font-bold hover:bg-slate-700 transition shadow-lg">Save Entry</button>
-            </div>
+            </div>` : ''}
             <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
                 <div class="p-4 border-b border-slate-100 bg-slate-50 font-bold text-slate-600 flex justify-between">
                     <span>Recent Transactions</span>
@@ -1196,9 +1336,23 @@ export const Templates = {
              <div class="grid grid-cols-1 lg:grid-cols-3">
                  <!-- Staff List -->
                  <div class="lg:col-span-2 p-6 border-r border-slate-100">
-                     <h4 class="text-sm font-bold text-slate-700 mb-4 uppercase tracking-wide">Assigned Staff</h4>
-                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="unit-staff-list">
-                         <!-- Staff Cards Injected Here -->
+                     <h4 id="unit-section-header" class="text-sm font-bold text-slate-700 mb-4 uppercase tracking-wide">Assigned Staff</h4>
+                     <div id="unit-staff-view">
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="unit-staff-list">
+                             <!-- Staff Cards Injected Here -->
+                         </div>
+                     </div>
+
+                     <!-- INLINE CATALOGUE SELECTION (Hidden by default) -->
+                     <div id="unit-catalogue-view" class="hidden">
+                         <div class="flex items-center gap-4 mb-4">
+                             <button onclick="closeCatalogueSelectionPanel()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition">
+                                 <i class="fa-solid fa-arrow-left"></i>
+                             </button>
+                         </div>
+                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar" id="unit-catalogue-grid">
+                             <!-- Catalogue Items Injected Here -->
+                         </div>
                      </div>
                  </div>
                  
@@ -1217,7 +1371,7 @@ export const Templates = {
     }).join('')}
                             </datalist>
                             <p id="unit-pcs-preview" class="text-xs text-right hidden"></p>
-                            <button onclick="addUnitPieces()" class="bg-indigo-600 text-white w-full py-2 rounded-lg font-bold hover:bg-indigo-700 transition shadow-md mt-2">
+                            <button onclick="openUnitCatalogueSelection()" class="bg-indigo-600 text-white w-full py-2 rounded-lg font-bold hover:bg-indigo-700 transition shadow-md mt-2">
                                 Add to Daily Log
                             </button>
                         </div>
@@ -1229,7 +1383,56 @@ export const Templates = {
                     </div>
                 </div>
              </div>
-         </div>
+
+             <!-- Problem Panel Section -->
+             <div class="col-span-full mt-6 bg-red-50/50 rounded-2xl border border-red-100 overflow-hidden" id="unit-problems-section">
+                <div class="p-4 bg-red-100/50 border-b border-red-200">
+                    <h4 class="text-sm font-bold text-red-800 uppercase tracking-wide flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Reported Issues
+                    </h4>
+                    <p class="text-xs text-red-500 mt-0.5">Log problems or defects for this unit</p>
+                </div>
+                
+                <div class="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Report Form -->
+                    <div class="lg:col-span-1">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Report New Issue</label>
+                        <textarea id="unit-problem-input" rows="3" class="w-full p-3 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-red-200 text-sm resize-none mb-3" placeholder="Describe the problem..."></textarea>
+                        <button onclick="reportUnitProblem()" class="w-full bg-red-600 text-white font-bold py-2 rounded-xl hover:bg-red-700 transition shadow-sm text-sm">
+                            Report Issue
+                        </button>
+                    </div>
+                    
+                    <!-- Issues List -->
+                    <div class="lg:col-span-2">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Active Issues</label>
+                        <div id="unit-problems-list" class="space-y-2 max-h-[200px] overflow-y-auto pr-1 custom-scrollbar">
+                            <!-- Problems injected here -->
+                            <p class="text-center text-slate-400 italic text-sm py-8">No issues reported.</p>
+                        </div>
+                    </div>
+                </div>
+             </div>
+          </div>
+         
+         <!-- Catalogue Selection Modal (Black View) -->
+        <div id="catalogue-selection-modal" class="hidden fixed inset-0 z-[100] bg-black/95 flex flex-col items-center justify-center p-4 fade-in">
+            <button onclick="closeCatalogueSelectionModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white transition w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <h2 class="text-2xl font-bold text-white mb-8">Select Catalogue Item</h2>
+            
+            <div class="w-full max-w-5xl overflow-y-auto max-h-[80vh] custom-scrollbar px-2">
+                <div id="catalogue-selection-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                    <!-- Items injected here -->
+                </div>
+            </div>
+            
+            <div id="cat-select-empty" class="hidden text-center text-slate-500 mt-10">
+                <i class="fa-regular fa-folder-open text-4xl mb-4 opacity-50"></i>
+                <p>No catalogue items found.</p>
+            </div>
+        </div>
     </div>`,
 
     inventory: () => `

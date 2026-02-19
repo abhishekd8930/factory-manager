@@ -1,19 +1,6 @@
 // --- CATALOGUE LOGIC ---
 
-// 3D VIEWER (Dynamic Import)
-window.init3DViewer = null;
-window.render3DPattern = null;
 
-(async () => {
-    try {
-        const module = await import('./modules/pattern-3d.js');
-        window.init3DViewer = module.init3DViewer;
-        window.render3DPattern = module.render3DPattern;
-        console.log("3D Module loaded successfully");
-    } catch (e) {
-        console.warn("3D Viewer failed to load (Offline or Error):", e);
-    }
-})();
 
 // --- CONFIGURATION ---
 const FIXED_FILTERS = {
@@ -21,6 +8,43 @@ const FIXED_FILTERS = {
     brand: ["Bluecube", "Snowfinch", "D-club", "Aravind"],
     fitting: ["Ankle fit", "Jogger", "Formal"],
     duration: ["This Week", "Last Week", "This Month", "Last Month"]
+};
+
+// Expanded Design Data including Fabric/Fit options for Pattern Editor
+const PATTERN_DESIGN_OPTIONS = {
+    'mainBody': {
+        title: "Fabric & Fit Specs",
+        options: [
+            "100% Cotton Canvas - Slim Fit",
+            "Cotton Twill Blend - Straight Fit",
+            "Stretch Denim - Athletic Fit",
+            "Linen Blend - Relaxed Fit"
+        ]
+    },
+    'waistband': {
+        title: "Waistband Style",
+        options: ["Formal Foldover (Standard)", "Jogger Elastic Band", "Canvas Stiffener", "Drawstring Finish"]
+    },
+    'frontPocket': {
+        title: "Front Pocket Style",
+        options: ["Slash Pocket (Current)", "On-Seam Pocket", "Zippered Tech Pocket", "No Front Pockets"]
+    },
+    'backPocket': {
+        title: "Back Pocket Style",
+        options: ["Double Welt with Button", "Single Welt", "Patch Pocket", "Flap Pocket", "No Back Pockets"]
+    },
+    'bottom': {
+        title: "Leg Opening / Cuff",
+        options: ["Rolled Cuff (Current)", "Standard Blind Hem", "Elastic Scrunch", "Side Slit Hem"]
+    },
+    'beltLoop': {
+        title: "Belt Loop Configuration",
+        options: ["Standard 1/2 inch Loops", "Wide 1 inch Loops", "Crossed Loops", "No Belt Loops"]
+    },
+    'button': {
+        title: "Hardware / Button Style",
+        options: ["Standard 4-Hole Resin", "Metal Rivet/Tack Button", "Faux Horn Button", "Hidden Hook and Eye"]
+    }
 };
 
 // State
@@ -356,13 +380,6 @@ window.switchDetailTab = (tabName) => {
     if (tabName === 'details') {
         renderCatalogueLedgerTable();
     }
-
-    if (tabName === '3d') {
-        setTimeout(() => {
-            if (window.init3DViewer) window.init3DViewer();
-            if (window.render3DPattern) window.render3DPattern("32"); // Default to 32 for now, or fetch from item
-        }, 100);
-    }
 };
 
 window.renderCatalogueLedgerTable = () => {
@@ -370,8 +387,8 @@ window.renderCatalogueLedgerTable = () => {
     const item = catalogueItems.find(i => i.id === activeCatalogueId);
     if (!item) return;
 
-    // Ensure at least one row exists
-    if (!item.ledger || item.ledger.length === 0) {
+    // Ensure at least one row exists (ONLY IF CAN EDIT)
+    if ((!item.ledger || item.ledger.length === 0) && window.canEdit()) {
         addCatalogueLedgerRow();
         return; // addLedgerRow will trigger re-render
     }
@@ -390,17 +407,17 @@ window.renderCatalogueLedgerTable = () => {
         // We'll apply to all rows for consistency or just check in the handler.
 
         tr.innerHTML = `
-            <td class="p-2"><input type="number" value="${row.slNo || ''}" onchange="updateLedgerRow(${index}, 'slNo', this.value)" onkeydown="handleLedgerKeydown(event, ${index}, 'slNo')" class="w-full text-center bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-indigo-100 rounded-md py-1" placeholder="#"></td>
-            <td class="p-2"><input type="number" step="0.01" value="${row.meters || ''}" onchange="updateLedgerRow(${index}, 'meters', this.value)" onkeydown="handleLedgerKeydown(event, ${index}, 'meters')" class="w-full text-center bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-indigo-100 rounded-md py-1" placeholder="0.0"></td>
+            <td class="p-2"><input type="number" value="${row.slNo || ''}" onchange="updateLedgerRow(${index}, 'slNo', this.value)" onkeydown="handleLedgerKeydown(event, ${index}, 'slNo')" class="w-full text-center bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-indigo-100 rounded-md py-1" placeholder="#" ${!window.canEdit() ? 'disabled' : ''}></td>
+            <td class="p-2"><input type="number" step="0.01" value="${row.meters || ''}" onchange="updateLedgerRow(${index}, 'meters', this.value)" onkeydown="handleLedgerKeydown(event, ${index}, 'meters')" class="w-full text-center bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-indigo-100 rounded-md py-1" placeholder="0.0" ${!window.canEdit() ? 'disabled' : ''}></td>
             
-            <td class="p-2 border-l border-slate-100"><input type="number" value="${row.s30 || ''}" onchange="updateLedgerRow(${index}, 's30', this.value)" onkeydown="handleLedgerKeydown(event, ${index}, 's30')" class="w-full text-center bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-indigo-100 rounded-md py-1 font-medium text-slate-600" placeholder="-"></td>
-            <td class="p-2"><input type="number" value="${row.s32 || ''}" onchange="updateLedgerRow(${index}, 's32', this.value)" onkeydown="handleLedgerKeydown(event, ${index}, 's32')" class="w-full text-center bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-indigo-100 rounded-md py-1 font-medium text-slate-600" placeholder="-"></td>
-            <td class="p-2"><input type="number" value="${row.s34 || ''}" onchange="updateLedgerRow(${index}, 's34', this.value)" onkeydown="handleLedgerKeydown(event, ${index}, 's34')" class="w-full text-center bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-indigo-100 rounded-md py-1 font-medium text-slate-600" placeholder="-"></td>
-            <td class="p-2"><input type="number" value="${row.s36 || ''}" onchange="updateLedgerRow(${index}, 's36', this.value)" onkeydown="handleLedgerKeydown(event, ${index}, 's36')" class="w-full text-center bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-indigo-100 rounded-md py-1 font-medium text-slate-600" placeholder="-"></td>
+            <td class="p-2 border-l border-slate-100"><input type="number" value="${row.s30 || ''}" onchange="updateLedgerRow(${index}, 's30', this.value)" onkeydown="handleLedgerKeydown(event, ${index}, 's30')" class="w-full text-center bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-indigo-100 rounded-md py-1 font-medium text-slate-600" placeholder="-" ${!window.canEdit() ? 'disabled' : ''}></td>
+            <td class="p-2"><input type="number" value="${row.s32 || ''}" onchange="updateLedgerRow(${index}, 's32', this.value)" onkeydown="handleLedgerKeydown(event, ${index}, 's32')" class="w-full text-center bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-indigo-100 rounded-md py-1 font-medium text-slate-600" placeholder="-" ${!window.canEdit() ? 'disabled' : ''}></td>
+            <td class="p-2"><input type="number" value="${row.s34 || ''}" onchange="updateLedgerRow(${index}, 's34', this.value)" onkeydown="handleLedgerKeydown(event, ${index}, 's34')" class="w-full text-center bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-indigo-100 rounded-md py-1 font-medium text-slate-600" placeholder="-" ${!window.canEdit() ? 'disabled' : ''}></td>
+            <td class="p-2"><input type="number" value="${row.s36 || ''}" onchange="updateLedgerRow(${index}, 's36', this.value)" onkeydown="handleLedgerKeydown(event, ${index}, 's36')" class="w-full text-center bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-indigo-100 rounded-md py-1 font-medium text-slate-600" placeholder="-" ${!window.canEdit() ? 'disabled' : ''}></td>
             
             <td class="p-2 text-center font-bold text-indigo-600 border-l border-slate-100">${row.total || 0}</td>
             <td class="p-2 text-center">
-                <button onclick="deleteLedgerRow(${index})" class="text-slate-300 hover:text-red-500 transition"><i class="fa-solid fa-trash"></i></button>
+                ${window.canEdit() ? `<button onclick="deleteLedgerRow(${index})" class="text-slate-300 hover:text-red-500 transition"><i class="fa-solid fa-trash"></i></button>` : ''}
             </td>
         `;
         tbody.appendChild(tr);
@@ -425,6 +442,7 @@ window.handleLedgerKeydown = (e, index, field) => {
 };
 
 window.addCatalogueLedgerRow = () => {
+    if (!window.canEdit()) return;
     catalogueItems = JSON.parse(localStorage.getItem('catalogueItems')) || [];
     const idx = catalogueItems.findIndex(i => i.id === activeCatalogueId);
     if (idx === -1) return;
@@ -459,6 +477,7 @@ window.addCatalogueLedgerRow = () => {
 };
 
 window.updateLedgerRow = (rowIndex, field, value) => {
+    if (!window.canEdit()) return;
     catalogueItems = JSON.parse(localStorage.getItem('catalogueItems')) || [];
     const idx = catalogueItems.findIndex(i => i.id === activeCatalogueId);
     if (idx === -1) return;
@@ -493,6 +512,7 @@ window.updateLedgerRow = (rowIndex, field, value) => {
 };
 
 window.deleteLedgerRow = (rowIndex) => {
+    if (!window.canEdit()) return;
     catalogueItems = JSON.parse(localStorage.getItem('catalogueItems')) || [];
     const idx = catalogueItems.findIndex(i => i.id === activeCatalogueId);
     if (idx === -1) return;
@@ -817,6 +837,56 @@ window.renderAdditionalPages = () => {
                 <p class="text-[10px] font-medium uppercase tracking-widest">No additional pages</p>
             </div>`;
     }
+};
+
+// --- INTERACTIVE PATTERN EDITOR LOGIC ---
+
+window.showDesignOptions = (partKey, viewClicked) => {
+    // 1. Focus View
+    if (viewClicked === 'front') {
+        const backGroup = document.getElementById('back-view-group');
+        if (backGroup) backGroup.style.opacity = '0.1'; // Fade out instead of display:none for smoother feel
+        // Optionally center the front view? For now just fade other.
+    } else if (viewClicked === 'back') {
+        const frontGroup = document.getElementById('front-view-group');
+        if (frontGroup) frontGroup.style.opacity = '0.1';
+    }
+
+    // 2. Load Options
+    const data = PATTERN_DESIGN_OPTIONS[partKey];
+    if (!data) return;
+
+    document.getElementById('panel-title').innerText = data.title;
+
+    let htmlContent = "";
+    data.options.forEach((option, index) => {
+        htmlContent += `
+            <label class="pe-option-item">
+                <input type="radio" name="design_choice_${partKey}" ${index === 0 ? 'checked' : ''}> 
+                <span class="pe-option-label">${option}</span>
+            </label>
+        `;
+    });
+
+    const contentDiv = document.getElementById('panel-content');
+    if (contentDiv) contentDiv.innerHTML = htmlContent;
+
+    // 3. Show Panel
+    const panel = document.getElementById('design-panel');
+    if (panel) panel.classList.add('active');
+};
+
+window.restoreFullView = () => {
+    // 1. Hide Panel
+    const panel = document.getElementById('design-panel');
+    if (panel) panel.classList.remove('active');
+
+    // 2. Restore Views
+    const frontGroup = document.getElementById('front-view-group');
+    const backGroup = document.getElementById('back-view-group');
+
+    if (frontGroup) frontGroup.style.opacity = '1';
+    if (backGroup) backGroup.style.opacity = '1';
 };
 
 window.deleteCataloguePage = (index) => {

@@ -192,12 +192,15 @@ window.renderTimeLedgerTable = () => {
         document.getElementById('salary-label').innerText = 'Basic Salary';
         const salInput = document.getElementById('ledger-salary');
         if (salInput) {
-            salInput.readOnly = false;
+            salInput.readOnly = !window.canEdit();
             salInput.value = state.staffLedgers[lId].salary || '';
         }
 
         const advInput = document.getElementById('ledger-advance');
-        if (advInput) advInput.value = state.staffLedgers[lId].advance || '';
+        if (advInput) {
+            advInput.value = state.staffLedgers[lId].advance || '';
+            advInput.disabled = !window.canEdit();
+        }
 
         const tbody = document.getElementById('ledger-table-body');
         if (!tbody) {
@@ -251,7 +254,7 @@ window.renderTimeLedgerTable = () => {
                         name="in-${i}"
                         data-day="${i}" value="${isLocked ? '-' : (dayData.in || '')}" 
                         placeholder="${isLocked ? '-' : (state.config.RATES.DEFAULT_IN_TIME || '09:30 AM')}" 
-                        ${isLocked ? 'disabled' : ''} 
+                        ${isLocked || !window.canEdit() ? 'disabled' : ''} 
                         oninput="quickSave(this)" 
                         onkeydown="handleTimeKey(event, this, 'in')" 
                         onblur="handleBlur(event, this, '${i}')">
@@ -261,7 +264,7 @@ window.renderTimeLedgerTable = () => {
                         name="out-${i}"
                         data-day="${i}" value="${isLocked ? '-' : (dayData.out || '')}" 
                         placeholder="${isLocked ? '-' : (state.config.RATES.DEFAULT_OUT_TIME || '07:00 PM')}" 
-                        ${isLocked ? 'disabled' : ''} 
+                        ${isLocked || !window.canEdit() ? 'disabled' : ''} 
                         oninput="quickSave(this)" 
                         onkeydown="handleTimeKey(event, this, 'out')" 
                         onblur="handleBlur(event, this, '${i}')">
@@ -314,7 +317,10 @@ window.renderPcsLedgerTable = () => {
         const pcsBtn = document.getElementById('pcs-add-row-container');
         const salaryBtn = document.getElementById('salary-calc-btn-container');
 
-        if (pcsBtn) pcsBtn.classList.remove('hidden');
+        if (pcsBtn) {
+            if (window.canEdit()) pcsBtn.classList.remove('hidden');
+            else pcsBtn.classList.add('hidden');
+        }
 
         // SHOW the button, but change text to "View Bill"
         if (salaryBtn) {
@@ -363,7 +369,10 @@ window.renderPcsLedgerTable = () => {
         }
 
         const advInput = document.getElementById('ledger-advance');
-        if (advInput) advInput.value = lData.advance || '';
+        if (advInput) {
+            advInput.value = lData.advance || '';
+            advInput.disabled = !window.canEdit();
+        }
 
         const tbody = document.getElementById('ledger-table-body');
         if (!tbody) {
@@ -379,14 +388,14 @@ window.renderPcsLedgerTable = () => {
                 <td class="p-3 border-r border-slate-100 text-slate-600 font-medium text-center">
                     <span class="inline-block font-bold text-slate-800">${index + 1}</span>
                 </td>
-                <td class="p-2 border-r border-slate-100"><input type="text" name="pcs-item-${index}" class="pcs-item text-slate-700" data-index="${index}" value="${row.item || ''}" placeholder="Item" onchange="updatePcsRow(this)" onkeydown="handlePcsEnter(event, this)"></td>
-                <td class="p-2 border-r border-slate-100"><input type="text" name="pcs-style-${index}" class="pcs-style text-slate-700" data-index="${index}" value="${row.style || ''}" placeholder="Style" onchange="updatePcsRow(this)" onkeydown="handlePcsEnter(event, this)"></td>
-                <td class="p-2 border-r border-slate-100"><input type="text" name="pcs-fabric-${index}" class="pcs-fabric text-slate-700" data-index="${index}" value="${row.fabric || ''}" placeholder="Fabric" onchange="updatePcsRow(this)" onkeydown="handlePcsEnter(event, this)"></td>
-                <td class="p-2 border-r border-slate-100"><input type="number" name="pcs-qty-${index}" class="text-center pcs-qty text-slate-700" data-index="${index}" value="${row.quantity || ''}" placeholder="0" oninput="updatePcsRow(this)" onkeydown="handlePcsEnter(event, this)"></td>
-                <td class="p-2 border-r border-slate-100"><input type="number" name="pcs-rate-${index}" step="0.1" class="text-center pcs-rate text-slate-700" data-index="${index}" value="${row.rate || ''}" placeholder="0" oninput="updatePcsRow(this)" onkeydown="handlePcsEnter(event, this)"></td>
+                <td class="p-2 border-r border-slate-100"><input type="text" name="pcs-item-${index}" class="pcs-item text-slate-700" data-index="${index}" value="${row.item || ''}" placeholder="Item" ${!window.canEdit() ? 'disabled' : ''} onchange="updatePcsRow(this)" onkeydown="handlePcsEnter(event, this)"></td>
+                <td class="p-2 border-r border-slate-100"><input type="text" name="pcs-style-${index}" class="pcs-style text-slate-700" data-index="${index}" value="${row.style || ''}" placeholder="Style" ${!window.canEdit() ? 'disabled' : ''} onchange="updatePcsRow(this)" onkeydown="handlePcsEnter(event, this)"></td>
+                <td class="p-2 border-r border-slate-100"><input type="text" name="pcs-fabric-${index}" class="pcs-fabric text-slate-700" data-index="${index}" value="${row.fabric || ''}" placeholder="Fabric" ${!window.canEdit() ? 'disabled' : ''} onchange="updatePcsRow(this)" onkeydown="handlePcsEnter(event, this)"></td>
+                <td class="p-2 border-r border-slate-100"><input type="number" name="pcs-qty-${index}" class="text-center pcs-qty text-slate-700" data-index="${index}" value="${row.quantity || ''}" placeholder="0" ${!window.canEdit() ? 'disabled' : ''} oninput="updatePcsRow(this)" onkeydown="handlePcsEnter(event, this)"></td>
+                <td class="p-2 border-r border-slate-100"><input type="number" name="pcs-rate-${index}" step="0.1" class="text-center pcs-rate text-slate-700" data-index="${index}" value="${row.rate || ''}" placeholder="0" ${!window.canEdit() ? 'disabled' : ''} oninput="updatePcsRow(this)" onkeydown="handlePcsEnter(event, this)"></td>
                 <td class="p-2 text-right"><span class="font-bold text-emerald-600 pcs-total">${row.total || 0}</span></td>
                 <td class="p-2 text-center">
-                    <button onclick="deletePcsRow(${index})" class="text-slate-300 hover:text-red-500 transition"><i class="fa-solid fa-trash"></i></button>
+                    ${window.canEdit() ? `<button onclick="deletePcsRow(${index})" class="text-slate-300 hover:text-red-500 transition"><i class="fa-solid fa-trash"></i></button>` : ''}
                 </td>
             `;
             tbody.appendChild(tr);
