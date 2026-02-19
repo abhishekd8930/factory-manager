@@ -1,7 +1,16 @@
 console.log("Home Module Loaded");
 
 // --- INITIALIZATION ---
-const TODO_STORAGE_KEY = 'srf_owner_todos';
+// Per-user storage for employees (keyed by email), shared key for owner/manager
+function getTodoStorageKey() {
+    if (window.isEmployee && window.isEmployee()) {
+        const user = window.auth && window.auth.currentUser;
+        const email = user && user.email ? user.email.replace(/[^a-z0-9]/gi, '_') : 'employee';
+        return `srf_todos_${email}`;
+    }
+    return 'srf_owner_todos';
+}
+const TODO_STORAGE_KEY = getTodoStorageKey();
 
 if (!window.state) window.state = {};
 if (!window.state.ownerTodos) {
@@ -251,10 +260,12 @@ window.renderHomeCalendar = () => {
             classes += " text-slate-600 hover:bg-slate-100";
         }
 
+        // Employees can only select a date (for tasks); double-click holiday grant is owner/manager only
+        const isEmp = window.isEmployee && window.isEmployee();
         html += `<div class="${classes}" 
                     onclick="selectTodoDate('${currentDateStr}')" 
-                    ondblclick="openHolidayMenu('${currentDateStr}')"
-                    title="Click for Tasks, Double-Click for Holiday">
+                    ${isEmp ? '' : `ondblclick="openHolidayMenu('${currentDateStr}')"`}
+                    title="${isEmp ? 'Click to view tasks' : 'Click for Tasks, Double-Click for Holiday'}">
                     <span class="leading-none">${i}</span>
                     ${hasHoliday ? `<span class="text-[7px] uppercase tracking-tighter leading-none absolute bottom-0.5 truncate w-full px-1">${holidayTitle.substring(0, 8)}</span>` : ''}
                 </div>`;

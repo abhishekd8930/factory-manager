@@ -197,15 +197,15 @@ export const Templates = {
                         <span class="nav-label hidden">Staff</span> <span class="nav-label ml-auto text-[10px] opacity-50 hidden">Alt+4</span>
                     </a>
 
-                    <a href="#/history" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3 group justify-center" id="nav-history">
+                    ${!window.isEmployee() ? `<a href="#/history" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3 group justify-center" id="nav-history">
                         <i class="fa-solid fa-clock-rotate-left w-5 text-center"></i> 
                         <span class="nav-label hidden">History</span> <span class="nav-label ml-auto text-[10px] opacity-50 hidden">Alt+5</span>
-                    </a>
+                    </a>` : ''}
                     
-                    <a href="#/dashboard" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3 group justify-center" id="nav-dashboard">
+                    ${!window.isEmployee() ? `<a href="#/dashboard" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3 group justify-center" id="nav-dashboard">
                         <i class="fa-solid fa-chart-pie w-5 text-center"></i> 
                         <span class="nav-label hidden">Analytics</span> <span class="nav-label ml-auto text-[10px] opacity-50 hidden">Alt+6</span>
-                    </a>
+                    </a>` : ''}
 
                     ${window.canEdit() ? `<a href="#/accounts" class="nav-btn w-full text-left p-3 rounded-full text-slate-500 hover:bg-slate-50 hover:text-slate-800 transition font-medium flex items-center gap-3 group justify-center" id="nav-accounts">
                          <i class="fa-solid fa-file-invoice-dollar w-5 text-center"></i>
@@ -291,6 +291,7 @@ export const Templates = {
             </div>
         </div>
 
+        ${!window.isEmployee() ? `
         <div class="grid grid-cols-1 gap-8 mb-8">
             <!-- Metrics Section (Scrollable) -->
             <div class="min-w-0">
@@ -365,10 +366,12 @@ export const Templates = {
                     </div>
                 </div>
             </div>
+        </div>` : ''}
 
             <!-- Issues & Recommendations Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- 1. Reported Issues Panel (New) -->
+            ${!window.isEmployee() ? `
+            <!-- 1. Reported Issues Panel -->
                 <div class="lg:col-span-1 flex flex-col">
                     <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2 text-lg">
                         <i class="fa-solid fa-triangle-exclamation text-red-500"></i> Reported Issues
@@ -385,10 +388,10 @@ export const Templates = {
                             <a href="#/units" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 transition">Manage Units <i class="fa-solid fa-arrow-right ml-1"></i></a>
                         </div>
                     </div>
-                </div>
+                </div>` : ''}
 
                 <!-- 2. Recommendation Panel (Existing) -->
-                <div class="lg:col-span-2 flex flex-col">
+                <div class="${!window.isEmployee() ? 'lg:col-span-2' : 'lg:col-span-3'} flex flex-col">
                     <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2 text-lg">
                         <i class="fa-solid fa-lightbulb text-yellow-500"></i> Smart Recommendations
                     </h3>
@@ -446,7 +449,7 @@ export const Templates = {
                 </div>
             </div>
         </div>
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
             <div class="lg:col-span-2 bg-white p-6 rounded-[32px] shadow-sm border border-slate-100 flex flex-col relative" id="todo-block">
                 <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">Daily To-Do List</h3>
                 <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-4 shrink-0">

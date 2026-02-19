@@ -40,7 +40,7 @@ export const Router = {
         }
 
         // Role-based route guard: block employees from restricted pages
-        const restrictedForEmployee = ['/settings', '/accounts'];
+        const restrictedForEmployee = ['/settings', '/accounts', '/history', '/dashboard'];
         if (window.isEmployee && window.isEmployee() && restrictedForEmployee.includes(hash)) {
             window.location.hash = '#/home';
             return;

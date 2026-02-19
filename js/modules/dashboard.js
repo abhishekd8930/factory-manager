@@ -148,7 +148,18 @@ window.saveWashingLog = () => {
 window.updateGreeting = () => {
     const now = new Date();
     const hour = now.getHours();
-    const name = CONFIG.OWNER_NAME || "Manager";
+
+    // For employees, show their own Google account name; for owner/manager use CONFIG.OWNER_NAME
+    let name = CONFIG.OWNER_NAME || "Manager";
+    if (window.isEmployee && window.isEmployee()) {
+        const user = window.auth && window.auth.currentUser;
+        if (user) {
+            // Prefer displayName, fall back to email prefix
+            name = user.displayName || (user.email ? user.email.split('@')[0] : 'Employee');
+        } else {
+            name = 'Employee';
+        }
+    }
 
     let greetingText = "Welcome";
     let icon = "fa-sun";
