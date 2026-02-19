@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
+    "start:api": "python -m uvicorn api.main:app --reload --port 8000",
     "build:css": "tailwindcss -i ./src/input.css -o ./css/output.css",
     "watch:css": "tailwindcss -i ./src/input.css -o ./css/output.css --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -14,8 +15,8 @@
     "url": "git+https://github.com/abhishekd8930/factory-manager.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Abhishek D",
+  "license": "UNLICENSED",
   "type": "commonjs",
   "bugs": {
     "url": "https://github.com/abhishekd8930/factory-manager/issues"
