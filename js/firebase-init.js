@@ -18,8 +18,8 @@ const firebaseConfig = {
 };
 
 if (!firebaseConfig.apiKey) {
-    console.error("Firebase Config Missing! Ensure .env is set and server.js is running.");
-    alert("System Error: Configuration missing. Please contact administrator.");
+    console.error("Firebase Config Missing! Ensure .env is set and you have run 'npm run build' to generate env-config.js.");
+    alert("System Error: Configuration missing. Please contact administrator (or run the build step).");
 }
 
 // Initialize App

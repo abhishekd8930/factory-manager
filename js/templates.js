@@ -10,7 +10,7 @@ export const Templates = {
             <div class="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-blue-100/50 blur-[100px]"></div>
             <div class="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-indigo-100/50 blur-[100px]"></div>
 
-            <div class="relative z-10 max-w-lg text-center">
+            <div class="relative z-10 max-w-lg text-center pb-12 mb-8">
                 <div class="flex flex-col items-center justify-center gap-4 mb-8">
                     <img src="assets/images/logo.jpg" alt="Smart Manager Logo" class="w-24 h-24 object-contain drop-shadow-md mix-blend-multiply rounded-3xl">
                     <h1 class="text-3xl font-bold text-slate-800 tracking-tight">Smart Manager</h1>
@@ -27,7 +27,7 @@ export const Templates = {
             </div>
 
             <!-- Footer Copyright -->
-            <div class="absolute bottom-6 text-slate-400 text-xs font-medium">
+            <div class="absolute bottom-6 left-0 w-full px-6 text-center text-slate-400 text-xs font-medium leading-relaxed">
                 © 2026 Abhi Company
             </div>
         </div>
@@ -42,21 +42,21 @@ export const Templates = {
                         <span class="text-xl font-bold text-slate-800">Smart Manager</span>
                     </div>
 
-                    <h2 id="login-garment-name" class="text-2xl font-bold text-indigo-500 uppercase tracking-[0.2em] mb-4 leading-tight text-center md:text-center w-full">Abhi Company</h2>
+                    <h2 id="login-garment-name" class="text-2xl font-bold text-indigo-500 uppercase tracking-[0.2em] mb-4 leading-tight text-center md:text-center w-full">Sri Raghavendra Fashions</h2>
                     <h2 class="text-slate-900 text-3xl font-bold mb-3 text-center md:text-left">Sign in to your account</h2>
                     <p class="text-slate-500 text-center md:text-left">Please enter your details to continue.</p>
                 </div>
             <!-- Role Selection -->
             <div class="flex p-1 bg-slate-100/80 rounded-2xl mb-8 border border-slate-200 relative overflow-hidden">
-                <div id="role-highlight" class="absolute top-1 left-1 bottom-1 w-[calc(33.33%-4px)] bg-indigo-600 rounded-xl shadow-md transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] z-0"></div>
+                <div id="role-highlight" class="absolute top-1 left-1 bottom-1 w-[calc(33.33%-4px)] bg-indigo-600 rounded-xl shadow-md transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] z-0" style="transform: translateX(200%);"></div>
                 
-                <button onclick="switchLoginRole('owner', this)" class="role-btn active flex-1 text-center py-2.5 relative z-10 transition-colors text-white font-medium shadow-none" data-role="owner">Owner</button>
+                <button onclick="switchLoginRole('owner', this)" class="role-btn flex-1 text-center py-2.5 relative z-10 transition-colors text-slate-500 hover:text-slate-800 font-medium" data-role="owner">Owner</button>
                 <button onclick="switchLoginRole('manager', this)" class="role-btn flex-1 text-center py-2.5 relative z-10 transition-colors text-slate-500 hover:text-slate-800 font-medium" data-role="manager">Manager</button>
-                <button onclick="switchLoginRole('employee', this)" class="role-btn flex-1 text-center py-2.5 relative z-10 transition-colors text-slate-500 hover:text-slate-800 font-medium" data-role="employee">Employee</button>
+                <button onclick="switchLoginRole('employee', this)" class="role-btn active flex-1 text-center py-2.5 relative z-10 transition-colors text-white font-medium shadow-none" data-role="employee">Employee</button>
             </div>
 
             <!-- Email/Password Form (Owner/Manager) -->
-            <div id="email-login-container" class="space-y-6 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]">
+            <div id="email-login-container" class="hidden space-y-6 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]">
                 <form onsubmit="handleLogin(event)" class="space-y-5">
                     
                     <div class="input-group relative">
@@ -93,7 +93,7 @@ export const Templates = {
             </div>
 
             <!-- Google Login (Employee) -->
-             <div id="google-login-container" class="hidden space-y-6 pt-2 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]">
+             <div id="google-login-container" class="space-y-6 pt-2 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]">
                   <div class="text-center text-slate-500 text-sm mb-6 font-medium bg-slate-50 p-3 rounded-lg border border-slate-100">
                      Access your workspace securely via Google.
                  </div>

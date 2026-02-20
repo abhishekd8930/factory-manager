@@ -425,8 +425,8 @@ thead .sticky-col-left { background-color: #f8fafc; z-index: 30; }
 .card__face {
     position: absolute;
     inset: 0;
-    backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
     border-radius: 20px;
     background: white;
     overflow: hidden;
@@ -605,6 +605,12 @@ thead .sticky-col-left { background-color: #f8fafc; z-index: 30; }
     border-radius: 8px;
 }
 
+.card-qr-text {
+    font-size: 0.7rem;
+    color: #64748b;
+    font-family: monospace;
+}
+
 .disclaimer {
     font-size: 0.6rem;
     color: var(--color-text-muted);
@@ -778,7 +784,6 @@ thead .sticky-col-left { background-color: #f8fafc; z-index: 30; }
 }
 .hide-scrollbar {
     -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
 }
 
 /* AI Panel Animations */

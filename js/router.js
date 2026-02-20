@@ -25,16 +25,29 @@ export const Router = {
 
     navigate: () => {
         let hash = window.location.hash.slice(1);
-        if (!hash || hash === '/') hash = '/home'; // Default redirection
 
-        // Simple Auth Check Mockup (Replace with actual logic)
-        // If we have a 'login-view' template, we likely want to show it if not logged in.
-        // Assuming some global state or localStorage token.
-        // For now, if hash is /login, we show login.
+        // 1. Initial State Definition
+        if (!hash || hash === '/') {
+            hash = '/home'; // Will be evaluated by Auth Guard below
+        }
+
+        // 2. Auth Guard
+        const userRole = localStorage.getItem('srf_user_role');
+        if (!userRole && hash !== '/login') {
+            console.warn("No active session found. Redirecting to login.");
+            window.location.hash = '#/login';
+            return;
+        }
+
+        // 3. Prevent logged-in users from seeing login page
+        if (userRole && hash === '/login') {
+            window.location.hash = '#/home';
+            return;
+        }
 
         const routeConfig = ROUTES[hash];
         if (!routeConfig && hash !== '/login') {
-            // Fallback
+            // Fallback for unknown routes
             window.location.hash = '#/home';
             return;
         }

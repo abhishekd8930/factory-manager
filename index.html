@@ -13,7 +13,7 @@
         rel="stylesheet">
     <link href="css/output.css" rel="stylesheet">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
+    <script src="js/html-to-image.min.js"></script>
     <script src="js/chart.js"></script>
     <script type="importmap">
         {
@@ -163,7 +163,7 @@
 
                                 <div class="qr-area">
                                     <img id="card-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=SRF-AUTH-001-MANAGER" alt="ID QR Code" class="qr-code">
-                                    <div id="card-qr-text" style="font-size: 0.7rem; color: #64748b; font-family: monospace;">SRF-AUTH-001</div>
+                                    <div id="card-qr-text" class="card-qr-text">SRF-AUTH-001</div>
                                 </div>
 
                                 <div class="disclaimer">
@@ -307,7 +307,7 @@
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-bold text-slate-800">Edit Profile</h3>
-                <button onclick="document.getElementById('edit-profile-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 transition">
+                <button onclick="document.getElementById('edit-profile-modal').classList.add('hidden')" aria-label="Close Edit Profile" class="text-slate-400 hover:text-slate-600 transition">
                     <i class="fa-solid fa-xmark text-xl"></i>
                 </button>
             </div>

@@ -2,7 +2,7 @@
 console.log("Auth Module Loaded");
 
 // Track the currently selected login role
-let _selectedLoginRole = 'owner';
+let _selectedLoginRole = 'employee';
 
 // --- 1. LOGIN LOGIC ---
 window.handleLogin = (e) => {
@@ -174,6 +174,13 @@ window.logout = () => {
         localStorage.removeItem('srf_employee_name');
         localStorage.removeItem('srf_employee_photo');
         if (typeof state !== 'undefined') state.userRole = 'owner';
+
+        if (typeof window.signOut !== 'function') {
+            console.warn("Firebase not ready yet, reloading...");
+            window.location.reload();
+            return;
+        }
+
         window.signOut(window.auth).then(() => {
             console.log("Signed Out");
             window.location.reload();
