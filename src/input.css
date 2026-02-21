@@ -4,3 +4,41 @@
   --font-sans: "Outfit", sans-serif;
 }
 
+@layer components {
+  /* Expanding Search Bar Container */
+  .search-container-expandable {
+    @apply relative transition-all duration-300 ease-out h-10 bg-white rounded-full shadow-sm ring-1 ring-inset ring-slate-200 overflow-hidden flex items-center shrink-0;
+    @apply w-10 focus-within:w-48 lg:focus-within:w-64 focus-within:ring-2 focus-within:ring-indigo-500;
+    /* Hardware acceleration to prevent border-radius glitching on WebKit during width transition */
+    transform: translateZ(0); 
+    -webkit-backface-visibility: hidden;
+  }
+
+  /* Standard/Solid Search Bar Container */
+  .search-container-solid {
+    @apply relative h-10 flex-1 w-full bg-slate-100 rounded-full shadow-sm ring-1 ring-inset ring-transparent overflow-hidden flex items-center transition-all duration-300;
+    @apply focus-within:ring-2 focus-within:ring-indigo-500/50 focus-within:bg-white;
+    transform: translateZ(0);
+  }
+
+  /* Icon for all Search Bars */
+  .search-icon {
+    @apply absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-sm transition-colors;
+  }
+
+  .group:focus-within .search-icon,
+  .search-container-expandable:focus-within .search-icon,
+  .search-container-solid:focus-within .search-icon {
+    @apply text-indigo-500;
+  }
+
+  /* Input Element for Expanding Search */
+  .search-input-expandable {
+    @apply w-full h-full pl-10 pr-4 text-sm bg-transparent outline-none text-slate-700 placeholder-transparent focus:placeholder-slate-400 cursor-pointer focus:cursor-text;
+  }
+
+  /* Input Element for Solid Search */
+  .search-input-solid {
+    @apply w-full h-full pl-10 pr-4 text-sm bg-transparent outline-none text-slate-700 placeholder-slate-400;
+  }
+}

@@ -1,6 +1,77 @@
 console.log("Units Module Loaded");
 
+window.renderEmployeeUnitView = () => {
+    // 1. Fetch Tasks (from state.ownerTodos - showing ones assigned today or general)
+    const tasksList = document.getElementById('employee-tasks-list');
+    if (tasksList) {
+        // Show pending tasks
+        const tasks = (state.ownerTodos || []).filter(t => !t.completed).sort((a, b) => b.timestamp - a.timestamp);
+
+        if (tasks.length === 0) {
+            tasksList.innerHTML = `<div class="text-center text-slate-400 italic py-8">No tasks assigned.</div>`;
+        } else {
+            tasksList.innerHTML = tasks.map(t => `
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-3 flex items-start gap-3">
+                    <div class="mt-0.5 text-blue-500">
+                        <i class="fa-regular fa-circle"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-slate-700 font-medium">${t.text}</p>
+                        <p class="text-[10px] text-slate-400 mt-1"><i class="fa-regular fa-calendar mr-1"></i>${t.date === state.today ? 'Today' : new Date(t.date).toLocaleDateString()}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    // 2. Fetch Personal Output (from state.staffLedgers for this employee, today's date)
+    const todayStr = state.today || new Date().toISOString().split('T')[0];
+    let totalPcsToday = 0;
+    const recentLogs = [];
+
+    // Find the employee's ID
+    const storedName = localStorage.getItem('srf_employee_name') || "";
+    const staffMatch = (state.staffData || []).find(e => e.name.toLowerCase() === storedName.toLowerCase());
+
+    if (staffMatch && state.staffLedgers && state.staffLedgers[staffMatch.id]) {
+        const empLedger = state.staffLedgers[staffMatch.id].entries || [];
+        // Filter for exactly today's date
+        empLedger.forEach(entry => {
+            if (entry.date === todayStr && entry.type === 'pcs') {
+                totalPcsToday += (parseInt(entry.amount) || 0);
+                recentLogs.push(entry);
+            }
+        });
+    }
+
+    // Update Output UI
+    const totalPcsEl = document.getElementById('employee-total-pcs');
+    if (totalPcsEl) totalPcsEl.innerText = totalPcsToday;
+
+    const outputList = document.getElementById('employee-output-list');
+    if (outputList) {
+        if (recentLogs.length === 0) {
+            outputList.innerHTML = `<div class="text-center text-slate-400 italic py-8">No pieces logged today.</div>`;
+        } else {
+            outputList.innerHTML = recentLogs.sort((a, b) => b.timestamp - a.timestamp).map(log => `
+                <div class="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-100 mb-2">
+                    <div>
+                        <p class="text-sm font-bold text-slate-700">${log.description || 'Production'}</p>
+                        <p class="text-[10px] text-slate-400">${new Date(log.timestamp).toLocaleTimeString()}</p>
+                    </div>
+                    <span class="font-bold text-emerald-600">+${log.amount} Pcs</span>
+                </div>
+            `).join('');
+        }
+    }
+};
+
 window.renderUnitsView = () => {
+    if (window.isEmployee && window.isEmployee()) {
+        window.renderEmployeeUnitView();
+        return;
+    }
+
     // 1. Calculate Staff Counts
     const staffCounts = {
         Cutting: 0,

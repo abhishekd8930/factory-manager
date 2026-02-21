@@ -141,9 +141,10 @@ export const Templates = {
 
             <!-- SEARCH BAR (Using flex-1 to fill space properly) -->
             <div class="hidden md:flex flex-1 max-w-xl mx-8 relative group">
-                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors"></i>
-                <input type="text" placeholder="Search orders, staff, or patterns..." 
-                    class="w-full bg-slate-100 border-none rounded-full py-2.5 pl-11 pr-4 text-sm focus:ring-2 focus:ring-indigo-500/50 focus:bg-white transition placeholder-slate-400 text-slate-700 outline-none shadow-sm">
+                <div class="search-container-solid">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" placeholder="Search orders, staff, or patterns..." class="search-input-solid">
+                </div>
             </div>
 
             <!-- RIGHT ACTIONS -->
@@ -521,14 +522,14 @@ export const Templates = {
                 </div>
                 <div class="flex items-center gap-3 w-full md:w-auto justify-end">
                     <!-- Expandable Search Wrapper -->
-                    <div class="group relative transition-all duration-300 ease-out w-10 focus-within:w-48 lg:focus-within:w-64 h-10 bg-white rounded-full shadow-sm border border-slate-200 focus-within:border-indigo-500 overflow-hidden flex items-center shrink-0">
+                    <div class="search-container-expandable group">
                          <!-- Icon (Absolute Left) -->
-                         <i class="fa-solid fa-magnifying-glass absolute left-3 text-slate-400 group-focus-within:text-indigo-500 transition-colors pointer-events-none text-sm"></i>
+                         <i class="fa-solid fa-magnifying-glass search-icon"></i>
                          <!-- Input (Full Width, padded left) -->
                          <input type="text" 
                                 id="catalogue-search-input"
                                 oninput="handleCatalogueSearch(this.value)" 
-                                class="w-full h-full pl-10 pr-4 text-sm bg-transparent outline-none text-slate-700 placeholder-transparent focus:placeholder-slate-400 cursor-pointer focus:cursor-text"
+                                class="search-input-expandable"
                                 placeholder="Search catalog...">
                     </div>
                     
@@ -1205,8 +1206,11 @@ export const Templates = {
                 <button onclick="changePage(1)"><i class="fa-solid fa-chevron-left"></i></button><span id="history-month-label" class="text-sm font-bold">--</span><button onclick="changePage(-1)"><i class="fa-solid fa-chevron-right"></i></button>
             </div>
         </div>
-        <div class="mb-4 relative max-w-md">
-            <div class="relative"><input type="text" id="history-search" oninput="renderHistoryPage()" placeholder="Search..." class="w-full pl-10 pr-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none"><i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-slate-400"></i></div>
+        <div class="mb-4 relative max-w-md group">
+            <div class="search-container-solid">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="history-search" oninput="renderHistoryPage()" placeholder="Search..." class="search-input-solid">
+            </div>
         </div>
         <div class="glass-panel rounded-lg min-h-[500px] overflow-hidden">
             <div id="history-page-content"></div>
@@ -1263,7 +1267,59 @@ export const Templates = {
         </div>
     </div>`,
 
-    units: () => `
+    units: () => {
+        if (window.isEmployee && window.isEmployee()) {
+            return `
+            <div id="units-employee" class="fade-in max-w-7xl mx-auto h-[calc(100vh-140px)] flex flex-col">
+                <div class="mb-4">
+                    <h2 class="text-3xl font-bold text-slate-800">My Unit</h2>
+                    <p class="text-slate-500 mt-1">Overview of your tasks and daily production.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 min-h-0">
+                    <!-- Tasks from Manager (2/3) -->
+                    <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+                                <i class="fa-solid fa-clipboard-list"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-lg">Tasks from Manager</h3>
+                                <p class="text-xs text-slate-500">Your assigned tasks for today</p>
+                            </div>
+                        </div>
+                        <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar" id="employee-tasks-list">
+                            <div class="text-center text-slate-400 italic py-8">Loading tasks...</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Personal Output (1/3) -->
+                    <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                                <i class="fa-solid fa-shirt"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-lg">My Output Today</h3>
+                                <p class="text-xs text-slate-500">Pieces logged under your name</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-slate-50 rounded-xl p-4 flex flex-col items-center justify-center mb-6">
+                            <span class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Total Pieces</span>
+                            <span class="text-4xl font-black text-emerald-600" id="employee-total-pcs">0</span>
+                        </div>
+                        
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Recent Logs</h4>
+                        <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar" id="employee-output-list">
+                             <div class="text-center text-slate-400 italic py-8">Loading output...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        return `
     <div id="units" class="fade-in max-w-7xl mx-auto">
         <div class="mb-8">
             <h2 class="text-3xl font-bold text-slate-800">Managing Units</h2>
@@ -1345,7 +1401,7 @@ export const Templates = {
                              <!-- Staff Cards Injected Here -->
                          </div>
                      </div>
-
+ 
                      <!-- INLINE CATALOGUE SELECTION (Hidden by default) -->
                      <div id="unit-catalogue-view" class="hidden">
                          <div class="flex items-center gap-4 mb-4">
@@ -1369,9 +1425,9 @@ export const Templates = {
                             <input list="catalogue-list-options" id="unit-catalogue-input" onchange="updatePiecePreview(this)" placeholder="Search Catalogue..." class="w-full p-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 font-bold text-slate-700">
                             <datalist id="catalogue-list-options">
                                 ${(JSON.parse(localStorage.getItem('catalogueItems')) || []).map(item => {
-        const total = (item.ledger || []).reduce((sum, row) => sum + (parseInt(row.total) || 0), 0);
-        return `<option value="${item.name}" data-id="${item.id}" data-total="${total}">Total Pcs: ${total}</option>`;
-    }).join('')}
+            const total = (item.ledger || []).reduce((sum, row) => sum + (parseInt(row.total) || 0), 0);
+            return `<option value="${item.name}" data-id="${item.id}" data-total="${total}">Total Pcs: ${total}</option>`;
+        }).join('')}
                             </datalist>
                             <p id="unit-pcs-preview" class="text-xs text-right hidden"></p>
                             <button onclick="openUnitCatalogueSelection()" class="bg-indigo-600 text-white w-full py-2 rounded-lg font-bold hover:bg-indigo-700 transition shadow-md mt-2">
@@ -1379,14 +1435,14 @@ export const Templates = {
                             </button>
                         </div>
                     </div>
-
+ 
                     <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Production Log</h4>
                     <div class="max-h-[300px] overflow-y-auto pr-1" id="unit-production-log">
                         <!-- Logs injected here -->
                     </div>
                 </div>
              </div>
-
+ 
              <!-- Problem Panel Section -->
              <div class="col-span-full mt-6 bg-red-50/50 rounded-2xl border border-red-100 overflow-hidden" id="unit-problems-section">
                 <div class="p-4 bg-red-100/50 border-b border-red-200">
@@ -1436,10 +1492,11 @@ export const Templates = {
                 <p>No catalogue items found.</p>
             </div>
         </div>
-    </div>`,
+    </div>`;
+    },
 
     inventory: () => `
-    <div id="inventory" class="fade-in max-w-7xl mx-auto">
+            < div id = "inventory" class="fade-in max-w-7xl mx-auto" >
         <div class="mb-8 flex justify-between items-center">
             <div>
                 <h2 class="text-3xl font-bold text-slate-800">Store Inventory</h2>
@@ -1518,18 +1575,18 @@ export const Templates = {
                 </div>
             </div>
         </div>
-    </div>`,
+    </div > `,
 
 
     settings: () => `
-    <div id="settings" class="fade-in max-w-4xl mx-auto">
+    < div id = "settings" class="fade-in max-w-4xl mx-auto" >
         <div class="mb-8">
             <h2 class="text-3xl font-bold text-slate-800">System Settings</h2>
             <p class="text-slate-500 mt-1">Manage application configuration and data.</p>
         </div>
 
-        <!-- Section 1: Data Management -->
-        <!-- Section 1: Data Management -->
+        <!--Section 1: Data Management-- >
+        < !--Section 1: Data Management-- >
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-4 transition-all duration-300">
             <button onclick="toggleSettingsSection('sec-data')" class="w-full p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 hover:bg-slate-50 transition text-left group">
                 <h3 class="font-bold text-slate-700 flex items-center gap-2">
@@ -1576,8 +1633,8 @@ export const Templates = {
             </div>
         </div>
 
-        <!-- Section 2: Configuration -->
-        <!-- Section 2: Configuration -->
+        <!--Section 2: Configuration-- >
+        < !--Section 2: Configuration-- >
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-4 transition-all duration-300">
             <button onclick="toggleSettingsSection('sec-config')" class="w-full p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 hover:bg-slate-50 transition text-left group">
                 <h3 class="font-bold text-slate-700 flex items-center gap-2">
@@ -1739,27 +1796,27 @@ export const Templates = {
 
 
 
-        <!-- Section 4: Account -->
+        <!--Section 4: Account-- >
 
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-20 transition-all duration-300">
-            <button onclick="toggleSettingsSection('sec-account')" class="w-full p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 hover:bg-slate-50 transition text-left group">
-                <h3 class="font-bold text-slate-700 flex items-center gap-2">
-                    <i class="fa-solid fa-user-shield text-indigo-500 w-6 text-center"></i> Account Actions
-                </h3>
-                <i id="icon-sec-account" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
-            </button>
-            
-            <div id="sec-account" class="hidden border-t border-slate-100 bg-white">
-                <div class="p-6">
-                     <button onclick="logout()" class="w-full md:w-auto px-6 py-3 rounded-xl border border-red-200 text-red-600 font-bold hover:bg-red-50 transition flex items-center justify-center gap-3">
-                        <i class="fa-solid fa-power-off"></i> Sign Out
-                    </button>
-                </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-20 transition-all duration-300">
+        <button onclick="toggleSettingsSection('sec-account')" class="w-full p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 hover:bg-slate-50 transition text-left group">
+            <h3 class="font-bold text-slate-700 flex items-center gap-2">
+                <i class="fa-solid fa-user-shield text-indigo-500 w-6 text-center"></i> Account Actions
+            </h3>
+            <i id="icon-sec-account" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
+        </button>
+
+        <div id="sec-account" class="hidden border-t border-slate-100 bg-white">
+            <div class="p-6">
+                <button onclick="logout()" class="w-full md:w-auto px-6 py-3 rounded-xl border border-red-200 text-red-600 font-bold hover:bg-red-50 transition flex items-center justify-center gap-3">
+                    <i class="fa-solid fa-power-off"></i> Sign Out
+                </button>
             </div>
         </div>
     </div>
+    </div >
 
-    <!-- Password Modal for Secure Edit -->
+    < !--Password Modal for Secure Edit-- >
     <div id="password-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] flex items-center justify-center p-4 fade-in">
         <div class="bg-white w-full max-w-xs rounded-2xl shadow-2xl overflow-hidden p-6 text-center relative">
             <button onclick="closePasswordModal()" aria-label="Close" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -1776,9 +1833,9 @@ export const Templates = {
                         <input type="password" id="secure-edit-pass" autocomplete="current-password"
                             class="w-full text-center text-lg font-bold py-2 border-b-2 border-slate-200 focus:border-indigo-600 outline-none bg-transparent transition-colors pr-10"
                             placeholder="Password">
-                        <button type="button" onclick="toggleSecurePasswordVisibility()" class="absolute right-0 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition p-2">
-                            <i class="fa-solid fa-eye" id="secure-pass-icon"></i>
-                        </button>
+                            <button type="button" onclick="toggleSecurePasswordVisibility()" class="absolute right-0 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition p-2">
+                                <i class="fa-solid fa-eye" id="secure-pass-icon"></i>
+                            </button>
                     </div>
                     <p id="secure-edit-error" class="text-[10px] text-red-500 mt-2 font-bold hidden"></p>
                 </div>
@@ -1790,8 +1847,8 @@ export const Templates = {
             </form>
         </div>
     </div>
-    </div>`
+    </div > `
     ,
 
-    bin: () => `<div id="bin-placeholder"></div>`
+    bin: () => `< div id = "bin-placeholder" ></div > `
 };
