@@ -67,7 +67,16 @@ window.handleWorkerLogin = async (e) => {
 
         // Sign in anonymously to trigger onAuthStateChanged -> initAppView
         if (window.signInAnonymously && window.auth) {
-            await window.signInAnonymously(window.auth);
+            try {
+                await window.signInAnonymously(window.auth);
+            } catch (authErr) {
+                console.warn("Anonymous Auth Failed (Fallback to local session):", authErr.code);
+                // Fallback: directly navigate
+                setTimeout(() => {
+                    window.location.hash = '#/home';
+                    window.location.reload();
+                }, 500);
+            }
         } else {
             // Fallback: directly navigate
             setTimeout(() => {
@@ -78,6 +87,13 @@ window.handleWorkerLogin = async (e) => {
 
     } catch (error) {
         console.error("Worker Login Failed:", error);
+
+        // If the error was just the anonymous auth failing, we don't want to show a UI error.
+        // We handle it in the inner try-catch now, but just in case it leaks:
+        if (error.code === 'auth/admin-restricted-operation') {
+            console.warn("Caught admin-restricted-operation in outer block. Ignoring.");
+            return;
+        }
 
         if (btn) {
             btn.classList.add('bg-red-500', 'animate-shake');

@@ -500,19 +500,22 @@ window.shareSalarySlip = async () => {
     // Check if we are using the side panel or modal
     const sideContent = document.getElementById('salary-side-content');
     const modalContent = document.getElementById('salary-modal-content');
-    const content = (sideContent && !document.getElementById('salary-side-panel').classList.contains('hidden'))
+    let content = (sideContent && !document.getElementById('salary-side-panel').classList.contains('hidden'))
         ? sideContent
         : modalContent;
 
     if (!content) return alert("No salary slip to share.");
 
+    // The actual slip is wrapped in a child div. Target it to avoid overflow/scroll cropping.
+    const targetNode = content.firstElementChild || content;
+
     try {
         // Hide buttons before capture
-        const noPrintEls = content.querySelectorAll('.no-print');
+        const noPrintEls = targetNode.querySelectorAll('.no-print');
         noPrintEls.forEach(el => el.style.display = 'none');
 
         // Use html-to-image (supports modern CSS like oklch)
-        const dataUrl = await htmlToImage.toPng(content, {
+        const dataUrl = await htmlToImage.toPng(targetNode, {
             backgroundColor: '#ffffff',
             quality: 1,
             pixelRatio: 2,

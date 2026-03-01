@@ -141,7 +141,7 @@ window.renderStaffGrid = () => {
         }
 
         return `
-        <tr class="hover:bg-slate-50 transition group">
+        <tr onclick="window.openStaffProfile('${emp.id}')" class="hover:bg-slate-50 transition group cursor-pointer">
             <td class="p-3 text-slate-400 text-xs font-mono">${i + 1}</td>
             <td class="p-3">
                 <div class="flex items-center gap-2">
@@ -158,17 +158,156 @@ window.renderStaffGrid = () => {
                 <span class="text-[10px] bg-slate-100 border border-slate-200 px-2 py-1 rounded-md font-mono text-slate-700 font-bold uppercase tracking-wider whitespace-nowrap">${emp.id}</span>
             </td>
             <td class="p-3 text-center">
-                <button onclick="window.openLedger('${emp.id}')" class="w-8 h-8 rounded-lg bg-${colorClass}-50 text-${colorClass}-600 hover:bg-${colorClass}-100 flex items-center justify-center transition mx-auto" title="Open Ledger">
+                <button onclick="event.stopPropagation(); window.openLedger('${emp.id}')" class="w-8 h-8 rounded-lg bg-${colorClass}-50 text-${colorClass}-600 hover:bg-${colorClass}-100 flex items-center justify-center transition mx-auto" title="Open Ledger">
                     <i class="fa-solid fa-book-open text-xs"></i>
                 </button>
             </td>
             <td class="p-3 text-center">
-                <button onclick="deleteStaff(event, '${emp.id}', '${emp.name}')" class="w-6 h-6 rounded-full text-slate-300 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition opacity-0 group-hover:opacity-100 mx-auto" title="Delete">
+                <button onclick="event.stopPropagation(); deleteStaff(event, '${emp.id}', '${emp.name}')" class="w-6 h-6 rounded-full text-slate-300 hover:text-red-500 hover:bg-red-50 flex items-center justify-center transition opacity-0 group-hover:opacity-100 mx-auto" title="Delete">
                     <i class="fa-solid fa-trash-can text-[10px]"></i>
                 </button>
             </td>
         </tr>`;
     }).join('');
+};
+
+// --- PROFILE SIDE PANEL LOGIC ---
+
+window.openStaffProfile = (empId) => {
+    const emp = state.staffData?.find(e => e.id === empId);
+    if (!emp) return;
+
+    const panel = document.getElementById('staff-profile-panel');
+    const content = document.getElementById('staff-profile-content');
+    const tableContainer = document.getElementById('staff-table-container');
+
+    if (!panel || !content || !tableContainer) return;
+
+    // Build Profile HTML
+    const colorClass = emp.type === 'timings' ? 'indigo' : 'emerald';
+    const initial = emp.name.charAt(0).toUpperCase();
+
+    // Find Auth Credentials (if any)
+    const allWorkers = state.workers || {};
+    const cred = allWorkers[emp.id];
+    let credHtml = `<div class="text-xs text-slate-500 italic mt-2">No login PIN set.</div>`;
+
+    if (cred) {
+        credHtml = `
+            <div class="mt-3 bg-white border border-slate-200 rounded-lg p-3">
+                <div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Login PIN</div>
+                <div class="font-mono text-slate-700 tracking-widest">${cred.pin}</div>
+            </div>
+        `;
+    }
+
+    content.innerHTML = `
+        <div class="flex flex-col items-center text-center pb-4 border-b border-slate-200">
+            <div class="w-20 h-20 rounded-full bg-${colorClass}-100 text-${colorClass}-600 flex items-center justify-center font-bold text-3xl mb-3 shadow-sm border-4 border-white">
+                ${initial}
+            </div>
+            <h3 class="text-lg font-bold text-slate-800">${emp.name}</h3>
+            <p class="text-xs font-bold text-${colorClass}-600 uppercase tracking-widest bg-${colorClass}-50 px-2 py-0.5 rounded mt-1">${emp.role}</p>
+        </div>
+
+        <div class="py-4 space-y-4">
+            <div>
+                <div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Employee ID</div>
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-id-badge text-slate-300 w-4"></i>
+                    <span class="font-mono text-slate-700 font-bold">${emp.id}</span>
+                </div>
+            </div>
+            
+            ${emp.phone ? `
+            <div>
+                <div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Phone Number</div>
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-phone text-slate-300 w-4"></i>
+                    <a href="tel:${emp.phone}" class="text-indigo-600 hover:underline font-medium">${emp.phone}</a>
+                </div>
+            </div>
+            ` : ''}
+
+            ${emp.email ? `
+            <div>
+                <div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Email Address</div>
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-envelope text-slate-300 w-4"></i>
+                    <a href="mailto:${emp.email}" class="text-indigo-600 hover:underline font-medium">${emp.email}</a>
+                </div>
+            </div>
+            ` : ''}
+
+            <div class="flex gap-4">
+                <div class="flex-1">
+                    <div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Managing Unit</div>
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-industry text-slate-300 w-4"></i>
+                        <span class="text-slate-700 font-medium">${emp.unit || 'Not Assigned'}</span>
+                    </div>
+                </div>
+                ${(() => {
+            if (emp.type !== 'timings') return '';
+            const now = new Date();
+            const lid = emp.id + '_' + now.getFullYear() + '_' + (now.getMonth() + 1);
+            const ledger = state.staffLedgers && state.staffLedgers[lid];
+            const basicSalary = ledger && ledger.salary ? ledger.salary : 0;
+            return '<div class="flex-1">' +
+                '<div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Basic Salary</div>' +
+                '<div class="flex items-center gap-2">' +
+                '<i class="fa-solid fa-money-bill-wave text-emerald-500 w-4"></i>' +
+                '<span class="text-emerald-700 font-bold">₹' + Number(basicSalary).toLocaleString('en-IN') + '</span>' +
+                '</div></div>';
+        })()}
+            </div>
+
+            <div>
+                <div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Payment Basis</div>
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid ${emp.type === 'timings' ? 'fa-clock' : 'fa-layer-group'} text-slate-300 w-4"></i>
+                    <span class="text-slate-700 font-medium">${emp.type === 'timings' ? 'Time-based (Salary)' : 'Piece Work (Contract)'}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="pt-4 border-t border-slate-200">
+            <div class="text-[10px] font-bold uppercase text-slate-400 mb-2">Worker Credentials</div>
+            ${credHtml}
+        </div>
+        
+        <div class="mt-6">
+             <button onclick="window.openLedger('${emp.id}')" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-xl transition shadow-sm flex items-center justify-center gap-2">
+                <i class="fa-solid fa-book-open"></i> Open Full Ledger
+            </button>
+        </div>
+    `;
+
+    // Show panel
+    panel.classList.remove('hidden');
+    panel.classList.add('flex');
+
+    // Highlight active row in table
+    const tbody = document.getElementById('staff-table-body');
+    if (tbody) {
+        Array.from(tbody.children).forEach(tr => tr.classList.remove('bg-indigo-50/50', 'border-l-4', 'border-indigo-500'));
+        // We know which row was clicked if we want, but simple implementation:
+        // the click handler just fires. To highlight exactly, we'd need to emit the TR element.
+    }
+};
+
+window.closeStaffProfile = () => {
+    const panel = document.getElementById('staff-profile-panel');
+    if (panel) {
+        panel.classList.add('hidden');
+        panel.classList.remove('flex');
+    }
+
+    // Remove active highlights
+    const tbody = document.getElementById('staff-table-body');
+    if (tbody) {
+        Array.from(tbody.children).forEach(tr => tr.classList.remove('bg-indigo-50/50', 'border-l-4', 'border-indigo-500'));
+    }
 };
 
 // --- 3. ADD STAFF LOGIC ---
@@ -266,7 +405,7 @@ window.generateEmployeeId = () => {
     let pRole = role.charAt(0).toUpperCase();
     if (!pRole || !/[A-Z]/.test(pRole)) pRole = 'X'; // fallback if not a letter
 
-    const prefix = `${pType}${pUnit}${pRole}-`;
+    const prefix = `${pType}${pUnit}${pRole} -`;
 
     // 4. Find max number for this prefix
     let maxNum = 0;
@@ -285,7 +424,7 @@ window.generateEmployeeId = () => {
     }
 
     const nextNumStr = String(maxNum + 1).padStart(3, '0');
-    idInput.value = `${prefix}${nextNumStr}`;
+    idInput.value = `${prefix}${nextNumStr} `;
 };
 
 window.saveNewStaff = () => {
@@ -337,7 +476,7 @@ window.deleteStaff = (e, id, name) => {
     e.stopPropagation();
 
     // 2. Confirmation
-    if (!confirm(`⚠ Move ${name} to Recycle Bin?\n\nThey will be permanently deleted after 30 days unless restored.`)) {
+    if (!confirm(`⚠ Move ${name} to Recycle Bin ?\n\nThey will be permanently deleted after 30 days unless restored.`)) {
         return;
     }
 
@@ -347,7 +486,7 @@ window.deleteStaff = (e, id, name) => {
 
     // 4. Create deleted item entry
     const deletedItem = {
-        id: `deleted_${Date.now()}_${id}`,
+        id: `deleted_${Date.now()}_${id} `,
         type: 'staff',
         data: emp,
         deletedAt: Date.now(),
@@ -372,6 +511,6 @@ window.deleteStaff = (e, id, name) => {
     window.addNotification({
         type: 'info',
         title: 'Moved to Bin',
-        message: `${name} moved to Recycle Bin. Can be restored within 30 days.`
+        message: `${name} moved to Recycle Bin.Can be restored within 30 days.`
     });
 };

@@ -257,18 +257,38 @@ input:focus, select:focus, textarea:focus {
 
 /* Print Styles */
 @media print {
-    body * { visibility: hidden; }
-    #salary-modal, #salary-modal * { visibility: visible; }
-    #salary-modal { 
-        display: block !important;
-        position: absolute; 
-        left: 0; 
-        top: 0; 
-        width: 100%; 
-        background: white; 
-        z-index: 9999;
-        padding: 0;
+    body * { visibility: hidden !important; }
+    
+    #salary-modal:not(.hidden), #salary-modal:not(.hidden) *,
+    #salary-side-panel:not(.hidden), #salary-side-panel:not(.hidden) * { 
+        visibility: visible !important; 
     }
+    
+    #salary-modal:not(.hidden),
+    #salary-side-panel:not(.hidden) { 
+        display: block !important;
+        position: absolute !important; 
+        left: 0 !important; 
+        top: 0 !important; 
+        width: 100% !important; 
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+        background: white !important; 
+        z-index: 9999 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    #salary-modal-content,
+    #salary-side-content {
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+
     .no-print { display: none !important; } 
 }
 

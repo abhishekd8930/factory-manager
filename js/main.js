@@ -459,15 +459,22 @@ window.openProfile = () => {
         user.email = window.auth.currentUser.email;
     }
 
-    // Employee override: use Google profile data
+    // Employee override: use Google profile data or Local Auth data
     if (window.isEmployee && window.isEmployee()) {
         const empName = localStorage.getItem('srf_employee_name');
         const empPhoto = localStorage.getItem('srf_employee_photo');
+        const empId = localStorage.getItem('srf_worker_id');
+        const empUnit = localStorage.getItem('srf_employee_unit');
+
         if (empName) {
             user.name = empName;
             user.initials = empName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
         }
+        if (empId) user.id = empId;
+        if (empUnit) user.unit = empUnit;
+
         user.role = 'Employee';
+
         if (empPhoto) {
             // Store as avatar override for ID card
             user.photoURL = empPhoto;

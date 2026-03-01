@@ -11,35 +11,35 @@ function formatDate(dateStr) {
 // --- 2. SMART TIME PARSER ---
 // Converts "9", "930", "1430" -> "09:00 AM", "09:30 AM", "02:30 PM"
 
-function parseTime12h(timeStr, type) { 
-    if(!timeStr) return null; 
-    
-    // 1. Clean input
-    let s = timeStr.toUpperCase().trim().replace(/[:\s]/g, ''); 
-    
-    // 2. Detect explicit AM/PM
-    let isPm = s.includes('P'); 
-    let isAm = s.includes('A'); 
-    
-    // 3. Extract just the numbers
-    let digits = s.replace(/[^0-9]/g, ''); 
-    if (!digits) return null; 
+function parseTime12h(timeStr, type) {
+    if (!timeStr) return null;
 
-    let h = 0, m = 0; 
+    // 1. Clean input
+    let s = timeStr.toUpperCase().trim().replace(/[:\s]/g, '');
+
+    // 2. Detect explicit AM/PM
+    let isPm = s.includes('P');
+    let isAm = s.includes('A');
+
+    // 3. Extract just the numbers
+    let digits = s.replace(/[^0-9]/g, '');
+    if (!digits) return null;
+
+    let h = 0, m = 0;
 
     // 4. Parse Digits
-    if (digits.length <= 2) { 
-        h = parseInt(digits); 
-    } else if (digits.length === 3) { 
-        h = parseInt(digits.substring(0, 1)); 
-        m = parseInt(digits.substring(1)); 
-    } else if (digits.length === 4) { 
-        h = parseInt(digits.substring(0, 2)); 
-        m = parseInt(digits.substring(2)); 
-    } 
+    if (digits.length <= 2) {
+        h = parseInt(digits);
+    } else if (digits.length === 3) {
+        h = parseInt(digits.substring(0, 1));
+        m = parseInt(digits.substring(1));
+    } else if (digits.length === 4) {
+        h = parseInt(digits.substring(0, 2));
+        m = parseInt(digits.substring(2));
+    }
 
     // Validity Check (Allow up to 23 for 24h input)
-    if (h > 23 || m > 59) return null; 
+    if (h > 23 || m > 59) return null;
 
     // 5. Smart 24h Conversion
     // If user types 13, 14... 23, it is definitely PM
@@ -54,35 +54,35 @@ function parseTime12h(timeStr, type) {
             isPm = true; // 12 is usually Noon
         } else if (h < 8) {
             // 1, 2, 3, 4, 5, 6, 7 -> Assume PM (Afternoon/Evening)
-            isPm = true; 
+            isPm = true;
         } else {
             // 8, 9, 10, 11 -> Assume AM (Morning)
-            isAm = true; 
+            isAm = true;
         }
     }
 
     // 7. Calculate standardized Minutes for Math
     let h24 = h;
-    
+
     // If input was 12-hour format (e.g. 2 PM), convert to 14
     if (h <= 12) {
-        if (isPm && h < 12) h24 += 12; 
-        if (isAm && h === 12) h24 = 0; 
+        if (isPm && h < 12) h24 += 12;
+        if (isAm && h === 12) h24 = 0;
     }
     // If input was 24-hour format (e.g. 14), keep it, but display will be 2
-    
+
     // Calculate display hour (1-12)
     let displayH = h24 % 12;
     if (displayH === 0) displayH = 12;
 
-    return { 
-        mins: h24 * 60 + m, 
-        formatted: formatTime12hObj(displayH, m, isPm || h24 >= 12 ? 'PM' : 'AM') 
-    }; 
+    return {
+        mins: h24 * 60 + m,
+        formatted: formatTime12hObj(displayH, m, isPm || h24 >= 12 ? 'PM' : 'AM')
+    };
 }
 
-function formatTime12hObj(h, m, suffix) { 
-    return `${h < 10 ? '0' + h : h}:${m < 10 ? '0' + m : m} ${suffix}`; 
+function formatTime12hObj(h, m, suffix) {
+    return `${h < 10 ? '0' + h : h}:${m < 10 ? '0' + m : m} ${suffix}`;
 }
 
 // --- 3. CENTRALIZED WORK CALCULATION ---
@@ -92,23 +92,23 @@ function formatTime12hObj(h, m, suffix) {
 window.calculateWorkHours = (startTimeStr, endTimeStr) => {
     const start = parseTime12h(startTimeStr, 'in');
     const end = parseTime12h(endTimeStr, 'out');
-    
+
     if (!start || !end) return { hours: '', ot: '' };
 
     let sMins = start.mins;
     let eMins = end.mins;
-    
+
     // Handle overnight shift (e.g. 10 PM to 6 AM)
     if (eMins < sMins) eMins += 24 * 60;
 
     // Deduct 30 mins break
     const totalMins = (eMins - sMins) - 30;
-    
+
     // Prevent negative hours if they worked less than 30 mins
     if (totalMins <= 0) return { hours: '0', ot: '0' };
 
     const totalHours = totalMins / 60;
-    
+
     // OT Calculation (Standard 8 hour shift)
     let ot = 0;
     if (totalHours > 8) ot = totalHours - 8;
@@ -117,4 +117,37 @@ window.calculateWorkHours = (startTimeStr, endTimeStr) => {
         hours: totalHours.toFixed(1), // e.g. "8.5"
         ot: ot > 0 ? ot.toFixed(1) : '' // e.g. "0.5" or empty string
     };
+};
+
+// --- 4. MOTIVATIONAL QUOTES ---
+window.getDailyQuote = (role) => {
+    const quotes = {
+        employee: [
+            "\"Great things are done by a series of small things brought together.\" — Vincent Van Gogh",
+            "\"Quality is not an act, it is a habit.\" — Aristotle",
+            "\"The secret of joy in work is contained in one word – excellence. To know how to do something well is to enjoy it.\" — Pearl S. Buck",
+            "\"Every piece matters, and every person makes a difference.\" — Anonymous",
+            "\"Craftsmanship names the basic human impulse to do a job well for its own sake.\" — Richard Sennett"
+        ],
+        manager: [
+            "\"Alone we can do so little; together we can do so much.\" — Helen Keller",
+            "\"Efficiency is doing things right; effectiveness is doing the right things.\" — Peter Drucker",
+            "\"The strength of the team is each individual member. The strength of each member is the team.\" — Phil Jackson",
+            "\"Good management consists in showing average people how to do the work of superior people.\" — John D. Rockefeller",
+            "\"A goal without a timeline is just a dream.\" — Robert Herjavec"
+        ],
+        owner: [
+            "\"A big business starts small.\" — Richard Branson",
+            "\"The best way to predict the future is to create it.\" — Peter Drucker",
+            "\"Success is the sum of small efforts, repeated day in and day out.\" — Robert Collier",
+            "\"Don't build a business, build people. And then people build the business.\" — Zig Ziglar",
+            "\"Vision is the art of seeing what is invisible to others.\" — Jonathan Swift"
+        ]
+    };
+
+    // Safely default to 'employee' if role is unknown
+    const roleKey = (role || 'employee').toLowerCase();
+    const roleQuotes = quotes[roleKey] || quotes['employee'];
+    const randomIndex = Math.floor(Math.random() * roleQuotes.length);
+    return roleQuotes[randomIndex];
 };

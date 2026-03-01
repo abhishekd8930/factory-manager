@@ -189,11 +189,21 @@ window.updateGreeting = () => {
     const nameEl = document.getElementById('greet-name');
     const iconEl = document.getElementById('greet-icon');
     const roleEl = document.getElementById('greet-role');
+    const quoteEl = document.getElementById('greet-quote');
 
     if (msgEl) msgEl.innerText = greetingText + ",";
     if (nameEl) nameEl.innerText = name;
     if (iconEl) iconEl.className = `fa-solid ${icon} text-yellow-400 text-3xl`;
     if (roleEl) roleEl.innerText = roleText;
+
+    if (quoteEl && window.getDailyQuote) {
+        const storedRole = localStorage.getItem('srf_user_role') || 'employee';
+        quoteEl.style.opacity = '0';
+        setTimeout(() => {
+            quoteEl.innerText = window.getDailyQuote(storedRole);
+            quoteEl.style.opacity = '1';
+        }, 150);
+    }
 
     const dateEl = document.getElementById('home-date');
     if (dateEl) {

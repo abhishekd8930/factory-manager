@@ -299,10 +299,10 @@ export const Templates = {
                 <h1 class="text-3xl font-normal text-slate-800 mb-2">
                     <span id="greet-msg">Hello,</span> <span id="greet-name" class="font-bold">Manager</span>
                 </h1>
-                <p class="text-slate-500 max-w-lg mb-6">Start now to set your priorities and progress toward your goals with a clear, structured plan.</p>
-                <div class="mt-4 inline-block bg-indigo-50 border border-indigo-100 px-4 py-1.5 rounded-full">
+                <div class="mb-4 inline-block bg-indigo-50 border border-indigo-100 px-4 py-1.5 rounded-full">
                     <span class="text-indigo-600 font-bold text-sm tracking-wide uppercase" id="greet-role">Role</span>
                 </div>
+                <p id="greet-quote" class="text-slate-500 max-w-lg mt-4 leading-relaxed italic border-l-4 border-indigo-200 pl-4 py-1.5 transition-opacity duration-500">Start now to set your priorities and progress toward your goals with a clear, structured plan.</p>
             </div>
             <div class="shrink-0">
                 <img src="assets/images/welcome-parrot.jpg" alt="Welcome" class="h-28 md:h-32 w-auto object-contain drop-shadow-sm hover:scale-105 transition duration-500 rounded-[32px]">
@@ -1026,21 +1026,36 @@ export const Templates = {
                 <div id="search-box-pcs" class="hidden mb-3">
                     <input type="text" oninput="handleStaffSearch('pcs', this.value)" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:border-emerald-500 outline-none" placeholder="Search by name or role...">
                 </div>
-                <!-- Staff Table -->
-                <div class="bg-white rounded-xl border border-slate-200 overflow-hidden">
-                    <table class="w-full text-sm text-left">
-                        <thead class="bg-slate-50 text-[10px] uppercase text-slate-400 border-b border-slate-100">
-                            <tr>
-                                <th class="p-3">#</th>
-                                <th class="p-3">Name</th>
-                                <th class="p-3">ID</th>
-                                <th class="p-3 text-center">Ledger</th>
-                                <th class="p-3 text-center w-10"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="staff-table-body" class="divide-y divide-slate-50">
-                        </tbody>
-                    </table>
+                <div class="flex gap-6 items-start">
+                    <!-- Staff Table -->
+                    <div id="staff-table-container" class="bg-white rounded-xl border border-slate-200 overflow-hidden flex-1 transition-all duration-300">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-slate-50 text-[10px] uppercase text-slate-400 border-b border-slate-100">
+                                <tr>
+                                    <th class="p-3">#</th>
+                                    <th class="p-3">Name</th>
+                                    <th class="p-3">ID</th>
+                                    <th class="p-3 text-center">Ledger</th>
+                                    <th class="p-3 text-center w-10"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="staff-table-body" class="divide-y divide-slate-50">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- PROFILE SIDE PANEL -->
+                    <div id="staff-profile-panel" class="hidden w-1/3 shrink-0 bg-white rounded-xl shadow-lg border border-slate-200 flex-col sticky top-4 max-h-[calc(100vh-120px)] transition-all duration-300 relative">
+                        <div class="p-2 flex justify-between items-center border-b border-slate-100 bg-slate-50 rounded-t-xl">
+                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider px-2">Staff Profile</span>
+                            <button onclick="closeStaffProfile()" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200 flex items-center justify-center transition">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                        <div class="p-2 sm:p-4 overflow-y-auto flex-1 custom-scrollbar text-sm" id="staff-profile-content">
+                            <!-- Profile data injected here by JS -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1552,14 +1567,13 @@ export const Templates = {
 
 
     settings: () => `
-    < div id = "settings" class="fade-in max-w-4xl mx-auto" >
+    <div id="settings" class="fade-in max-w-4xl mx-auto">
         <div class="mb-8">
             <h2 class="text-3xl font-bold text-slate-800">System Settings</h2>
             <p class="text-slate-500 mt-1">Manage application configuration and data.</p>
         </div>
 
-        <!--Section 1: Data Management-- >
-        < !--Section 1: Data Management-- >
+        <!-- Section 1: Data Management -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-4 transition-all duration-300">
             <button onclick="toggleSettingsSection('sec-data')" class="w-full p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 hover:bg-slate-50 transition text-left group">
                 <h3 class="font-bold text-slate-700 flex items-center gap-2">
@@ -1606,8 +1620,7 @@ export const Templates = {
             </div>
         </div>
 
-        <!--Section 2: Configuration-- >
-        < !--Section 2: Configuration-- >
+        <!-- Section 2: Configuration -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-4 transition-all duration-300">
             <button onclick="toggleSettingsSection('sec-config')" class="w-full p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 hover:bg-slate-50 transition text-left group">
                 <h3 class="font-bold text-slate-700 flex items-center gap-2">
@@ -1838,7 +1851,7 @@ export const Templates = {
         </script>
 
 
-        <!--Section 4: Account-- >
+        <!-- Section 4: Account -->
 
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-20 transition-all duration-300">
         <button onclick="toggleSettingsSection('sec-account')" class="w-full p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 hover:bg-slate-50 transition text-left group">
@@ -1850,7 +1863,7 @@ export const Templates = {
 
         <div id="sec-account" class="hidden border-t border-slate-100 bg-white">
             <div class="p-6">
-                <button onclick="logout()" class="w-full md:w-auto px-6 py-3 rounded-xl border border-red-200 text-red-600 font-bold hover:bg-red-50 transition flex items-center justify-center gap-3">
+                <button onclick="window.logout()" class="w-full md:w-auto px-6 py-3 rounded-xl border border-red-200 text-red-600 font-bold hover:bg-red-50 transition flex items-center justify-center gap-3">
                     <i class="fa-solid fa-power-off"></i> Sign Out
                 </button>
             </div>
@@ -1858,7 +1871,7 @@ export const Templates = {
     </div>
     </div >
 
-    < !--Password Modal for Secure Edit-- >
+    <!-- Password Modal for Secure Edit -->
     <div id="password-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] flex items-center justify-center p-4 fade-in">
         <div class="bg-white w-full max-w-xs rounded-2xl shadow-2xl overflow-hidden p-6 text-center relative">
             <button onclick="closePasswordModal()" aria-label="Close" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-lg"></i></button>

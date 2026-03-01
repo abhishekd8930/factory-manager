@@ -181,12 +181,18 @@ window.logout = () => {
             return;
         }
 
-        window.signOut(window.auth).then(() => {
-            console.log("Signed Out");
+        if (window.auth && window.auth.currentUser) {
+            window.signOut(window.auth).then(() => {
+                console.log("Signed Out");
+                window.location.reload();
+            }).catch((error) => {
+                console.error("Sign Out Error", error);
+            });
+        } else {
+            // Handle local-only session logout
+            console.log("Local Session Signed Out");
             window.location.reload();
-        }).catch((error) => {
-            console.error("Sign Out Error", error);
-        });
+        }
     }
 };
 
@@ -194,9 +200,11 @@ window.logout = () => {
 // This runs automatically whenever the user's status changes (Login or Logout)
 document.addEventListener('firebase-ready', () => {
     window.onAuthStateChanged(window.auth, (user) => {
-        if (user) {
-            // User is signed in.
-            console.log("User is Authenticated:", user.email);
+        const localRole = localStorage.getItem('srf_user_role');
+
+        if (user || localRole === 'employee') {
+            // User is signed in (Firebase Auth OR Local Employee PIN Session)
+            console.log("User is Authenticated:", user ? user.email || 'Anonymous' : 'Local Employee');
             initAppView();
         } else {
             // User is signed out.
