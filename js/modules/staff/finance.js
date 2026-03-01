@@ -152,8 +152,15 @@ window.calculateSalary = () => {
     }
 
     const modal = document.getElementById('salary-modal');
-    modal.className = "fixed inset-0 bg-slate-900/80 z-[100] flex items-center justify-center p-4 backdrop-blur-sm transition-opacity duration-200";
+    const sidePanel = document.getElementById('salary-side-panel');
+    const sideContent = document.getElementById('salary-side-content');
 
+    // We will render either to the side panel (if available) or fallback to modal
+    const isSidePanelAvailable = sidePanel && sideContent;
+
+    if (!isSidePanelAvailable && modal) {
+        modal.className = "fixed inset-0 bg-slate-900/80 z-[100] flex items-center justify-center p-4 backdrop-blur-sm transition-opacity duration-200";
+    }
     let html = '';
     const dateLabel = document.getElementById('ledger-month-label').innerText;
     const RATES = (window.CONFIG && window.CONFIG.RATES) ? window.CONFIG.RATES : { OT_PER_HOUR: 45, NPL_FINE: 500, ATTENDANCE_BONUS: 600 };
@@ -254,20 +261,27 @@ window.calculateSalary = () => {
         if (sundayStatusStr === '') sundayStatusStr = '<span class="text-emerald-600">All Paid</span>';
 
         html = `
-        <div class="bg-white p-6 max-w-md mx-auto text-slate-800 font-sans">
+        <div class="bg-white p-4 sm:p-5 max-w-md mx-auto text-slate-800 font-sans ${isSidePanelAvailable ? 'shadow-none' : 'rounded-xl border border-slate-200'}">
             
-            <div class="w-full flex justify-end gap-3 mb-4 no-print">
-                <button onclick="shareSalarySlip()" class="bg-emerald-600 text-white font-bold py-2 px-6 rounded-lg shadow-lg hover:bg-emerald-700 transition flex items-center gap-2">
-                    <i class="fa-solid fa-share-nodes"></i> Share
+            <div class="w-full flex justify-end gap-2 mb-3 no-print">
+                <button onclick="shareSalarySlip()" class="bg-emerald-100 text-emerald-700 w-8 h-8 rounded-full flex items-center justify-center hover:bg-emerald-200 transition" title="Share Slip">
+                    <i class="fa-solid fa-share-nodes"></i>
                 </button>
-                <button onclick="window.print()" class="bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg shadow-lg hover:bg-indigo-700 transition flex items-center gap-2">
-                    <i class="fa-solid fa-print"></i> Print Slip
+                <button onclick="window.print()" class="bg-indigo-100 text-indigo-700 w-8 h-8 rounded-full flex items-center justify-center hover:bg-indigo-200 transition" title="Print Slip">
+                    <i class="fa-solid fa-print"></i>
                 </button>
+                ${isSidePanelAvailable ? `
+                <button onclick="closeSalarySidePanel()" class="bg-rose-100 text-rose-700 w-8 h-8 rounded-full flex items-center justify-center hover:bg-rose-200 transition" title="Close Slip">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>` : `
+                <button onclick="document.getElementById('salary-modal').classList.add('hidden')" class="bg-slate-100 text-slate-700 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-200 transition" title="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>`}
             </div>
 
             <div class="text-center border-b-2 border-slate-800 pb-4 mb-4">
-                <h2 class="text-2xl font-bold uppercase tracking-widest">Salary Slip</h2>
-                <p class="text-slate-500 text-sm font-bold mt-1">${OWNER}</p>
+                <h1 class="text-3xl font-black uppercase tracking-tight text-slate-900">Sri Raghavendra Fashions</h1>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Salary Slip • ${OWNER}</p>
             </div>
 
     <div class="flex justify-between items-end mb-6 text-sm">
@@ -352,15 +366,22 @@ window.calculateSalary = () => {
 
         // Step D: Render The Printable Invoice
         html = `
-        <div class="w-full max-w-xl mx-auto bg-white p-8 text-slate-800 font-sans shadow-none">
+        <div class="w-full max-w-xl mx-auto bg-white p-4 sm:p-5 text-slate-800 font-sans shadow-none ${isSidePanelAvailable ? 'shadow-none' : 'rounded-xl border border-slate-200'}">
             
-            <div class="flex justify-end gap-3 mb-6 no-print">
-                <button onclick="shareSalarySlip()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-6 rounded-lg shadow-lg transition flex items-center gap-2 text-sm">
-                    <i class="fa-solid fa-share-nodes"></i> Share
+            <div class="flex justify-end gap-2 mb-3 no-print">
+                <button onclick="shareSalarySlip()" class="bg-emerald-100 text-emerald-700 w-8 h-8 rounded-full flex items-center justify-center hover:bg-emerald-200 transition" title="Share Statement">
+                    <i class="fa-solid fa-share-nodes"></i>
                 </button>
-                <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg shadow-lg transition flex items-center gap-2 text-sm">
-                    <i class="fa-solid fa-print"></i> Print Statement
+                <button onclick="window.print()" class="bg-indigo-100 text-indigo-700 w-8 h-8 rounded-full flex items-center justify-center hover:bg-indigo-200 transition" title="Print Statement">
+                    <i class="fa-solid fa-print"></i>
                 </button>
+                ${isSidePanelAvailable ? `
+                <button onclick="closeSalarySidePanel()" class="bg-rose-100 text-rose-700 w-8 h-8 rounded-full flex items-center justify-center hover:bg-rose-200 transition" title="Close Slip">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>` : `
+                <button onclick="document.getElementById('salary-modal').classList.add('hidden')" class="bg-slate-100 text-slate-700 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-200 transition" title="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>`}
             </div>
 
             <div class="text-center border-b-2 border-slate-800 pb-4 mb-6">
@@ -445,8 +466,23 @@ window.calculateSalary = () => {
         </div>
     `;
 
-    document.getElementById('salary-modal-content').innerHTML = html;
-    modal.classList.remove('hidden');
+    if (isSidePanelAvailable) {
+        sideContent.innerHTML = html;
+        sidePanel.classList.remove('hidden');
+        sidePanel.classList.add('flex');
+    } else {
+        document.getElementById('salary-modal-content').innerHTML = html;
+        modal.classList.remove('hidden');
+    }
+};
+
+// --- CLOSE SIDE PANEL ---
+window.closeSalarySidePanel = () => {
+    const sidePanel = document.getElementById('salary-side-panel');
+    if (sidePanel) {
+        sidePanel.classList.add('hidden');
+        sidePanel.classList.remove('flex');
+    }
 };
 
 // --- ENSURE CLOSE FUNCTION EXISTS ---
@@ -461,7 +497,13 @@ window.closeSalaryModal = () => {
 
 // --- SHARE SALARY SLIP AS IMAGE ---
 window.shareSalarySlip = async () => {
-    const content = document.getElementById('salary-modal-content');
+    // Check if we are using the side panel or modal
+    const sideContent = document.getElementById('salary-side-content');
+    const modalContent = document.getElementById('salary-modal-content');
+    const content = (sideContent && !document.getElementById('salary-side-panel').classList.contains('hidden'))
+        ? sideContent
+        : modalContent;
+
     if (!content) return alert("No salary slip to share.");
 
     try {

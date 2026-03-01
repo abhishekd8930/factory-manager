@@ -151,11 +151,21 @@ window.updateGreeting = () => {
 
     // For employees, show their own Google account name; for owner/manager use CONFIG.OWNER_NAME
     let name = CONFIG.OWNER_NAME || "Manager";
+    let roleText = window.isEmployee && window.isEmployee() ? "Staff Member" : "Owner / Manager";
+
     if (window.isEmployee && window.isEmployee()) {
         const user = window.auth && window.auth.currentUser;
         if (user) {
             // Prefer displayName, fall back to email prefix
             name = user.displayName || (user.email ? user.email.split('@')[0] : 'Employee');
+
+            // Try to look up role from staff data matching the email
+            if (window.state && window.state.staffData && user.email) {
+                const staffAcct = window.state.staffData.find(s => s.email === user.email);
+                if (staffAcct && staffAcct.role) {
+                    roleText = staffAcct.role;
+                }
+            }
         } else {
             name = 'Employee';
         }
@@ -178,10 +188,12 @@ window.updateGreeting = () => {
     const msgEl = document.getElementById('greet-msg');
     const nameEl = document.getElementById('greet-name');
     const iconEl = document.getElementById('greet-icon');
+    const roleEl = document.getElementById('greet-role');
 
     if (msgEl) msgEl.innerText = greetingText + ",";
     if (nameEl) nameEl.innerText = name;
     if (iconEl) iconEl.className = `fa-solid ${icon} text-yellow-400 text-3xl`;
+    if (roleEl) roleEl.innerText = roleText;
 
     const dateEl = document.getElementById('home-date');
     if (dateEl) {

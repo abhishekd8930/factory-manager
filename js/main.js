@@ -826,7 +826,145 @@ window.updateHeaderProfile = () => {
             initEl.classList.remove('hidden');
             // Update Initial
             const name = (isEmp && empName) ? empName : (state.config.OWNER_NAME || "Manager");
-            initEl.innerText = name.charAt(0).toUpperCase();
         }
     }
 };
+
+// --- GLOBAL SEARCH LOGIC ---
+let globalSearchTimeout = null;
+
+window.handleGlobalSearch = (query) => {
+    clearTimeout(globalSearchTimeout);
+
+    const resultsContainer = document.getElementById('global-search-results');
+    const inputEl = document.getElementById('global-search-input');
+
+    if (!query || query.trim() === '') {
+        resultsContainer.classList.add('hidden');
+        return;
+    }
+
+    // Determine dropdown width based on input
+    if (inputEl) {
+        // Ensure dropdown matches exactly input container width or preferred width
+        resultsContainer.style.width = inputEl.closest('.search-container-solid').offsetWidth + 'px';
+    }
+
+    resultsContainer.classList.remove('hidden');
+
+    globalSearchTimeout = setTimeout(() => {
+        executeGlobalSearch(query.trim().toLowerCase());
+    }, 300); // 300ms debounce
+};
+
+function executeGlobalSearch(query) {
+    const listEl = document.getElementById('global-search-list');
+    let results = [];
+
+    // 1. Search Staff (if allowed)
+    if (state.staffData) {
+        const staffMatches = state.staffData.filter(s =>
+            (s.name && s.name.toLowerCase().includes(query)) ||
+            (s.id && s.id.toLowerCase().includes(query)) ||
+            (s.phone && s.phone.includes(query)) ||
+            (s.role && s.role.toLowerCase().includes(query))
+        ).map(s => ({
+            type: 'staff',
+            id: s.id,
+            title: s.name,
+            subtitle: `${s.role} • ${s.id}`,
+            icon: 'fa-user',
+            color: 'text-indigo-500 bg-indigo-50 border-indigo-100',
+            data: s
+        }));
+        results = results.concat(staffMatches);
+    }
+
+    // 2. Search Catalogue
+    if (state.catalogueItems) {
+        const catMatches = state.catalogueItems.filter(c =>
+            (c.item_name && c.item_name.toLowerCase().includes(query)) ||
+            (c.fabric && c.fabric.toLowerCase().includes(query)) ||
+            (c.pattern && c.pattern.toLowerCase().includes(query)) ||
+            (c.brand && c.brand.toLowerCase().includes(query))
+        ).map(c => ({
+            type: 'catalogue',
+            id: c.id,
+            title: c.item_name,
+            subtitle: `${c.pattern || 'No Pattern'} • ${c.fabric || 'No Fabric'}`,
+            icon: 'fa-book-open',
+            color: 'text-emerald-500 bg-emerald-50 border-emerald-100',
+            data: c
+        }));
+        results = results.concat(catMatches);
+    }
+
+    // Limit to top 8 overall results for UI sanity
+    results = results.slice(0, 8);
+
+    renderGlobalSearchResults(results, query);
+}
+
+function renderGlobalSearchResults(results, query) {
+    const listEl = document.getElementById('global-search-list');
+
+    if (results.length === 0) {
+        listEl.innerHTML = `
+            <div class="px-4 py-8 text-center text-slate-400">
+                <i class="fa-solid fa-magnifying-glass text-2xl mb-2 opacity-30"></i>
+                <p class="text-xs">No results found for "<span class="font-bold text-slate-500">${query}</span>"</p>
+            </div>
+        `;
+        return;
+    }
+
+    listEl.innerHTML = results.map(r => `
+        <div onclick="navigateFromGlobalSearch('${r.type}', '${r.id}')" 
+             class="flex items-center gap-3 p-3 hover:bg-slate-50 rounded-lg cursor-pointer transition border border-transparent hover:border-slate-100 group">
+            <div class="w-10 h-10 rounded-xl ${r.color} flex items-center justify-center shrink-0 border">
+                <i class="fa-solid ${r.icon} group-hover:scale-110 transition-transform"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+                <h4 class="font-bold text-slate-700 text-sm truncate group-hover:text-indigo-600 transition-colors">${r.title}</h4>
+                <p class="text-xs text-slate-500 truncate">${r.subtitle}</p>
+            </div>
+            <i class="fa-solid fa-chevron-right text-xs text-slate-300 group-hover:text-indigo-400 transition-colors opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transform duration-200"></i>
+        </div>
+    `).join('');
+}
+
+window.navigateFromGlobalSearch = (type, id) => {
+    window.closeGlobalSearch();
+
+    if (type === 'staff') {
+        window.switchTab('staff');
+        setTimeout(() => {
+            if (window.openLedger) {
+                // Find matching staff object
+                const emp = state.staffData.find(s => s.id === id);
+                if (emp) window.openLedger(emp);
+            }
+        }, 100);
+    } else if (type === 'catalogue') {
+        window.switchTab('catalogue');
+        setTimeout(() => {
+            if (window.openCatalogueDetail) window.openCatalogueDetail(id);
+        }, 100);
+    }
+};
+
+window.closeGlobalSearch = () => {
+    const resultsContainer = document.getElementById('global-search-results');
+    const inputEl = document.getElementById('global-search-input');
+    if (resultsContainer) resultsContainer.classList.add('hidden');
+    if (inputEl) inputEl.value = '';
+};
+
+// Close global search when clicking outside
+document.addEventListener('click', (e) => {
+    const searchContainer = document.getElementById('global-search-container');
+    if (searchContainer && !searchContainer.contains(e.target)) {
+        window.closeGlobalSearch();
+    }
+});
+

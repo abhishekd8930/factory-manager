@@ -383,8 +383,12 @@
         class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center backdrop-blur-sm p-4">
         <div class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-md">
             <h3 class="text-xl font-bold mb-4">New Employee</h3>
+            <label for="new-staff-id" class="sr-only">Employee ID</label>
+            <input type="text" id="new-staff-id" readonly placeholder="Auto-generated ID"
+                class="w-full mb-3 p-3 border border-slate-200 bg-slate-50 text-slate-500 rounded-lg focus:outline-none font-mono text-sm uppercase tracking-wider cursor-not-allowed">
             <label for="new-staff-name" class="sr-only">Full Name</label>
             <input type="text" id="new-staff-name" placeholder="Full Name"
+                oninput="this.value = this.value.replace(/\b[a-z]/g, c => c.toUpperCase())"
                 class="w-full mb-3 p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
             <div
                 class="flex items-center border rounded-lg mb-3 overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500 bg-white">
@@ -395,14 +399,14 @@
                     oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)">
             </div>
             <label class="block text-xs font-bold text-slate-500 uppercase mb-1" for="new-staff-type">Work Type</label>
-            <select id="new-staff-type" onchange="updateRoleOptions()"
+            <select id="new-staff-type" onchange="updateRoleOptions(); generateEmployeeId()"
                 class="w-full mb-4 p-3 border rounded-lg bg-slate-50 focus:ring-2 focus:ring-indigo-500 outline-none">
                 <option value="timings">Based on Timings (Salary)</option>
                 <option value="pcs">Based on Pcs (Piece Work)</option>
             </select>
 
             <label class="block text-xs font-bold text-slate-500 uppercase mb-1" for="new-staff-unit">Unit Assignment <span class="text-red-500">*</span></label>
-            <select id="new-staff-unit"
+            <select id="new-staff-unit" onchange="generateEmployeeId()"
                 class="w-full mb-4 p-3 border rounded-lg bg-slate-50 focus:ring-2 focus:ring-indigo-500 outline-none">
                 <option value="">-- Select Unit --</option>
                 <option value="Cutting">Cutting Unit</option>
@@ -412,11 +416,11 @@
             </select>
             <label class="block text-xs font-bold text-slate-500 uppercase mb-1" for="new-staff-role">Role</label>
 
-            <select id="new-staff-role" onchange="checkCustomRole()"
+            <select id="new-staff-role" onchange="checkCustomRole(); generateEmployeeId()"
                 class="w-full mb-2 p-3 border rounded-lg bg-slate-50 focus:ring-2 focus:ring-indigo-500 outline-none"></select>
 
             <label for="new-staff-role-custom" class="sr-only">Custom Role Name</label>
-            <input type="text" id="new-staff-role-custom" placeholder="Enter Role Name"
+            <input type="text" id="new-staff-role-custom" placeholder="Enter Role Name" oninput="generateEmployeeId()"
                 class="hidden w-full mb-4 p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none animate-fade-in-up">
 
             <div class="mb-2"></div>
@@ -515,7 +519,7 @@
     <script src="js/state.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/auth.js"></script>
-
+    <script src="js/worker-auth.js"></script>
     <script src="js/modules/home.js"></script>
     <script src="js/modules/dashboard.js"></script>
     <script src="js/modules/staff/core.js"></script>
@@ -528,7 +532,7 @@
     <script src="js/modules/inventory.js"></script>
     <script src="js/modules/units.js"></script>
     <script src="js/modules/bin.js"></script>
-
+    <script src="js/modules/worker-admin.js"></script>
     <script type="module" src="js/modules/settings.js"></script>
     <script src="js/main.js"></script>
     <script type="module">

@@ -345,17 +345,16 @@ window.switchLoginRole = (role, btn) => {
 
     // 3. Toggle Forms
     const emailForm = document.getElementById('email-login-container');
-    const googleForm = document.getElementById('google-login-container');
-    const appleBtn = document.getElementById('btn-apple-login'); // Apple button is inside google-login-container
+    const workerForm = document.getElementById('worker-login-container');
 
     if (role === 'employee') {
-        // Show Google, Hide Email
+        // Show Worker ID+PIN, Hide Email
         if (emailForm) emailForm.classList.add('hidden');
-        if (googleForm) googleForm.classList.remove('hidden');
+        if (workerForm) workerForm.classList.remove('hidden');
     } else {
-        // Show Email, Hide Google
+        // Show Email, Hide Worker
         if (emailForm) emailForm.classList.remove('hidden');
-        if (googleForm) googleForm.classList.add('hidden');
+        if (workerForm) workerForm.classList.add('hidden');
     }
 };
 

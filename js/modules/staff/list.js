@@ -107,7 +107,11 @@ window.renderStaffGrid = () => {
     let list = state.staffData.filter(e => e.type === type);
 
     if (searchVal) {
-        list = list.filter(e => e.name.toLowerCase().includes(searchVal) || e.role.toLowerCase().includes(searchVal));
+        list = list.filter(e =>
+            e.name.toLowerCase().includes(searchVal) ||
+            e.role.toLowerCase().includes(searchVal) ||
+            e.id.toLowerCase().includes(searchVal)
+        );
     }
 
     const sortMode = state[sortKey] || 'alpha_asc';
@@ -150,8 +154,8 @@ window.renderStaffGrid = () => {
                     </div>
                 </div>
             </td>
-            <td class="p-3 hidden sm:table-cell">
-                <span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded font-mono text-slate-500">${emp.id}</span>
+            <td class="p-3">
+                <span class="text-[10px] bg-slate-100 border border-slate-200 px-2 py-1 rounded-md font-mono text-slate-700 font-bold uppercase tracking-wider whitespace-nowrap">${emp.id}</span>
             </td>
             <td class="p-3 text-center">
                 <button onclick="window.openLedger('${emp.id}')" class="w-8 h-8 rounded-lg bg-${colorClass}-50 text-${colorClass}-600 hover:bg-${colorClass}-100 flex items-center justify-center transition mx-auto" title="Open Ledger">
@@ -173,10 +177,13 @@ window.toggleAddStaffModal = () => {
     const modal = document.getElementById('add-staff-modal');
     if (modal.classList.contains('hidden')) {
         modal.classList.remove('hidden');
+        document.getElementById('new-staff-id').value = '';
         document.getElementById('new-staff-name').value = '';
         document.getElementById('new-staff-phone').value = '';
         document.getElementById('new-staff-type').value = 'timings';
+        document.getElementById('new-staff-unit').value = '';
         if (window.updateRoleOptions) window.updateRoleOptions();
+        if (window.generateEmployeeId) window.generateEmployeeId();
         document.getElementById('new-staff-name').focus();
     } else {
         modal.classList.add('hidden');
@@ -229,6 +236,58 @@ window.checkCustomRole = () => {
     }
 };
 
+window.generateEmployeeId = () => {
+    const type = document.getElementById('new-staff-type').value;
+    const unit = document.getElementById('new-staff-unit').value || '';
+    let role = document.getElementById('new-staff-role').value || '';
+    if (role === 'Other') {
+        role = document.getElementById('new-staff-role-custom').value.trim();
+    }
+
+    const idInput = document.getElementById('new-staff-id');
+    if (!idInput) return;
+
+    if (!unit || !role) {
+        idInput.value = '';
+        return;
+    }
+
+    // 1. Type: T or P
+    const pType = type === 'timings' ? 'T' : 'P';
+
+    // 2. Unit: C, F, A, F
+    let pUnit = 'X';
+    if (unit === 'Cutting') pUnit = 'C';
+    else if (unit === 'FB') pUnit = 'F';
+    else if (unit === 'Assembly') pUnit = 'A';
+    else if (unit === 'Finishing') pUnit = 'F';
+
+    // 3. Role: First letter
+    let pRole = role.charAt(0).toUpperCase();
+    if (!pRole || !/[A-Z]/.test(pRole)) pRole = 'X'; // fallback if not a letter
+
+    const prefix = `${pType}${pUnit}${pRole}-`;
+
+    // 4. Find max number for this prefix
+    let maxNum = 0;
+    if (state.staffData) {
+        state.staffData.forEach(emp => {
+            if (emp.id && emp.id.startsWith(prefix)) {
+                const numParts = emp.id.split('-');
+                if (numParts.length === 2) {
+                    const num = parseInt(numParts[1], 10);
+                    if (!isNaN(num) && num > maxNum) {
+                        maxNum = num;
+                    }
+                }
+            }
+        });
+    }
+
+    const nextNumStr = String(maxNum + 1).padStart(3, '0');
+    idInput.value = `${prefix}${nextNumStr}`;
+};
+
 window.saveNewStaff = () => {
     const name = document.getElementById('new-staff-name').value.trim();
     const phone = document.getElementById('new-staff-phone').value.trim();
@@ -244,8 +303,11 @@ window.saveNewStaff = () => {
     if (!unit) return alert("Please select a Managing Unit.");
     if (!role) return alert("Please enter a role.");
 
+    const finalId = document.getElementById('new-staff-id').value;
+    if (!finalId) return alert("Employee ID could not be generated. Please ensure all form fields are filled.");
+
     const newEmp = {
-        id: Date.now().toString(),
+        id: finalId,
         name: name,
         phone: phone,
         type: type,

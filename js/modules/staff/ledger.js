@@ -47,6 +47,10 @@ window.openLedger = (empId, restoreSession = false) => {
 
     document.getElementById('staff-list-view').classList.add('hidden');
     document.getElementById('staff-ledger-view').classList.remove('hidden');
+
+    // Ensure side panel is closed when opening a new ledger
+    if (window.closeSalarySidePanel) window.closeSalarySidePanel();
+
     document.getElementById('ledger-emp-name').innerText = emp.name;
     document.getElementById('ledger-emp-role').innerText = emp.role;
 
@@ -158,10 +162,10 @@ window.renderTimeLedgerTable = () => {
         if (pcsBtn) pcsBtn.classList.add('hidden');
         if (salaryDiv) salaryDiv.style.display = 'block';
 
-        // Ensure button says "Calculate Pay" for Time staff
+        // Ensure button says "Salary Slip" for Time staff
         if (salaryBtn) {
             salaryBtn.classList.remove('hidden');
-            salaryBtn.querySelector('button').innerHTML = `<i class="fa-solid fa-calculator"></i> Calculate Pay`;
+            salaryBtn.innerHTML = `<button onclick="calculateSalary()" class="bg-slate-800 text-white shadow-md hover:bg-slate-900 font-bold py-2 px-6 rounded-lg transition flex items-center gap-2 text-sm"><i class="fa-solid fa-file-invoice"></i> Salary Slip</button>`;
         }
 
         const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -322,10 +326,10 @@ window.renderPcsLedgerTable = () => {
             else pcsBtn.classList.add('hidden');
         }
 
-        // SHOW the button, but change text to "View Bill"
+        // SHOW the button, but change text to "Salary Slip"
         if (salaryBtn) {
             salaryBtn.classList.remove('hidden');
-            salaryBtn.querySelector('button').innerHTML = `<i class="fa-solid fa-file-invoice"></i> View Bill`;
+            salaryBtn.innerHTML = `<button onclick="calculateSalary()" class="bg-slate-800 text-white shadow-md hover:bg-slate-900 font-bold py-2 px-6 rounded-lg transition flex items-center gap-2 text-sm"><i class="fa-solid fa-file-invoice"></i> Salary Slip</button>`;
         }
 
         document.getElementById('ledger-hints').innerHTML = `<i class="fa-solid fa-calculator mr-1"></i> Enter on last cell adds row`;

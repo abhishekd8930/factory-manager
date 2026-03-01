@@ -92,21 +92,30 @@ export const Templates = {
                 </form>
             </div>
 
-            <!-- Google Login (Employee) -->
-             <div id="google-login-container" class="space-y-6 pt-2 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]">
+            <!-- Worker Login (Employee) -->
+             <div id="worker-login-container" class="space-y-6 pt-2 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]">
                   <div class="text-center text-slate-500 text-sm mb-6 font-medium bg-slate-50 p-3 rounded-lg border border-slate-100">
-                     Access your workspace securely via Google.
+                     <i class="fa-solid fa-id-badge text-indigo-500 mr-1"></i> Enter your Employee ID and PIN to clock in.
                  </div>
-                 <button id="btn-google-login" onclick="signInWithGoogle()" class="w-full bg-white hover:bg-slate-50 text-slate-700 font-bold py-3.5 rounded-xl shadow-sm border border-slate-200 transition-all transform hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-3 relative overflow-hidden group">
-                     <span class="absolute inset-0 bg-slate-100 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300"></span>
-                     <svg width="20" height="20" viewBox="0 0 48 48" class="relative z-10"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#34A853" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#FBBC05" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-                     <span class="relative z-10">Continue with Google</span>
-                 </button>
-                 <button id="btn-apple-login" onclick="signInWithApple()" style="background-color: black !important; color: white !important;" class="w-full bg-black hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-sm border border-slate-700 transition-all transform hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-3 relative overflow-hidden group">
-                     <span class="absolute inset-0 bg-slate-900 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300"></span>
-                     <i class="fa-brands fa-apple text-xl relative z-10"></i>
-                     <span class="relative z-10">Continue with Apple</span>
-                 </button>
+                 <form onsubmit="handleWorkerLogin(event)" class="space-y-5">
+                     <div class="input-group relative">
+                         <input type="text" id="worker-id" autocomplete="off" style="text-transform: uppercase; font-family: monospace; letter-spacing: 0.15em;" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 pt-5 pb-2 text-slate-800 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition placeholder-transparent peer" placeholder=" " required>
+                         <label for="worker-id" class="absolute left-4 top-3.5 text-sm text-slate-500 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-placeholder-shown:text-slate-500 peer-focus:top-1 peer-focus:text-[10px] peer-focus:font-bold peer-focus:text-indigo-500 peer-focus:uppercase peer-focus:tracking-wider peer-[:not(:placeholder-shown)]:top-1 peer-[:not(:placeholder-shown)]:text-[10px] peer-[:not(:placeholder-shown)]:font-bold peer-[:not(:placeholder-shown)]:uppercase peer-[:not(:placeholder-shown)]:tracking-wider">Employee ID</label>
+                         <i class="fa-solid fa-id-card-clip absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 peer-focus:text-indigo-500 transition-colors"></i>
+                     </div>
+
+                     <div class="input-group relative">
+                         <input type="password" id="worker-pin" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="6" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 pt-5 pb-2 text-slate-800 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition placeholder-transparent peer tracking-[0.3em] text-center font-bold" placeholder=" " required>
+                         <label for="worker-pin" class="absolute left-4 top-3.5 text-sm text-slate-500 transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-sm peer-placeholder-shown:text-slate-500 peer-focus:top-1 peer-focus:text-[10px] peer-focus:font-bold peer-focus:text-indigo-500 peer-focus:uppercase peer-focus:tracking-wider peer-[:not(:placeholder-shown)]:top-1 peer-[:not(:placeholder-shown)]:text-[10px] peer-[:not(:placeholder-shown)]:font-bold peer-[:not(:placeholder-shown)]:uppercase peer-[:not(:placeholder-shown)]:tracking-wider">4-6 Digit PIN</label>
+                         <i class="fa-solid fa-lock absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 peer-focus:text-indigo-500 transition-colors"></i>
+                     </div>
+
+                     <button type="submit" id="btn-worker-login" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-200 transition-all transform hover:-translate-y-0.5 active:scale-[0.98] flex items-center justify-center gap-2 group relative overflow-hidden">
+                          <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                         <i class="fa-solid fa-right-to-bracket relative z-10"></i>
+                         <span class="relative z-10">Clock In</span>
+                     </button>
+                 </form>
              </div>
             
             <div class="mt-8 text-center">
@@ -140,10 +149,16 @@ export const Templates = {
             </div>
 
             <!-- SEARCH BAR (Using flex-1 to fill space properly) -->
-            <div class="hidden md:flex flex-1 max-w-xl mx-8 relative group">
-                <div class="search-container-solid">
+            <div class="hidden md:flex flex-1 max-w-xl mx-8 relative group" id="global-search-container">
+                <div class="search-container-solid relative">
                     <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                    <input type="text" placeholder="Search orders, staff, or patterns..." class="search-input-solid">
+                    <input type="text" id="global-search-input" oninput="handleGlobalSearch(this.value)" onfocus="handleGlobalSearch(this.value)" placeholder="Search orders, staff, or patterns..." class="search-input-solid w-full">
+                </div>
+                <!-- Global Search Dropdown -->
+                <div id="global-search-results" class="hidden absolute top-full left-0 w-full mt-2 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-[100] max-h-96 flex flex-col">
+                    <div class="p-2 overflow-y-auto custom-scrollbar flex-1" id="global-search-list">
+                        <!-- Results injected here -->
+                    </div>
                 </div>
             </div>
 
@@ -279,95 +294,21 @@ export const Templates = {
 
     home: () => `
     <div id="home" class="fade-in relative">
-        <div class="mb-8 bg-white p-8 rounded-[32px] shadow-sm relative overflow-hidden flex flex-col md:flex-row items-center gap-8">
+        <div class="mb-6 bg-white py-4 px-6 md:p-6 rounded-[32px] shadow-sm relative overflow-hidden flex flex-col md:flex-row items-center gap-8">
             <div class="relative z-10 text-center md:text-left flex-1">
                 <h1 class="text-3xl font-normal text-slate-800 mb-2">
                     <span id="greet-msg">Hello,</span> <span id="greet-name" class="font-bold">Manager</span>
                 </h1>
                 <p class="text-slate-500 max-w-lg mb-6">Start now to set your priorities and progress toward your goals with a clear, structured plan.</p>
-
+                <div class="mt-4 inline-block bg-indigo-50 border border-indigo-100 px-4 py-1.5 rounded-full">
+                    <span class="text-indigo-600 font-bold text-sm tracking-wide uppercase" id="greet-role">Role</span>
+                </div>
             </div>
             <div class="shrink-0">
-                <img src="assets/images/welcome-parrot.jpg" alt="Welcome" class="h-40 w-auto object-contain drop-shadow-sm hover:scale-105 transition duration-500 rounded-[32px]">
+                <img src="assets/images/welcome-parrot.jpg" alt="Welcome" class="h-28 md:h-32 w-auto object-contain drop-shadow-sm hover:scale-105 transition duration-500 rounded-[32px]">
             </div>
         </div>
 
-        ${!window.isEmployee() ? `
-        <div class="grid grid-cols-1 gap-8 mb-8">
-            <!-- Metrics Section (Scrollable) -->
-            <div class="min-w-0">
-                <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2 text-lg">
-                    <i class="fa-solid fa-chart-simple text-indigo-500"></i> Snapshots
-                </h3>
-                <div id="snapshot-container" class="flex overflow-x-auto gap-6 hide-scrollbar snap-x snap-mandatory pb-4">
-                    <!-- Staff Card -->
-                    <div class="w-full snap-center bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 flex flex-col justify-between relative group hover:shadow-md transition" style="width: 100%; flex-shrink: 0;">
-                         <div>
-                            <span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider mb-3 inline-block">
-                                <i class="fa-solid fa-users text-slate-400 mr-1"></i> Staff
-                            </span>
-                            <h3 class="text-xl font-bold text-slate-800 mb-1 leading-tight">Staff Attendance</h3>
-                            <p class="text-slate-500 text-sm mb-4">Live tracking of active workers.</p>
-                            <div class="flex items-baseline gap-1">
-                                <span class="text-4xl font-normal text-slate-800" id="stat-staff-today">0</span>
-                                <span class="text-sm text-slate-500">Active</span>
-                            </div>
-                            <div id="trend-staff" class="min-h-[20px]"></div>
-                        </div>
-                        <div class="mt-6 flex justify-between items-center border-t border-slate-50 pt-4">
-                            <div class="text-xs text-slate-400">Yesterday: <span id="stat-staff-yest" class="font-bold text-slate-600">0</span></div>
-                            <a href="#/staff" class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 transition">
-                                <i class="fa-solid fa-arrow-right"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Production Card -->
-                     <div class="w-full snap-center bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 flex flex-col justify-between relative group hover:shadow-md transition" style="width: 100%; flex-shrink: 0;">
-                        <div>
-                            <span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider mb-3 inline-block">
-                                <i class="fa-solid fa-layer-group text-slate-400 mr-1"></i> Output
-                            </span>
-                            <h3 class="text-xl font-bold text-slate-800 mb-1 leading-tight">Production Output</h3>
-                            <p class="text-slate-500 text-sm mb-4">Daily finished pieces count.</p>
-                            <div class="flex items-baseline gap-1">
-                                <span class="text-4xl font-normal text-slate-800" id="stat-prod-today">0</span>
-                                <span class="text-sm text-slate-500">Pcs</span>
-                            </div>
-                            <div id="trend-prod" class="min-h-[20px]"></div>
-                        </div>
-                        <div class="mt-6 flex justify-between items-center border-t border-slate-50 pt-4">
-                            <div class="text-xs text-slate-400">Yesterday: <span id="stat-prod-yest" class="font-bold text-slate-600">0</span></div>
-                            <a href="#/dashboard" class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 transition">
-                                <i class="fa-solid fa-arrow-right"></i>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Washing Card -->
-                    <div class="w-full snap-center bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 flex flex-col justify-between relative group hover:shadow-md transition" style="width: 100%; flex-shrink: 0;">
-                        <div>
-                            <span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider mb-3 inline-block">
-                                <i class="fa-solid fa-soap text-slate-400 mr-1"></i> Washing
-                            </span>
-                            <h3 class="text-xl font-bold text-slate-800 mb-1 leading-tight">Washing Output</h3>
-                            <p class="text-slate-500 text-sm mb-4">Items returned from washing.</p>
-                            <div class="flex items-baseline gap-1">
-                                <span class="text-4xl font-normal text-slate-800" id="stat-wash-today">0</span>
-                                <span class="text-sm text-slate-500">Pcs</span>
-                            </div>
-                            <div id="trend-wash" class="min-h-[20px]"></div>
-                        </div>
-                         <div class="mt-6 flex justify-between items-center border-t border-slate-50 pt-4">
-                            <div class="text-xs text-slate-400">Yesterday: <span id="stat-wash-yest" class="font-bold text-slate-600">0</span></div>
-                            <a href="#/dashboard" class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 transition">
-                                <i class="fa-solid fa-arrow-right"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>` : ''}
 
             <!-- Issues & Recommendations Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -391,59 +332,65 @@ export const Templates = {
                     </div>
                 </div>` : ''}
 
-                <!-- 2. Recommendation Panel (Existing) -->
+                <!-- 2. Snapshots Panel -->
                 <div class="${!window.isEmployee() ? 'lg:col-span-2' : 'lg:col-span-3'} flex flex-col">
                     <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2 text-lg">
-                        <i class="fa-solid fa-lightbulb text-yellow-500"></i> Smart Recommendations
+                        <i class="fa-solid fa-chart-simple text-indigo-500"></i> Snapshots
                     </h3>
                     <div class="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 flex-1 flex flex-col relative group hover:shadow-md transition">
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <!-- Insight Item 1 -->
-                            <div class="flex items-start gap-4 border-b border-slate-50 pb-4 last:border-0 last:pb-0">
+                            <div class="flex items-start gap-4 border-b border-slate-50 pb-4 md:border-b-0 md:pb-0">
                                 <div class="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 shrink-0">
-                                    <i class="fa-solid fa-arrow-trend-up"></i>
+                                    <i class="fa-solid fa-users"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-bold text-slate-800 text-sm mb-0.5">Production Surge</h4>
-                                    <p class="text-sm text-slate-500 leading-relaxed">
-                                        Production is <strong class="text-slate-700">12% higher</strong> than last Tuesday. Team "A" is outperforming targets.
+                                    <h4 class="font-bold text-slate-800 text-sm mb-0.5">Staff Attendance</h4>
+                                    <p class="text-sm text-slate-500 leading-relaxed mb-1">
+                                        Active workers today: <strong class="text-slate-700 text-base" id="stat-staff-today">0</strong>
                                     </p>
+                                    <div class="text-xs text-slate-400">Yesterday: <strong id="stat-staff-yest" class="text-slate-600">0</strong></div>
+                                    <div id="trend-staff" class="min-h-[20px] mt-1 -ml-1"></div>
                                 </div>
                             </div>
 
                             <!-- Insight Item 2 -->
-                            <div class="flex items-start gap-4 border-b border-slate-50 pb-4 last:border-0 last:pb-0">
-                                <div class="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-500 shrink-0">
-                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                            <div class="flex items-start gap-4 border-b border-slate-50 pb-4 md:border-b-0 md:pb-0">
+                                <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0">
+                                    <i class="fa-solid fa-layer-group"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-bold text-slate-800 text-sm mb-0.5">Stock Alert</h4>
-                                    <p class="text-sm text-slate-500 leading-relaxed">
-                                        <strong class="text-slate-700">Grey Thread</strong> count is low. Recommend reordering within 2 days to avoid delays.
+                                    <h4 class="font-bold text-slate-800 text-sm mb-0.5">Production Output</h4>
+                                    <p class="text-sm text-slate-500 leading-relaxed mb-1">
+                                        Finished pieces: <strong class="text-slate-700 text-base"><span id="stat-prod-today">0</span> Pcs</strong>
                                     </p>
+                                    <div class="text-xs text-slate-400">Yesterday: <strong id="stat-prod-yest" class="text-slate-600">0</strong></div>
+                                    <div id="trend-prod" class="min-h-[20px] mt-1 -ml-1"></div>
                                 </div>
                             </div>
 
                              <!-- Insight Item 3 -->
                             <div class="flex items-start gap-4">
-                                <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 shrink-0">
-                                    <i class="fa-solid fa-cloud-sun"></i>
+                                <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
+                                    <i class="fa-solid fa-soap"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-bold text-slate-800 text-sm mb-0.5">Weather Update</h4>
-                                    <p class="text-sm text-slate-500 leading-relaxed">
-                                        Rain expected tomorrow. Ensure outdoor drying area is cleared by 4 PM.
+                                    <h4 class="font-bold text-slate-800 text-sm mb-0.5">Washing Output</h4>
+                                    <p class="text-sm text-slate-500 leading-relaxed mb-1">
+                                        Returned from washing: <strong class="text-slate-700 text-base"><span id="stat-wash-today">0</span> Pcs</strong>
                                     </p>
+                                    <div class="text-xs text-slate-400">Yesterday: <strong id="stat-wash-yest" class="text-slate-600">0</strong></div>
+                                    <div id="trend-wash" class="min-h-[20px] mt-1 -ml-1"></div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="mt-auto pt-6 border-t border-slate-100 flex justify-between items-center">
-                            <span class="text-xs text-slate-400 font-medium">Updated 5 mins ago</span>
-                            <button class="text-indigo-600 text-sm font-bold hover:bg-indigo-50 px-4 py-2 rounded-lg transition flex items-center gap-2">
-                                View All Insights <i class="fa-solid fa-arrow-right"></i>
-                            </button>
+                            <span class="text-xs text-slate-400 font-medium">Live Insights</span>
+                            <a href="#/dashboard" class="text-indigo-600 text-sm font-bold hover:bg-indigo-50 px-4 py-2 rounded-lg transition flex items-center gap-2">
+                                View Reports <i class="fa-solid fa-arrow-right"></i>
+                            </a>
                         </div>
 
                     </div>
@@ -877,7 +824,7 @@ export const Templates = {
     </div>`,
     dashboard: () => `
     <div id="dashboard" class="fade-in max-w-7xl mx-auto">
-        <div class="mb-8 flex justify-between items-center">
+        <div class="mb-4 flex justify-between items-center">
             <div>
                 <h2 class="text-3xl font-bold text-slate-800">Analytics & Logs</h2>
                 <p class="text-slate-500 mt-1">Detailed charts and production history.</p>
@@ -915,7 +862,7 @@ export const Templates = {
                         <button onclick="updateChartMode('production', 'annual')" id="btn-prod-annual" class="px-3 py-1 rounded-md transition text-slate-500 hover:text-indigo-600">Year</button>
                     </div>
                 </div>
-                <div class="chart-container h-64 relative">
+                <div class="chart-container h-56 relative">
                     <canvas id="productionChart"></canvas>
                 </div>
             </div>
@@ -932,23 +879,22 @@ export const Templates = {
                         <button onclick="updateChartMode('washing', 'annual')" id="btn-wash-annual" class="px-3 py-1 rounded-md transition text-slate-500 hover:text-blue-600">Year</button>
                     </div>
                 </div>
-                <div class="chart-container h-64 relative">
+                <div class="chart-container h-56 relative">
                     <canvas id="washingChart"></canvas>
                 </div>
             </div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 mb-8">
-            <!-- Salary Pie Chart moved to full width or left alongside -->
-            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm md:col-span-2">
-            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                <h3 class="font-bold text-slate-700 mb-4">Salary Distribution</h3>
-                <div class="h-64 flex justify-center">
+        <!-- Salary Pie Chart Centered -->
+        <div class="flex justify-center mt-4 mb-6">
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm w-full md:w-1/2 lg:w-1/3">
+                <h3 class="font-bold text-slate-700 mb-4 text-center">Salary Distribution</h3>
+                <div class="h-56 flex justify-center">
                     <canvas id="salaryPieChart"></canvas>
                 </div>
             </div>
         </div>
         <div class="glass-panel rounded-2xl p-1 shadow-sm mb-10">
-            <div class="bg-white rounded-xl p-6 border border-slate-100">
+            <div class="bg-white rounded-xl p-4 border border-slate-100">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-bold text-slate-800">Daily Production Log</h3>
                     <div class="flex gap-4 bg-slate-50 p-2 rounded-lg border border-slate-200">
@@ -982,7 +928,7 @@ export const Templates = {
             </div>
         </div>
         <div class="glass-panel rounded-2xl p-1 shadow-sm mb-10">
-            <div class="bg-white rounded-xl p-6 border border-slate-100">
+            <div class="bg-white rounded-xl p-4 border border-slate-100">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
                         <i class="fa-solid fa-soap text-blue-400"></i> Washing Details
@@ -1028,12 +974,6 @@ export const Templates = {
                     <a href="#/attendance" class="bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 px-4 py-2 rounded-lg font-bold shadow-sm transition flex items-center gap-2">
                         <i class="fa-solid fa-clipboard-user"></i> Attendance
                     </a>
-                    ${window.canEdit() ? `<button onclick="toggleAddStaffModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-medium shadow-lg transition flex items-center gap-2">
-                        <i class="fa-solid fa-user-plus"></i> Add Employee
-                    </button>` : ''}
-                    <button onclick="toggleDetailsModal()" class="bg-white border border-indigo-200 text-indigo-600 hover:bg-indigo-50 px-3 py-2 rounded-lg font-medium shadow-md transition flex items-center gap-2" title="Wage Summary">
-                        <i class="fa-solid fa-circle-info text-xl"></i>
-                    </button>
                 </div>
             </div>
             <div class="bg-slate-100 p-6 rounded-2xl border border-slate-200/60">
@@ -1056,9 +996,28 @@ export const Templates = {
                             <i class="fa-solid fa-arrow-down-a-z" id="sort-icon-timings"></i>
                             <i class="fa-solid fa-arrow-down-a-z hidden" id="sort-icon-pcs"></i>
                         </button>
+                        ${window.canEdit() ? `<button onclick="toggleAddStaffModal()" class="max-md:hidden flex bg-indigo-600 hover:bg-indigo-700 text-white w-8 h-8 rounded-lg shadow-sm transition items-center justify-center" title="Add Employee">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </button>` : ''}
+                        <button onclick="toggleDetailsModal()" class="max-md:hidden flex bg-white w-8 h-8 rounded-lg border border-indigo-200 text-indigo-600 hover:bg-indigo-50 shadow-sm transition items-center justify-center" title="Wage Summary">
+                            <i class="fa-solid fa-circle-info"></i>
+                        </button>
                         <button onclick="toggleSearch(state.activeStaffType || 'timings')" class="bg-white w-8 h-8 rounded-lg border border-slate-200 text-slate-500 hover:text-indigo-600 shadow-sm transition flex items-center justify-center" title="Search">
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </button>
+                        <div class="relative md:hidden">
+                            <button onclick="document.getElementById('mobile-staff-menu').classList.toggle('hidden')" class="bg-white w-8 h-8 rounded-lg border border-slate-200 text-slate-500 hover:text-indigo-600 shadow-sm transition flex items-center justify-center">
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                            </button>
+                            <div id="mobile-staff-menu" class="hidden absolute right-0 top-10 w-48 bg-white border border-slate-100 shadow-xl rounded-xl z-50 overflow-hidden divide-y divide-slate-50">
+                                ${window.canEdit() ? `<button onclick="toggleAddStaffModal(); document.getElementById('mobile-staff-menu').classList.add('hidden')" class="w-fulltext-left px-4 py-3 text-sm font-medium text-indigo-600 hover:bg-indigo-50 flex items-center gap-3 transition">
+                                    <i class="fa-solid fa-user-plus w-4 text-center"></i> Add Employee
+                                </button>` : ''}
+                                <button onclick="toggleDetailsModal(); document.getElementById('mobile-staff-menu').classList.add('hidden')" class="w-full text-left px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 flex items-center gap-3 transition">
+                                    <i class="fa-solid fa-circle-info w-4 text-center"></i> Wage Summary
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div id="search-box-timings" class="hidden mb-3">
@@ -1074,7 +1033,7 @@ export const Templates = {
                             <tr>
                                 <th class="p-3">#</th>
                                 <th class="p-3">Name</th>
-                                <th class="p-3 hidden sm:table-cell">ID</th>
+                                <th class="p-3">ID</th>
                                 <th class="p-3 text-center">Ledger</th>
                                 <th class="p-3 text-center w-10"></th>
                             </tr>
@@ -1097,13 +1056,16 @@ export const Templates = {
                     <button onclick="changeLedgerEmployee(1)" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-indigo-100 text-slate-500 hover:text-indigo-600 flex items-center justify-center transition"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
                 <div class="flex-1"></div>
-                <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg shadow-sm border border-slate-200">
+                <div class="flex items-center gap-4 bg-white px-3 py-1.5 rounded-lg shadow-sm border border-slate-200">
                     <button onclick="changeLedgerMonth(-1)" class="text-slate-400 hover:text-indigo-600"><i class="fa-solid fa-chevron-left"></i></button>
                     <span id="ledger-month-label" class="text-sm font-bold text-slate-800 min-w-[120px] text-center uppercase">--</span>
                     <button onclick="changeLedgerMonth(1)" class="text-slate-400 hover:text-indigo-600"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
             </div>
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <!-- WRAP LEDGER & SIDE PANEL IN FLEX -->
+            <div class="flex gap-6 items-start">
+                <!-- LEDGER MAIN SECTION -->
+                <div id="ledger-main-section" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex-1 transition-all duration-300">
                 <div class="bg-slate-50 border-b border-slate-200 p-4 flex flex-wrap gap-6 items-center justify-between">
                     <div class="flex gap-6">
                         <div id="financial-salary-container">
@@ -1115,18 +1077,29 @@ export const Templates = {
                             <div class="flex items-center text-red-600 font-bold"><span>₹</span><input type="number" id="ledger-advance" onchange="saveFinancials()" class="bg-transparent border-b border-red-200 w-24 focus:border-red-500 outline-none px-1" placeholder="0"></div>
                         </div>
                     </div>
-                    <div id="salary-calc-btn-container">
-                        <button onclick="calculateSalary()" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-md hover:bg-slate-700 transition flex items-center gap-2"><i class="fa-solid fa-calculator"></i> Calculate Pay</button>
+                    <!-- Moved Salary Slip Button inside the header with Financials and forced right alignment -->
+                    <div id="salary-calc-btn-container" class="ml-auto">
+                        <!-- Button content injected by JS -->
                     </div>
-                    <div class="text-xs text-slate-500 bg-blue-50 text-blue-700 px-3 py-2 rounded-lg border border-blue-100" id="ledger-hints"></div>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm border-collapse" id="staff-table">
+                    <table class="w-full text-sm border-collapse mb-4" id="staff-table">
                         <thead id="ledger-table-head"></thead>
                         <tbody id="ledger-table-body" class="divide-y divide-slate-100"></tbody>
                     </table>
-                    <div id="pcs-add-row-container" class="p-3 text-center border-t border-slate-100 hidden">
+                    <div id="pcs-add-row-container" class="p-4 text-center border-t border-slate-100 hidden">
                         <button onclick="addPcsRow()" class="text-emerald-600 font-bold text-sm hover:underline flex items-center justify-center gap-2 w-full py-2 hover:bg-emerald-50/50 rounded-lg transition"><i class="fa-solid fa-plus"></i> Add Row (Alt+N / Enter at end)</button>
+                    </div>
+                    <div class="p-4 bg-white border-t border-slate-200 flex justify-end mt-4">
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-50 px-3 py-1.5 rounded" id="ledger-hints"></div>
+                    </div>
+                </div>
+                </div>
+
+                <!-- SALARY SIDE PANEL (Hidden by default) -->
+                <div id="salary-side-panel" class="hidden w-1/3 shrink-0 bg-white rounded-xl shadow-lg border border-slate-200 flex-col sticky top-4 max-h-[calc(100vh-120px)] transition-all duration-300 relative">
+                    <div class="p-2 sm:p-4 overflow-y-auto flex-1 custom-scrollbar bg-slate-50 rounded-xl" id="salary-side-content">
+                        <!-- Slip content injected here -->
                     </div>
                 </div>
             </div>
@@ -1794,6 +1767,75 @@ export const Templates = {
             </div>
         </div>
 
+        <!-- Section 3: Worker Credentials -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-4 transition-all duration-300">
+            <button onclick="toggleSettingsSection('sec-workers')" class="w-full p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 hover:bg-slate-50 transition text-left group">
+                <h3 class="font-bold text-slate-700 flex items-center gap-2">
+                    <i class="fa-solid fa-id-badge text-indigo-500 w-6 text-center"></i> Worker Credentials
+                </h3>
+                <i id="icon-sec-workers" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
+            </button>
+
+            <div id="sec-workers" class="hidden border-t border-slate-100 bg-white">
+                <div class="p-6">
+                    <p class="text-sm text-slate-500 mb-6">Add login credentials for employees. They use their <strong>Employee ID</strong> and a <strong>4-6 digit PIN</strong> to sign in.</p>
+
+                    <!-- Add Worker Form -->
+                    <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 mb-6">
+                        <h4 class="font-bold text-slate-700 text-sm mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-user-plus text-indigo-500"></i> Add Worker Login
+                        </h4>
+
+                        <!-- Staff Selector -->
+                        <div class="mb-4">
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Select from Staff List</label>
+                            <select id="wc-staff-select" class="w-full p-2.5 border border-slate-200 rounded-lg text-sm outline-none focus:border-indigo-500 bg-white">
+                                <option value="">-- Select from Staff --</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Employee ID</label>
+                                <input type="text" id="wc-id" style="text-transform: uppercase; font-family: monospace;" class="w-full p-2.5 border border-slate-200 rounded-lg text-sm font-bold outline-none focus:border-indigo-500 bg-white" placeholder="e.g. PCH-001">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Name</label>
+                                <input type="text" id="wc-name" class="w-full p-2.5 border border-slate-200 rounded-lg text-sm outline-none focus:border-indigo-500 bg-white" placeholder="Worker Name">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">PIN (4-6 digits)</label>
+                                <input type="password" id="wc-pin" inputmode="numeric" maxlength="6" class="w-full p-2.5 border border-slate-200 rounded-lg text-sm font-bold tracking-[0.3em] text-center outline-none focus:border-indigo-500 bg-white" placeholder="••••">
+                            </div>
+                        </div>
+
+                        <button id="btn-save-worker" onclick="saveWorkerCredential()" class="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-200 flex items-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Add Worker
+                        </button>
+                    </div>
+
+                    <!-- Worker List -->
+                    <h4 class="font-bold text-slate-700 text-sm mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-list text-slate-400"></i> Registered Workers
+                    </h4>
+                    <div id="worker-credentials-list" class="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar">
+                        <div class="text-center p-4 text-slate-400 text-sm">Loading...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Auto-populate staff dropdown when section opens
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('[onclick*="sec-workers"]')) {
+                    setTimeout(() => {
+                        if (window.populateWorkerIdDropdown) window.populateWorkerIdDropdown();
+                        if (window.renderWorkerCredentials) window.renderWorkerCredentials();
+                    }, 100);
+                }
+            });
+        </script>
 
 
         <!--Section 4: Account-- >
