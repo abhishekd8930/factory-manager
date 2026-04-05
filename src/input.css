@@ -1,7 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Outfit", sans-serif;
+  --font-family-sans: 'Outfit', 'Roboto', sans-serif;
+  --color-brand-indigo: #4f46e5;
+  --color-brand-slate: #1e293b;
 }
 
 @layer components {
@@ -41,4 +43,56 @@
   .search-input-solid {
     @apply w-full h-full pl-10 pr-4 text-sm bg-transparent outline-none text-slate-700 placeholder-slate-400;
   }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply font-sans antialiased text-slate-800 bg-slate-50;
+  }
+}
+
+@layer utilities {
+  /* Premium subtle gradient for the Hero section */
+  .bg-hero-pattern {
+    background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+  }
+
+  /* Frosted glass effect for cards or navbars */
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+
+  /* Smooth fade-in animation for page load */
+  .animate-fade-in {
+    animation: fadeIn 0.8s ease-out forwards;
+  }
+
+  /* Gentle float animation for the hero image/graphics */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+}
+
+/* Custom Keyframes for Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
 }

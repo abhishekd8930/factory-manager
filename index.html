@@ -514,6 +514,26 @@
         </div>
     </div>
 
+    <!-- PWA Install UI -->
+    <div id="pwa-install-container" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-6 lg:right-10 z-[120] flex items-center justify-between gap-4 bg-slate-900 border border-slate-700/50 rounded-2xl p-4 shadow-2xl w-[90vw] sm:w-auto">
+        <div class="flex items-center gap-3">
+            <img src="assets/images/logo.jpg" alt="Icon" class="w-10 h-10 rounded-lg object-cover">
+            <div>
+                <h4 class="text-white font-bold text-sm">Smart Manager</h4>
+                <p class="text-slate-400 text-xs">Install app for better experience</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <button id="pwa-install-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm px-4 py-2 rounded-lg transition-colors shadow-lg shadow-indigo-900/50 flex flex-shrink-0 items-center gap-2">
+                <i class="fa-solid fa-download"></i> Install
+            </button>
+            <button id="pwa-install-close" class="text-slate-400 hover:text-white flex-shrink-0 p-2 rounded-lg transition-colors" aria-label="Dismiss">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="js/pwa.js"></script>
     <script src="js/config.js"></script>
     <script type="module" src="js/firebase-init.js"></script>
     <script src="js/state.js"></script>
